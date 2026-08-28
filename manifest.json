@@ -1,7 +1,7 @@
 {
-  "name": "重要系统建设总控PMO",
-  "short_name": "PMO总控",
-  "description": "银行重要系统建设总控PMO可视化管理系统 - 3D全景数字大屏",
+  "name": "PMO棱镜驾驶舱",
+  "short_name": "PMO棱镜驾驶舱",
+  "description": "PMO棱镜驾驶舱 - 3D全景数字大屏",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

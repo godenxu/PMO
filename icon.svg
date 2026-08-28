@@ -83,6 +83,6 @@
   </g>
 
   <!-- Bottom Brand Typography -->
-  <text x="256" y="445" font-family="-apple-system, sans-serif" font-size="34" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="4" filter="url(#glow)">PMO 总控</text>
+  <text x="256" y="445" font-family="-apple-system, sans-serif" font-size="32" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="3" filter="url(#glow)">PMO棱镜驾驶舱</text>
   <text x="256" y="475" font-family="-apple-system, sans-serif" font-size="16" font-weight="500" fill="#20e3ee" text-anchor="middle" letter-spacing="2">3D VISUALIZATION</text>
 </svg>

@@ -81031,7 +81031,7 @@ exports.warnOnce = warnOnce;
       redLight.position.set(7, 6, 2);
       scene.add(redLight);
 
-      // 4. Multi-Layer Circular Stage Pedestal & Screen Track
+      // 4. Multi-Layer Circular Stage Pedestal
       const stageGroup = new THREE.Group();
       scene.add(stageGroup);
 
@@ -81066,22 +81066,14 @@ exports.warnOnce = warnOnce;
       stageEdge.position.y = STAGE_TOP_Y + 0.005;
       stageGroup.add(stageEdge);
 
-      // Screen Mounting Track Rail (Radius = 8.8) with High-Tech Magnetic Levitation Groove
+      // Inner Deck Concentric Rings & Mounting Track (Screen Mounting Rim at Radius = 8.8)
       const SCREEN_RADIUS = 8.8;
-      const mountTrackGeo = new THREE.RingGeometry(SCREEN_RADIUS - 0.16, SCREEN_RADIUS + 0.16, 96);
-      const mountTrackMat = new THREE.MeshBasicMaterial({ color: 0x36d5e8, side: THREE.DoubleSide, transparent: true, opacity: 0.75 });
+      const mountTrackGeo = new THREE.RingGeometry(SCREEN_RADIUS - 0.12, SCREEN_RADIUS + 0.12, 64);
+      const mountTrackMat = new THREE.MeshBasicMaterial({ color: 0x36d5e8, side: THREE.DoubleSide, transparent: true, opacity: 0.65 });
       const mountTrack = new THREE.Mesh(mountTrackGeo, mountTrackMat);
       mountTrack.rotation.x = -Math.PI / 2;
       mountTrack.position.y = STAGE_TOP_Y + 0.01;
       stageGroup.add(mountTrack);
-
-      // Magnetic Track Guideway Inner Glow Line
-      const guideRingGeo = new THREE.RingGeometry(SCREEN_RADIUS - 0.02, SCREEN_RADIUS + 0.02, 96);
-      const guideRingMat = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.9 });
-      const guideRing = new THREE.Mesh(guideRingGeo, guideRingMat);
-      guideRing.rotation.x = -Math.PI / 2;
-      guideRing.position.y = STAGE_TOP_Y + 0.012;
-      stageGroup.add(guideRing);
 
       // Inner Sci-Fi Concentric Grid Rings on Deck
       [6.4, 4.2, 2.0].forEach(r => {
@@ -81105,7 +81097,7 @@ exports.warnOnce = warnOnce;
       }
 
       // ==========================================================================
-      // 5. HONEYCOMB CUBE MATRIX (26 SYSTEMS)
+      // 5. ENLARGED 1, 4, 5, 6, 5, 4, 1 HONEYCOMB CUBE MATRIX
       // ==========================================================================
       const rawSystemDataList = [
         // Row 0 (1 cube)
@@ -81237,7 +81229,7 @@ exports.warnOnce = warnOnce;
       });
 
       // ==========================================================================
-      // 6. TWO SURROUNDING 3D CURVED SCREENS (CAN SLIDE FREELY ALONG CIRCULAR TRACK)
+      // 6. TWO SURROUNDING 3D CURVED SCREENS (LEFT: 会议管理, RIGHT: 综合项目状态看板)
       // ==========================================================================
       const SCREEN_HEIGHT = 4.6;
       const SCREEN_CENTER_Y = STAGE_TOP_Y + SCREEN_HEIGHT / 2;
@@ -81267,24 +81259,14 @@ exports.warnOnce = warnOnce;
         borderGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([topPts[0], btmPts[0]]), borderMat));
         borderGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([topPts[segs], btmPts[segs]]), borderMat));
 
-        // Magnetic Rail Rollers / Clamps that Glide along the Circular Track
-        const mountGeo = new THREE.BoxGeometry(0.36, 0.14, 0.36);
+        const mountGeo = new THREE.BoxGeometry(0.32, 0.12, 0.32);
         const mountMat = new THREE.MeshBasicMaterial({ color: 0x20e3ee });
-        const wheelGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.22, 16);
-        wheelGeo.rotateX(Math.PI / 2);
-        const wheelMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-
         const mountSteps = [0, Math.floor(segs / 4), Math.floor(segs / 2), Math.floor((3 * segs) / 4), segs];
         mountSteps.forEach(idx => {
           if (idx < btmPts.length) {
-            const clampGroup = new THREE.Group();
-            clampGroup.position.copy(btmPts[idx]);
             const m = new THREE.Mesh(mountGeo, mountMat);
-            clampGroup.add(m);
-            const w1 = new THREE.Mesh(wheelGeo, wheelMat);
-            w1.position.y = -0.06;
-            clampGroup.add(w1);
-            borderGroup.add(clampGroup);
+            m.position.copy(btmPts[idx]);
+            borderGroup.add(m);
           }
         });
 
@@ -81292,7 +81274,7 @@ exports.warnOnce = warnOnce;
       }
 
       // --- SCREEN 1: LEFT SECTOR SCREEN (会议管理) ---
-      let leftRotY = Math.PI * 0.68;
+      const leftRotY = Math.PI * 0.68;
       const leftCanvas = document.createElement('canvas');
       leftCanvas.width = 1024;
       leftCanvas.height = 768;
@@ -81315,12 +81297,7 @@ exports.warnOnce = warnOnce;
       const leftCurvedScreen = new THREE.Mesh(leftScreenGeo, leftHudMat);
       leftCurvedScreen.position.set(0, SCREEN_CENTER_Y, 0);
       leftCurvedScreen.rotation.y = leftRotY;
-      leftCurvedScreen.userData = {
-        name: '会议管理',
-        targetView: 'meeting',
-        arc: LEFT_SCREEN_ARC,
-        isScreen: true
-      };
+      leftCurvedScreen.userData = { targetView: 'meeting', rotY: leftRotY };
       leftCurvedScreen.add(createScreenBorder(SCREEN_RADIUS, SCREEN_HEIGHT, LEFT_SCREEN_ARC));
       surroundScreensGroup.add(leftCurvedScreen);
 
@@ -81356,11 +81333,12 @@ exports.warnOnce = warnOnce;
         leftCtx.textAlign = 'left';
         leftCtx.fillText('会议管理', 112, 68);
 
-        // Track Sliding Hint Badge
-        leftCtx.fillStyle = 'rgba(32, 227, 238, 0.8)';
-        leftCtx.font = '16px sans-serif';
-        leftCtx.textAlign = 'right';
-        leftCtx.fillText('⟷ 拖拽屏幕可沿轨道滑移', w - 60, 68);
+        leftCtx.fillStyle = 'rgba(140, 225, 250, 0.6)';
+        [0, 22, 44].forEach(dx => {
+          leftCtx.beginPath();
+          leftCtx.arc(w - 110 + dx, 62, 7, 0, Math.PI * 2);
+          leftCtx.fill();
+        });
 
         const meetingItems = [
           { title: '预约会议', count: '3 场待开', icon: '📅' },
@@ -81443,7 +81421,7 @@ exports.warnOnce = warnOnce;
       updateLeftCanvas();
 
       // --- SCREEN 2: MERGED SUPER-WIDE SCREEN (项目状态看板) ---
-      let statusRotY = -Math.PI * 0.37;
+      const statusRotY = -Math.PI * 0.37;
       const statusCanvas = document.createElement('canvas');
       statusCanvas.width = 2048;
       statusCanvas.height = 768;
@@ -81466,12 +81444,7 @@ exports.warnOnce = warnOnce;
       const statusCurvedScreen = new THREE.Mesh(wideScreenGeo, statusHudMat);
       statusCurvedScreen.position.set(0, SCREEN_CENTER_Y, 0);
       statusCurvedScreen.rotation.y = statusRotY;
-      statusCurvedScreen.userData = {
-        name: '项目状态看板',
-        targetView: 'status',
-        arc: WIDE_SCREEN_ARC,
-        isScreen: true
-      };
+      statusCurvedScreen.userData = { targetView: 'status', rotY: statusRotY };
       statusCurvedScreen.add(createScreenBorder(SCREEN_RADIUS, SCREEN_HEIGHT, WIDE_SCREEN_ARC));
       surroundScreensGroup.add(statusCurvedScreen);
 
@@ -81511,7 +81484,7 @@ exports.warnOnce = warnOnce;
 
         statusCtx.fillStyle = '#8dc0d8';
         statusCtx.font = '22px sans-serif';
-        statusCtx.fillText('重点在建系统 26 个 ｜ ⟷ 可按住本屏沿轨道滑移', 360, 64);
+        statusCtx.fillText('重点在建系统 26 个 ｜ 全景综合监控 & 质量健康度评估', 360, 64);
 
         statusCtx.fillStyle = '#20e3ee';
         statusCtx.font = 'bold 24px sans-serif';
@@ -81770,7 +81743,7 @@ exports.warnOnce = warnOnce;
       updateStatusCanvas();
 
       // ==========================================================================
-      // 7. RESPONSIVE TOUCH & MOUSE INTERACTION (DRAG ORBIT, PINCH ZOOM, RAIL SLIDE)
+      // 7. RESPONSIVE TOUCH & MOUSE INTERACTION (DRAG ORBIT, PINCH ZOOM, TAP FOCUS)
       // ==========================================================================
       const raycaster = new THREE.Raycaster();
       const mouse = new THREE.Vector2();
@@ -81786,9 +81759,6 @@ exports.warnOnce = warnOnce;
 
       let isDragging = false;
       let isTouchMoved = false;
-      let draggedScreen = null;
-      let screenDragVelocity = 0;
-
       let pointerDownPos = { x: 0, y: 0 };
       let pointerDownTime = 0;
       let prevPointerPos = { x: 0, y: 0 };
@@ -81802,35 +81772,6 @@ exports.warnOnce = warnOnce;
       let phi = Math.PI / 3.4;
       let orbitRadius = defaultCamPos.length();
 
-      function getHitScreen(clientX, clientY) {
-        const rect = container.getBoundingClientRect();
-        mouse.x = ((clientX - rect.left) / container.clientWidth) * 2 - 1;
-        mouse.y = -((clientY - rect.top) / container.clientHeight) * 2 + 1;
-        raycaster.setFromCamera(mouse, camera);
-
-        // Check if cursor is over a crystal cube in front
-        const hitMeshes = [];
-        cubeObjects.forEach(c => hitMeshes.push(c.userData.outerMesh));
-        const cubeHits = raycaster.intersectObjects(hitMeshes, false);
-
-        // Strict non-recursive hit test directly on the curved screen surface
-        const hits = raycaster.intersectObjects([leftCurvedScreen, statusCurvedScreen], false);
-        if (hits.length > 0) {
-          const hit = hits[0];
-          // If cube is closer in the line of sight, don't drag the screen
-          if (cubeHits.length > 0 && cubeHits[0].distance < hit.distance) {
-            return null;
-          }
-          // Strict physical height bounds check (must be strictly within screen interior)
-          const minY = STAGE_TOP_Y + 0.08;
-          const maxY = STAGE_TOP_Y + SCREEN_HEIGHT - 0.08;
-          if (hit.point.y >= minY && hit.point.y <= maxY) {
-            return hit.object;
-          }
-        }
-        return null;
-      }
-
       // Mouse Events
       container.addEventListener('mousedown', (e) => {
         isDragging = true;
@@ -81838,22 +81779,13 @@ exports.warnOnce = warnOnce;
         pointerDownPos = { x: e.clientX, y: e.clientY };
         prevPointerPos = { x: e.clientX, y: e.clientY };
         pointerDownTime = Date.now();
-
-        draggedScreen = getHitScreen(e.clientX, e.clientY);
-        if (draggedScreen) {
-          container.style.cursor = 'grabbing';
-        }
       });
 
       window.addEventListener('mouseup', (e) => {
         if (!isDragging) return;
         isDragging = false;
-        container.style.cursor = 'default';
-
         const elapsed = Date.now() - pointerDownTime;
         const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
-        
-        // If it was a click/tap and NOT a drag along rail
         if (!isTouchMoved && elapsed < 350 && dist < 6) {
           handlePointerClick(e.clientX, e.clientY);
         }
@@ -81870,37 +81802,21 @@ exports.warnOnce = warnOnce;
         if (isDragging) {
           const deltaX = e.clientX - prevPointerPos.x;
           const deltaY = e.clientY - prevPointerPos.y;
-          if (Math.hypot(deltaX, deltaY) > 3) isTouchMoved = true;
+          if (Math.hypot(deltaX, deltaY) > 2) isTouchMoved = true;
 
-          if (draggedScreen) {
-            // SLIDE SCREEN ALONG CIRCULAR STAGE TRACK!
-            const slideAngle = -deltaX * 0.007;
-            draggedScreen.rotation.y += slideAngle;
-            screenDragVelocity = slideAngle;
-          } else {
-            // Orbit Scene Camera
-            currentFocusMode = 'custom';
-            theta -= deltaX * 0.006;
-            phi = Math.max(0.15, Math.min(Math.PI / 2.05, phi - deltaY * 0.005));
+          currentFocusMode = 'custom';
+          theta -= deltaX * 0.006;
+          phi = Math.max(0.15, Math.min(Math.PI / 2.05, phi - deltaY * 0.005));
 
-            targetCamPos.x = orbitRadius * Math.sin(phi) * Math.sin(theta);
-            targetCamPos.y = orbitRadius * Math.cos(phi) + 1.2;
-            targetCamPos.z = orbitRadius * Math.sin(phi) * Math.cos(theta);
-          }
+          targetCamPos.x = orbitRadius * Math.sin(phi) * Math.sin(theta);
+          targetCamPos.y = orbitRadius * Math.cos(phi) + 1.2;
+          targetCamPos.z = orbitRadius * Math.sin(phi) * Math.cos(theta);
 
           prevPointerPos = { x: e.clientX, y: e.clientY };
         } else {
-          // Hover Cursor update for track draggable screen strictly within screen interior
-          const hitScr = getHitScreen(e.clientX, e.clientY);
-          if (hitScr) {
-            container.style.cursor = 'grab';
-          } else {
-            container.style.cursor = 'default';
-          }
-
           if (hoveredCube && tooltipEl) {
             tooltipEl.style.left = Math.min(e.clientX, window.innerWidth - 270) + 'px';
-            tooltipEl.style.top = Math.max(80, Math.min(clientY, window.innerHeight - 120)) + 'px';
+            tooltipEl.style.top = Math.max(80, Math.min(e.clientY, window.innerHeight - 120)) + 'px';
           }
         }
       });
@@ -81923,11 +81839,8 @@ exports.warnOnce = warnOnce;
           pointerDownPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
           prevPointerPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
           pointerDownTime = Date.now();
-
-          draggedScreen = getHitScreen(e.touches[0].clientX, e.touches[0].clientY);
         } else if (e.touches.length === 2) {
           isDragging = false;
-          draggedScreen = null;
           initialPinchDistance = Math.hypot(
             e.touches[0].clientX - e.touches[1].clientX,
             e.touches[0].clientY - e.touches[1].clientY
@@ -81941,20 +81854,13 @@ exports.warnOnce = warnOnce;
           const deltaY = e.touches[0].clientY - prevPointerPos.y;
           if (Math.hypot(deltaX, deltaY) > 3) isTouchMoved = true;
 
-          if (draggedScreen) {
-            // Touch Slide Screen along Rail
-            const slideAngle = -deltaX * 0.009;
-            draggedScreen.rotation.y += slideAngle;
-            screenDragVelocity = slideAngle;
-          } else {
-            currentFocusMode = 'custom';
-            theta -= deltaX * 0.008;
-            phi = Math.max(0.15, Math.min(Math.PI / 2.05, phi - deltaY * 0.006));
+          currentFocusMode = 'custom';
+          theta -= deltaX * 0.008;
+          phi = Math.max(0.15, Math.min(Math.PI / 2.05, phi - deltaY * 0.006));
 
-            targetCamPos.x = orbitRadius * Math.sin(phi) * Math.sin(theta);
-            targetCamPos.y = orbitRadius * Math.cos(phi) + 1.2;
-            targetCamPos.z = orbitRadius * Math.sin(phi) * Math.cos(theta);
-          }
+          targetCamPos.x = orbitRadius * Math.sin(phi) * Math.sin(theta);
+          targetCamPos.y = orbitRadius * Math.cos(phi) + 1.2;
+          targetCamPos.z = orbitRadius * Math.sin(phi) * Math.cos(theta);
 
           prevPointerPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
         } else if (e.touches.length === 2) {
@@ -81993,10 +81899,13 @@ exports.warnOnce = warnOnce;
 
         raycaster.setFromCamera(mouse, camera);
 
-        // 1. Check 3D Curved Screens (Strict non-recursive, within screen interior)
-        const hitScreen = getHitScreen(clientX, clientY);
-        if (hitScreen && hitScreen.userData && hitScreen.userData.targetView) {
-          setFocusView(hitScreen.userData.targetView);
+        // 1. Check 3D Curved Screens
+        const screenHits = raycaster.intersectObjects([leftCurvedScreen, statusCurvedScreen], false);
+        if (screenHits.length > 0) {
+          const targetScreen = screenHits[0].object;
+          if (targetScreen.userData && targetScreen.userData.targetView) {
+            setFocusView(targetScreen.userData.targetView);
+          }
           return;
         }
 
@@ -82030,7 +81939,7 @@ exports.warnOnce = warnOnce;
         if (tooltipEl) tooltipEl.style.display = 'none';
       }
 
-      // EXACT ORTHOGONAL FRONT-ON FOCUS (DYNAMICALLY COMPUTES FROM SCREEN'S CURRENT POSITION ON TRACK)
+      // EXACT ORTHOGONAL FRONT-ON FOCUS
       function setFocusView(view) {
         currentFocusMode = view;
         document.querySelectorAll('.quick-nav-btn').forEach(b => {
@@ -82043,23 +81952,17 @@ exports.warnOnce = warnOnce;
           theta = Math.PI / 4.2;
           phi = Math.PI / 3.4;
         } else if (view === 'meeting') {
-          const rot = leftCurvedScreen.rotation.y;
+          const rot = leftRotY;
           const screenCenter = new THREE.Vector3(SCREEN_RADIUS * Math.sin(rot), SCREEN_CENTER_Y, SCREEN_RADIUS * Math.cos(rot));
-          targetLookAt.set(screenCenter.x, 2.2, screenCenter.z);
-          const camOppositeDist = 6.8;
-          const camHeight = 6.2;
-          targetCamPos.set(-camOppositeDist * Math.sin(rot), camHeight, -camOppositeDist * Math.cos(rot));
-          theta = Math.atan2(targetCamPos.x, targetCamPos.z);
-          phi = Math.acos(Math.max(-1, Math.min(1, (targetCamPos.y - 1.2) / orbitRadius)));
+          targetLookAt.copy(screenCenter);
+          const camDist = 4.2;
+          targetCamPos.set(-camDist * Math.sin(rot), SCREEN_CENTER_Y + 0.1, -camDist * Math.cos(rot));
         } else if (view === 'status') {
-          const rot = statusCurvedScreen.rotation.y;
+          const rot = statusRotY;
           const screenCenter = new THREE.Vector3(SCREEN_RADIUS * Math.sin(rot), SCREEN_CENTER_Y, SCREEN_RADIUS * Math.cos(rot));
-          targetLookAt.set(screenCenter.x * 0.96, 2.3, screenCenter.z * 0.96);
-          const camOppositeDist = 8.5;
-          const camHeight = 7.6;
-          targetCamPos.set(-camOppositeDist * Math.sin(rot), camHeight, -camOppositeDist * Math.cos(rot));
-          theta = Math.atan2(targetCamPos.x, targetCamPos.z);
-          phi = Math.acos(Math.max(-1, Math.min(1, (targetCamPos.y - 1.2) / orbitRadius)));
+          targetLookAt.copy(screenCenter);
+          const camDist = 5.4; // Spacious panoramic view of the merged super-wide screen
+          targetCamPos.set(-camDist * Math.sin(rot), SCREEN_CENTER_Y + 0.1, -camDist * Math.cos(rot));
         }
       }
 
@@ -82104,18 +82007,6 @@ exports.warnOnce = warnOnce;
         camera.position.lerp(targetCamPos, 0.06);
         currentLookAt.lerp(targetLookAt, 0.06);
         camera.lookAt(currentLookAt);
-
-        // Screen Momentum on Track after dragging
-        if (!isDragging && Math.abs(screenDragVelocity) > 0.0001) {
-          if (draggedScreen) {
-            draggedScreen.rotation.y += screenDragVelocity;
-          }
-          screenDragVelocity *= 0.92;
-          if (Math.abs(screenDragVelocity) < 0.0001) {
-            screenDragVelocity = 0;
-            draggedScreen = null;
-          }
-        }
 
         // Gentle cinematic auto-rotation when idle in overview mode
         if (!isDragging && currentFocusMode === 'overview') {
