@@ -563,6 +563,38 @@
       background: var(--orange-warn);
       box-shadow: 0 0 8px var(--orange-warn);
     }
+  
+    /* BOTTOM-LEFT COPYRIGHT INFO */
+    .bottom-left-copyright {
+      position: absolute;
+      left: clamp(12px, 2vw, 24px);
+      bottom: clamp(8px, 1.4vh, 16px);
+      z-index: 40;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      background: rgba(6, 24, 48, 0.55);
+      border: 1px solid rgba(64, 196, 238, 0.2);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      font-size: clamp(10.5px, 0.95vw, 12px);
+      color: rgba(142, 208, 235, 0.75);
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+      text-shadow: 0 0 8px rgba(32, 227, 238, 0.25);
+    }
+    @media (max-width: 480px) {
+      .bottom-left-copyright {
+        bottom: 6px;
+        left: 8px;
+        padding: 2px 7px;
+        font-size: 10px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -764,6 +796,12 @@
           </div>
         </div>
       </div>
+    </div>
+
+  
+    <!-- BOTTOM-LEFT COPYRIGHT INFO -->
+    <div class="bottom-left-copyright">
+      <span>® 设计：黄菲影，开发：徐捷</span>
     </div>
 
   </main>
