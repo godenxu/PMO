@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#0e3a66"/>
+      <stop offset="50%" stop-color="#071b33"/>
+      <stop offset="100%" stop-color="#020813"/>
+    </radialGradient>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7df8ff"/>
+      <stop offset="100%" stop-color="#0bbbd2"/>
+    </linearGradient>
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffd066"/>
+      <stop offset="100%" stop-color="#ff9922"/>
+    </linearGradient>
+    <linearGradient id="topFace" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(32,227,238,0.95)"/>
+      <stop offset="100%" stop-color="rgba(14,140,195,0.75)"/>
+    </linearGradient>
+    <linearGradient id="leftFace" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(10,120,180,0.85)"/>
+      <stop offset="100%" stop-color="rgba(4,40,75,0.9)"/>
+    </linearGradient>
+    <linearGradient id="rightFace" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(24,165,225,0.9)"/>
+      <stop offset="100%" stop-color="rgba(6,70,120,0.92)"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="512" height="512" rx="108" fill="url(#bgGrad)"/>
+  <rect width="504" height="504" x="4" y="4" rx="104" fill="none" stroke="rgba(32,227,238,0.4)" stroke-width="4"/>
+
+  <!-- Background Sci-Fi Rings -->
+  <circle cx="256" cy="256" r="210" fill="none" stroke="rgba(32,227,238,0.15)" stroke-width="2" stroke-dasharray="8 12"/>
+  <circle cx="256" cy="256" r="175" fill="none" stroke="rgba(32,227,238,0.25)" stroke-width="1.5"/>
+
+  <!-- Surrounding Honeycomb Small Cubes -->
+  <!-- Top Left Cube -->
+  <g transform="translate(145, 150) scale(0.42)">
+    <polygon points="100,20 180,65 100,110 20,65" fill="url(#cyanGrad)" opacity="0.85"/>
+    <polygon points="20,65 100,110 100,195 20,150" fill="#0c4870" opacity="0.9"/>
+    <polygon points="100,110 180,65 180,150 100,195" fill="#146d9e" opacity="0.9"/>
+  </g>
+
+  <!-- Top Right Cube (Orange) -->
+  <g transform="translate(285, 150) scale(0.42)">
+    <polygon points="100,20 180,65 100,110 20,65" fill="url(#orangeGrad)" opacity="0.9"/>
+    <polygon points="20,65 100,110 100,195 20,150" fill="#753a06" opacity="0.9"/>
+    <polygon points="100,110 180,65 180,150 100,195" fill="#a85910" opacity="0.9"/>
+  </g>
+
+  <!-- Bottom Left Cube -->
+  <g transform="translate(145, 290) scale(0.42)">
+    <polygon points="100,20 180,65 100,110 20,65" fill="url(#cyanGrad)" opacity="0.85"/>
+    <polygon points="20,65 100,110 100,195 20,150" fill="#0c4870" opacity="0.9"/>
+    <polygon points="100,110 180,65 180,150 100,195" fill="#146d9e" opacity="0.9"/>
+  </g>
+
+  <!-- Bottom Right Cube (Red) -->
+  <g transform="translate(285, 290) scale(0.42)">
+    <polygon points="100,20 180,65 100,110 20,65" fill="#ff5e75" opacity="0.9"/>
+    <polygon points="20,65 100,110 100,195 20,150" fill="#6d101d" opacity="0.9"/>
+    <polygon points="100,110 180,65 180,150 100,195" fill="#a31d30" opacity="0.9"/>
+  </g>
+
+  <!-- Center Main 3D Crystal Cube (PMO Core) -->
+  <g transform="translate(156, 156) scale(1.0)" filter="url(#glow)">
+    <!-- Top Isometric Face -->
+    <polygon points="100,15 185,62 100,110 15,62" fill="url(#topFace)" stroke="#78f5ff" stroke-width="3"/>
+    <!-- Left Isometric Face -->
+    <polygon points="15,62 100,110 100,200 15,152" fill="url(#leftFace)" stroke="#38c5eb" stroke-width="2.5"/>
+    <!-- Right Isometric Face -->
+    <polygon points="100,110 185,62 185,152 100,200" fill="url(#rightFace)" stroke="#38c5eb" stroke-width="2.5"/>
+
+    <!-- Inner Core Glow Point -->
+    <circle cx="100" cy="110" r="14" fill="#ffffff" filter="url(#glow)"/>
+    <circle cx="100" cy="110" r="22" fill="none" stroke="#20e3ee" stroke-width="2"/>
+  </g>
+
+  <!-- Bottom Brand Typography -->
+  <text x="256" y="445" font-family="-apple-system, sans-serif" font-size="34" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="4" filter="url(#glow)">PMO 总控</text>
+  <text x="256" y="475" font-family="-apple-system, sans-serif" font-size="16" font-weight="500" fill="#20e3ee" text-anchor="middle" letter-spacing="2">3D VISUALIZATION</text>
+</svg>

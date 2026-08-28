@@ -1,0 +1,30 @@
+{
+  "name": "重要系统建设总控PMO",
+  "short_name": "PMO总控",
+  "description": "银行重要系统建设总控PMO可视化管理系统 - 3D全景数字大屏",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#030a16",
+  "theme_color": "#08203a",
+  "categories": [
+    "business",
+    "finance",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
