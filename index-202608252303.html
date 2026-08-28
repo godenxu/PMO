@@ -798,8 +798,8 @@
       </button>
     </div>
 
-    <!-- 3D CUBE HOVER / TAP TOOLTIP (Superseded by Large Curved Screen Live Telemetry Projection) -->
-    <div class="cube-hud-tooltip" id="cube-tooltip" style="display:none !important; visibility:hidden; pointer-events:none;">
+    <!-- 3D CUBE HOVER / TAP TOOLTIP -->
+    <div class="cube-hud-tooltip" id="cube-tooltip">
       <div class="tooltip-header">
         <span class="tooltip-title" id="tt-name">核心业务系统 4.0</span>
         <span class="tooltip-status cyan" id="tt-badge">正常</span>
@@ -80994,8 +80994,8 @@ exports.warnOnce = warnOnce;
 
       const camera = new THREE.PerspectiveCamera(calculateFOV(initialAspect), initialAspect, 0.1, 150);
       
-      const defaultCamPos = new THREE.Vector3(14.8, 17.2, 20.8);
-      const defaultLookAt = new THREE.Vector3(0, 2.8, 0);
+      const defaultCamPos = new THREE.Vector3(14.2, 15.6, 19.5);
+      const defaultLookAt = new THREE.Vector3(0, 2.2, 0);
       
       camera.position.copy(defaultCamPos);
       camera.lookAt(defaultLookAt);
@@ -81020,15 +81020,15 @@ exports.warnOnce = warnOnce;
       scene.add(dirLight);
 
       const cyanLight = new THREE.PointLight(0x00e5ff, 5.0, 26);
-      cyanLight.position.set(-7, 7, 2);
+      cyanLight.position.set(-7, 6, 2);
       scene.add(cyanLight);
 
       const orangeLight = new THREE.PointLight(0xff9900, 5.2, 24);
-      orangeLight.position.set(0, 7, 0);
+      orangeLight.position.set(0, 6, 0);
       scene.add(orangeLight);
 
       const redLight = new THREE.PointLight(0xff1133, 5.2, 26);
-      redLight.position.set(7, 7, 2);
+      redLight.position.set(7, 6, 2);
       scene.add(redLight);
 
       // 4. Multi-Layer Circular Stage Pedestal & Screen Track
@@ -81285,48 +81285,48 @@ exports.warnOnce = warnOnce;
       });
 
       // ==========================================================================
-      // 5. HONEYCOMB CUBE MATRIX (26 SYSTEMS - RICH TELEMETRY & STATUS DATA)
+      // 5. HONEYCOMB CUBE MATRIX (26 SYSTEMS - CHROMATIC OUTER EDGE BREATHING GLOW)
       // ==========================================================================
       const rawSystemDataList = [
         // Row 0 (1 cube)
-        { status: 'normal', name: '全行统一用户认证中台 4.0', code: 'SYS-01', prog: '98.6%', owner: '架构一处 / 王总监', category: '全行基础安全中枢', sla: '99.999%', tps: '18.5 万笔/秒', latency: '1.2 ms', nodes: '64 容器双活集群', healthScore: '98.8', cpu: '38%', mem: '52%', riskLevel: 'L1 常规监测', desc: '全节点双活部署运行平稳，SLA 99.999%，零高危漏洞' },
+        { status: 'normal', name: '全行统一用户认证中台 4.0', code: 'SYS-01', prog: '98.6%', owner: '架构一处 / 王总监', desc: '全节点双活部署，SLA 99.999%' },
 
         // Row 1 (4 cubes)
-        { status: 'normal', name: '分布式核心账务集群 5.0', code: 'SYS-02', prog: '96.2%', owner: '核心研发部 / 李工', category: '分布式核心账务底座', sla: '99.999%', tps: '24.8 万笔/秒', latency: '1.6 ms', nodes: '96 物理刀片集群', healthScore: '97.5', cpu: '45%', mem: '61%', riskLevel: 'L1 常规监测', desc: 'TPS 峰值突破 24 万笔/秒，分库分表无热点倾斜' },
-        { status: 'normal', name: '企业级风控流计算平台', code: 'SYS-03', prog: '94.8%', owner: '风控科技处 / 赵总', category: '智能风控决策引擎', sla: '99.99%', tps: '15.2 万笔/秒', latency: '2.4 ms', nodes: '32 GPU算力节点', healthScore: '96.2', cpu: '52%', mem: '68%', riskLevel: 'L1 常规监测', desc: '毫秒级反欺诈阻断引擎运行平稳，日拦截欺诈 120 万次' },
-        { status: 'warning', name: '实时反洗钱规则引擎', code: 'SYS-13', prog: '78.4%', owner: '风控科技处 / 张总监', category: '合规反洗钱流控', sla: '99.90%', tps: '6.8 万笔/秒', latency: '18.5 ms', nodes: '16 节点微服务集群', healthScore: '78.5', cpu: '82%', mem: '86%', riskLevel: 'L2 重点关注', desc: '⚠️ 规则引擎跨库联调延迟2天，正组织高并发专项调优攻坚' },
-        { status: 'risk', name: '多活双中心灾备同城切换', code: 'SYS-18', prog: '48.5%', owner: '运维保障中心 / 马总监', category: '高可用容灾演练', sla: '98.50%', tps: '3.2 万笔/秒', latency: '45.0 ms', nodes: '8 灾备专用集群', healthScore: '52.0', cpu: '91%', mem: '89%', riskLevel: 'L4 红色阻断', desc: '🚨 容灾演练存储同步链路偶现阻塞，特战组正重构复制策略' },
+        { status: 'normal', name: '分布式核心账务集群 5.0', code: 'SYS-02', prog: '96.2%', owner: '核心研发部 / 李工', desc: 'TPS 峰值突破 12 万笔/秒' },
+        { status: 'normal', name: '企业级风控流计算平台', code: 'SYS-03', prog: '94.8%', owner: '风控科技处 / 赵总', desc: '毫秒级反欺诈阻断引擎运行平稳' },
+        { status: 'warning', name: '实时反洗钱规则引擎', code: 'SYS-13', prog: '78.4%', owner: '风控科技处 / 张总监', desc: '⚠️ 规则引擎跨库联调延迟2天，紧急攻坚中' },
+        { status: 'risk', name: '多活双中心灾备同城切换', code: 'SYS-18', prog: '48.5%', owner: '运维保障中心 / 马总监', desc: '🚨 容灾演练存储同步出现阻断，已升级特战组' },
 
         // Row 2 (5 cubes)
-        { status: 'normal', name: '网银互联开放API网关', code: 'SYS-04', prog: '99.1%', owner: '渠道研发部 / 陈工', category: '开放银行互联生态', sla: '99.99%', tps: '16.0 万笔/秒', latency: '1.5 ms', nodes: '48 容器副本', healthScore: '99.0', cpu: '34%', mem: '48%', riskLevel: 'L1 常规监测', desc: '外部三方生态接入规范全部达标，自动化鉴权拦截正常' },
-        { status: 'normal', name: '信用卡新一代核心结算', code: 'SYS-05', prog: '95.0%', owner: '信用卡中心 / 周经理', category: '零售信贷结算体系', sla: '99.99%', tps: '11.8 万笔/秒', latency: '2.0 ms', nodes: '36 分布式节点', healthScore: '95.8', cpu: '41%', mem: '55%', riskLevel: 'L1 常规监测', desc: '多活分库分表迁移完毕，日终跑批耗时压降 42%' },
-        { status: 'normal', name: '个人手机银行 8.0 终端', code: 'SYS-06', prog: '97.5%', owner: '移动金融部 / 孙总', category: '移动前端交互门户', sla: '99.99%', tps: '21.0 万笔/秒', latency: '1.4 ms', nodes: '64 边缘接入节点', healthScore: '98.2', cpu: '39%', mem: '53%', riskLevel: 'L1 常规监测', desc: '灰度放量突破 800 万活跃用户，前端渲染耗时低于 380ms' },
-        { status: 'warning', name: '信贷业务中台微服务集群', code: 'SYS-14', prog: '74.2%', owner: '信贷科技部 / 刘经理', category: '普惠业务中台底座', sla: '99.85%', tps: '5.6 万笔/秒', latency: '22.0 ms', nodes: '20 节点集群', healthScore: '74.8', cpu: '85%', mem: '84%', riskLevel: 'L2 重点关注', desc: '⚠️ 高并发压测吞吐量待调优，已安排架构专家组进驻' },
-        { status: 'risk', name: '国产化分布式数据库迁移', code: 'SYS-19', prog: '42.0%', owner: '数据库专项组 / 魏经理', category: '信创数据库核心改造', sla: '97.80%', tps: '2.8 万笔/秒', latency: '52.0 ms', nodes: '12 信创物理机群', healthScore: '46.5', cpu: '94%', mem: '92%', riskLevel: 'L4 红色阻断', desc: '🚨 遗留存储过程兼容度 72%，需重构语法，已申请排期延展' },
+        { status: 'normal', name: '网银互联开放API网关', code: 'SYS-04', prog: '99.1%', owner: '渠道研发部 / 陈工', desc: '外部三方生态接入规范达标' },
+        { status: 'normal', name: '信用卡新一代核心结算', code: 'SYS-05', prog: '95.0%', owner: '信用卡中心 / 周经理', desc: '多活分库分表迁移完毕' },
+        { status: 'normal', name: '个人手机银行 8.0 终端', code: 'SYS-06', prog: '97.5%', owner: '移动金融部 / 孙总', desc: '灰度放量 800 万活跃用户' },
+        { status: 'warning', name: '信贷业务中台微服务集群', code: 'SYS-14', prog: '74.2%', owner: '信贷科技部 / 刘经理', desc: '⚠️ 高并发压测吞吐量待调优，已安排调优' },
+        { status: 'risk', name: '国产化分布式数据库迁移', code: 'SYS-19', prog: '42.0%', owner: '数据库专项组 / 魏经理', desc: '🚨 遗留存储过程兼容度 72%，需重构语法' },
 
         // Row 3 (6 cubes - Center Row)
-        { status: 'normal', name: '统一金融监管报送中枢', code: 'SYS-07', prog: '93.2%', owner: '合规科技组 / 吴经理', category: '监管报送与合规风控', sla: '99.99%', tps: '8.5 万笔/秒', latency: '2.8 ms', nodes: '24 报送专用节点', healthScore: '94.5', cpu: '46%', mem: '59%', riskLevel: 'L1 常规监测', desc: 'EAST 5.0 监管报送校验全量通过，数据上报零漏报' },
-        { status: 'normal', name: '同业资金交易直连系统', code: 'SYS-08', prog: '96.0%', owner: '同业科技处 / 郑工', category: '大额清算与资金交易', sla: '99.999%', tps: '14.2 万笔/秒', latency: '0.9 ms', nodes: '16 专用极速网卡节点', healthScore: '97.2', cpu: '32%', mem: '45%', riskLevel: 'L1 常规监测', desc: '大额清算通道低延迟保障，资金调拨撮合零误差' },
-        { status: 'normal', name: '全行主数据与资产平台', code: 'SYS-09', prog: '98.0%', owner: '数据智能部 / 钱总监', category: '数据湖仓一体化中枢', sla: '99.99%', tps: '19.0 万笔/秒', latency: '2.2 ms', nodes: '56 湖仓算力节点', healthScore: '98.0', cpu: '48%', mem: '64%', riskLevel: 'L1 常规监测', desc: '全域数据清洗入湖率 100%，实时血缘关系覆盖 99.8%' },
-        { status: 'warning', name: '跨境支付清算专线系统', code: 'SYS-15', prog: '76.0%', owner: '国际业务处 / 曹总', category: '跨境清算跨境专线', sla: '99.80%', tps: '4.8 万笔/秒', latency: '35.0 ms', nodes: '12 境外前置节点', healthScore: '76.0', cpu: '78%', mem: '80%', riskLevel: 'L2 重点关注', desc: '⚠️ 境外前置节点证书更新待行方联检，已启动应急加速专线' },
-        { status: 'warning', name: '智能财富管理投顾底座', code: 'SYS-16', prog: '71.5%', owner: '财富科技组 / 许工', category: '投顾算法与资产配置', sla: '99.75%', tps: '5.2 万笔/秒', latency: '28.0 ms', nodes: '16 算法节点', healthScore: '72.0', cpu: '81%', mem: '83%', riskLevel: 'L2 重点关注', desc: '⚠️ 行情实时推送接口抖动，正在优化消息队列背压机制' },
-        { status: 'risk', name: '主机核心下移过渡系统', code: 'SYS-20', prog: '45.2%', owner: '核心重构办 / 丁总', category: '核心下移去主机架构', sla: '98.20%', tps: '3.6 万笔/秒', latency: '65.0 ms', nodes: '20 混合架构节点', healthScore: '48.0', cpu: '92%', mem: '95%', riskLevel: 'L4 红色阻断', desc: '🚨 批量跑批耗时超限45分钟，正在重构索引与并行流水线' },
+        { status: 'normal', name: '统一金融监管报送中枢', code: 'SYS-07', prog: '93.2%', owner: '合规科技组 / 吴经理', desc: 'EAST 5.0 报送校验全部通过' },
+        { status: 'normal', name: '同业资金交易直连系统', code: 'SYS-08', prog: '96.0%', owner: '同业科技处 / 郑工', desc: '大额清算通道低延迟保障' },
+        { status: 'normal', name: '全行主数据与资产平台', code: 'SYS-09', prog: '98.0%', owner: '数据智能部 / 钱总监', desc: '全域数据清洗入湖率 100%' },
+        { status: 'warning', name: '跨境支付清算专线系统', code: 'SYS-15', prog: '76.0%', owner: '国际业务处 / 曹总', desc: '⚠️ 境外前置节点证书更新待行方联检' },
+        { status: 'warning', name: '智能财富管理投顾底座', code: 'SYS-16', prog: '71.5%', owner: '财富科技组 / 许工', desc: '⚠️ 行情实时推送接口抖动，正修复' },
+        { status: 'risk', name: '主机核心下移过渡系统', code: 'SYS-20', prog: '45.2%', owner: '核心重构办 / 丁总', desc: '🚨 批量跑批耗时超限45分钟，正在优化索引' },
 
         // Row 4 (5 cubes)
-        { status: 'normal', name: '供应链金融智能服务网', code: 'SYS-10', prog: '94.5%', owner: '对公科技处 / 冯经理', category: '对公供应链区块链网', sla: '99.99%', tps: '9.8 万笔/秒', latency: '2.5 ms', nodes: '28 存证背书节点', healthScore: '95.2', cpu: '43%', mem: '57%', riskLevel: 'L1 常规监测', desc: '区块链存证节点同步正常，应收账款流转毫秒级确认' },
-        { status: 'normal', name: '智能网点柜面综合平台', code: 'SYS-11', prog: '97.0%', owner: '运营管理部 / 蒋工', category: '全渠道柜面融合终端', sla: '99.99%', tps: '13.5 万笔/秒', latency: '1.8 ms', nodes: '40 分支接入节点', healthScore: '97.5', cpu: '37%', mem: '51%', riskLevel: 'L1 常规监测', desc: '无纸化智能终端覆盖 98%，业务一次办结率 99.2%' },
-        { status: 'normal', name: '企业网银协同办公系统', code: 'SYS-12', prog: '95.8%', owner: '对公研发部 / 韩工', category: '对公网银协同审批', sla: '99.99%', tps: '12.0 万笔/秒', latency: '1.9 ms', nodes: '32 弹性容器', healthScore: '96.4', cpu: '40%', mem: '54%', riskLevel: 'L1 常规监测', desc: '大额批量支付审批流优化完成，支持多重数字签名' },
-        { status: 'warning', name: '企业级微服务治理网格', code: 'SYS-17', prog: '75.8%', owner: '基础架构部 / 严总监', category: 'Service Mesh治理底座', sla: '99.85%', tps: '7.2 万笔/秒', latency: '19.0 ms', nodes: '64 Sidecar代理网格', healthScore: '75.5', cpu: '79%', mem: '82%', riskLevel: 'L2 重点关注', desc: '⚠️ 容器集群熔断降级策略待终审，下阶段进行全链路压测' },
-        { status: 'risk', name: 'AI大模型量化算力集群', code: 'SYS-21', prog: '39.0%', owner: 'AI创新实验室 / 方博士', category: '金融AI大模型基础设施', sla: '97.50%', tps: '2.1 万次/秒', latency: '120.0 ms', nodes: '16 高密度GPU集群', healthScore: '42.0', cpu: '98%', mem: '96%', riskLevel: 'L4 红色阻断', desc: '🚨 显存算力调度驱动与硬件存在兼容异常，厂商技术专家联合排查' },
+        { status: 'normal', name: '供应链金融智能服务网', code: 'SYS-10', prog: '94.5%', owner: '对公科技处 / 冯经理', desc: '区块链存证节点同步正常' },
+        { status: 'normal', name: '智能网点柜面综合平台', code: 'SYS-11', prog: '97.0%', owner: '运营管理部 / 蒋工', desc: '无纸化智能终端覆盖 98%' },
+        { status: 'normal', name: '企业网银协同办公系统', code: 'SYS-12', prog: '95.8%', owner: '对公研发部 / 韩工', desc: '大额批量支付审批流优化' },
+        { status: 'warning', name: '企业级微服务治理网格', code: 'SYS-17', prog: '75.8%', owner: '基础架构部 / 严总监', desc: '⚠️ 容器集群熔断降级策略待终审' },
+        { status: 'risk', name: 'AI大模型量化算力集群', code: 'SYS-21', prog: '39.0%', owner: 'AI创新实验室 / 方博士', desc: '🚨 显存算力调度驱动与硬件存在兼容异常' },
 
         // Row 5 (4 cubes)
-        { status: 'normal', name: '普惠小微智能信贷审批', code: 'SYS-22', prog: '96.4%', owner: '普惠金融部 / 赵经理', category: '大数据信贷智能审批', sla: '99.99%', tps: '11.0 万笔/秒', latency: '2.1 ms', nodes: '28 决策节点', healthScore: '96.8', cpu: '42%', mem: '56%', riskLevel: 'L1 常规监测', desc: '秒级自动授信模型稳健运行，坏账预警拦截率 99.4%' },
-        { status: 'normal', name: '全球现金管理流动性中枢', code: 'SYS-23', prog: '95.5%', owner: '交易银行部 / 张工', category: '跨时区资金池流动性', sla: '99.99%', tps: '10.2 万笔/秒', latency: '1.7 ms', nodes: '24 跨境结算节点', healthScore: '96.0', cpu: '38%', mem: '52%', riskLevel: 'L1 常规监测', desc: '跨时区资金池多币种归集正常，汇率对冲策略自动生效' },
-        { status: 'normal', name: '智能反欺诈生物特征库', code: 'SYS-24', prog: '98.2%', owner: '安全保卫部 / 陆总', category: '人脸声纹生物安全库', sla: '99.999%', tps: '17.4 万笔/秒', latency: '1.1 ms', nodes: '32 高性能识别引擎', healthScore: '98.5', cpu: '44%', mem: '58%', riskLevel: 'L1 常规监测', desc: '活体防伪检测准确率 99.98%，生物特征加密防篡改' },
-        { status: 'normal', name: '电子票据一体化流转网', code: 'SYS-25', prog: '97.1%', owner: '票据业务部 / 董经理', category: '票交所直连与供应链贴现', sla: '99.99%', tps: '13.0 万笔/秒', latency: '1.6 ms', nodes: '20 专用直连机组', healthScore: '97.4', cpu: '39%', mem: '53%', riskLevel: 'L1 常规监测', desc: '直连票交所系统实时秒贴，票据全生命周期可信追踪' },
+        { status: 'normal', name: '普惠小微智能信贷审批', code: 'SYS-22', prog: '96.4%', owner: '普惠金融部 / 赵经理', desc: '秒级自动授信模型稳健运行' },
+        { status: 'normal', name: '全球现金管理流动性中枢', code: 'SYS-23', prog: '95.5%', owner: '交易银行部 / 张工', desc: '跨时区资金池多币种归集' },
+        { status: 'normal', name: '智能反欺诈生物特征库', code: 'SYS-24', prog: '98.2%', owner: '安全保卫部 / 陆总', desc: '活体防伪检测准确率 99.98%' },
+        { status: 'normal', name: '电子票据一体化流转网', code: 'SYS-25', prog: '97.1%', owner: '票据业务部 / 董经理', desc: '直连票交所系统实时秒贴' },
 
         // Row 6 (1 cube)
-        { status: 'normal', name: '科技资产与CMDB知识库', code: 'SYS-26', prog: '99.4%', owner: '科技运营部 / 梁总监', category: '全行IT运维拓扑知识库', sla: '99.999%', tps: '20.5 万笔/秒', latency: '1.0 ms', nodes: '48 CMDB全纳管集群', healthScore: '99.5', cpu: '33%', mem: '46%', riskLevel: 'L1 常规监测', desc: '全行 IT 软硬件资产拓扑全景纳管，自动化配置审计达标 100%' }
+        { status: 'normal', name: '科技资产与CMDB知识库', code: 'SYS-26', prog: '99.4%', owner: '科技运营部 / 梁总监', desc: '全行 IT 软硬件资产拓扑全景纳管' }
       ];
 
       const rowCounts = [1, 4, 5, 6, 5, 4, 1];
@@ -81473,11 +81473,10 @@ exports.warnOnce = warnOnce;
       });
 
       // ==========================================================================
-      // 6. TWO SURROUNDING 3D CURVED SCREENS (ELEVATED EXPANSIVELY ABOVE GROUND)
+      // 6. TWO SURROUNDING 3D CURVED SCREENS (CAN SLIDE FREELY ALONG CIRCULAR TRACK)
       // ==========================================================================
-      const SCREEN_HEIGHT = 4.8;
-      const SCREEN_ELEVATION_Y = 1.65; // Elevated high above the ground/stage for expansive panoramic sightlines!
-      const SCREEN_CENTER_Y = STAGE_TOP_Y + SCREEN_ELEVATION_Y + SCREEN_HEIGHT / 2; // Y = 4.33
+      const SCREEN_HEIGHT = 4.6;
+      const SCREEN_CENTER_Y = STAGE_TOP_Y + SCREEN_HEIGHT / 2;
       const LEFT_SCREEN_ARC = 1.08;
       const WIDE_SCREEN_ARC = 2.25; // Continuous Panoramic Arc for Merged Status Board
 
@@ -81500,47 +81499,27 @@ exports.warnOnce = warnOnce;
         }
 
         borderGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(topPts), borderMat));
+        borderGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(btmPts), borderMat));
         borderGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([topPts[0], btmPts[0]]), borderMat));
         borderGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([topPts[segs], btmPts[segs]]), borderMat));
 
-        // Magnetic Rail Rollers / Clamps & Futuristic Vertical Mag-Lev Suspension Struts
+        // Magnetic Rail Rollers / Clamps that Glide along the Circular Track
         const mountGeo = new THREE.BoxGeometry(0.36, 0.14, 0.36);
         const mountMat = new THREE.MeshBasicMaterial({ color: 0x20e3ee });
         const wheelGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.22, 16);
         wheelGeo.rotateX(Math.PI / 2);
         const wheelMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
-        // Vertical Suspension Pylon Strut
-        const strutGeo = new THREE.CylinderGeometry(0.035, 0.035, SCREEN_ELEVATION_Y, 12);
-        const strutMat = new THREE.MeshPhongMaterial({ color: 0x145a86, emissive: 0x082538, specular: 0x60e0ff, shininess: 90 });
-        const strutGlowGeo = new THREE.RingGeometry(0.06, 0.12, 16);
-        const strutGlowMat = new THREE.MeshBasicMaterial({ color: 0x36ffff, side: THREE.DoubleSide });
-
         const mountSteps = [0, Math.floor(segs / 4), Math.floor(segs / 2), Math.floor((3 * segs) / 4), segs];
         mountSteps.forEach(idx => {
           if (idx < btmPts.length) {
             const clampGroup = new THREE.Group();
             clampGroup.position.copy(btmPts[idx]);
-            
-            // Screen bottom clamp bracket
             const m = new THREE.Mesh(mountGeo, mountMat);
             clampGroup.add(m);
-
-            // Vertical Mag-Lev Strut extending down to the track on the deck
-            const strut = new THREE.Mesh(strutGeo, strutMat);
-            strut.position.y = -SCREEN_ELEVATION_Y / 2;
-            clampGroup.add(strut);
-
-            // Ground Track Wheel Assembly
             const w1 = new THREE.Mesh(wheelGeo, wheelMat);
-            w1.position.y = -SCREEN_ELEVATION_Y - 0.04;
+            w1.position.y = -0.06;
             clampGroup.add(w1);
-
-            const g1 = new THREE.Mesh(strutGlowGeo, strutGlowMat);
-            g1.rotation.x = -Math.PI / 2;
-            g1.position.y = -SCREEN_ELEVATION_Y + 0.01;
-            clampGroup.add(g1);
-
             borderGroup.add(clampGroup);
           }
         });
@@ -81565,7 +81544,7 @@ exports.warnOnce = warnOnce;
       const leftHudMat = new THREE.MeshBasicMaterial({
         map: leftTexture,
         transparent: true,
-        opacity: 0.82,
+        opacity: 0.80,
         side: THREE.DoubleSide,
         depthWrite: false
       });
@@ -81588,9 +81567,9 @@ exports.warnOnce = warnOnce;
         leftCtx.clearRect(0, 0, w, h);
 
         const bgGrad = leftCtx.createRadialGradient(w / 2, h / 2, 40, w / 2, h / 2, w / 1.1);
-        bgGrad.addColorStop(0, 'rgba(1, 6, 20, 0.25)');
-        bgGrad.addColorStop(0.6, 'rgba(1, 5, 16, 0.40)');
-        bgGrad.addColorStop(1, 'rgba(0, 3, 12, 0.55)');
+        bgGrad.addColorStop(0, 'rgba(1, 6, 20, 0.22)');
+        bgGrad.addColorStop(0.6, 'rgba(1, 5, 16, 0.38)');
+        bgGrad.addColorStop(1, 'rgba(0, 3, 12, 0.50)');
         leftCtx.fillStyle = bgGrad;
         leftCtx.beginPath();
         leftCtx.roundRect(24, 20, w - 48, h - 40, 20);
@@ -81699,7 +81678,7 @@ exports.warnOnce = warnOnce;
       }
       updateLeftCanvas();
 
-      // --- SCREEN 2: MERGED SUPER-WIDE SCREEN (项目状态看板 / 悬停项目实时遥测大屏) ---
+      // --- SCREEN 2: MERGED SUPER-WIDE SCREEN (项目状态看板) ---
       let statusRotY = -Math.PI * 0.37;
       const statusCanvas = document.createElement('canvas');
       statusCanvas.width = 2048;
@@ -81716,7 +81695,7 @@ exports.warnOnce = warnOnce;
       const statusHudMat = new THREE.MeshBasicMaterial({
         map: statusTexture,
         transparent: true,
-        opacity: 0.84,
+        opacity: 0.80,
         side: THREE.DoubleSide,
         depthWrite: false
       });
@@ -81733,707 +81712,315 @@ exports.warnOnce = warnOnce;
       surroundScreensGroup.add(statusCurvedScreen);
 
       let animPhase = 0;
-
-      function updateStatusCanvas(sysData) {
+      function updateStatusCanvas() {
         const w = statusCanvas.width;
         const h = statusCanvas.height;
         statusCtx.clearRect(0, 0, w, h);
 
-        // Translucent Ultra-Dark High-Tech Glass Background
+        // Translucent Ultra-Dark Glass Background
         const bgGrad = statusCtx.createRadialGradient(w / 2, h / 2, 60, w / 2, h / 2, w / 1.1);
-        bgGrad.addColorStop(0, 'rgba(2, 9, 26, 0.28)');
-        bgGrad.addColorStop(0.6, 'rgba(1, 6, 20, 0.42)');
-        bgGrad.addColorStop(1, 'rgba(0, 4, 14, 0.58)');
+        bgGrad.addColorStop(0, 'rgba(1, 6, 20, 0.22)');
+        bgGrad.addColorStop(0.6, 'rgba(1, 5, 16, 0.38)');
+        bgGrad.addColorStop(1, 'rgba(0, 3, 12, 0.50)');
         statusCtx.fillStyle = bgGrad;
         statusCtx.beginPath();
-        statusCtx.roundRect(24, 20, w - 48, h - 40, 22);
+        statusCtx.roundRect(24, 20, w - 48, h - 40, 20);
         statusCtx.fill();
 
-        // High-Tech Cyber Outer Border with Corner Glowing Accents
-        const statusAccent = sysData ? (sysData.status === 'normal' ? '#00f5ff' : sysData.status === 'warning' ? '#ffb800' : '#ff143c') : '#38e5f2';
-        statusCtx.strokeStyle = statusAccent;
+        statusCtx.strokeStyle = 'rgba(80, 225, 255, 0.8)';
         statusCtx.lineWidth = 4;
-        statusCtx.shadowColor = statusAccent;
+        statusCtx.stroke();
+
+        // MASTER HEADER
+        statusCtx.fillStyle = '#ff9f24';
+        statusCtx.shadowColor = '#ff9f24';
+        statusCtx.shadowBlur = 14;
+        statusCtx.beginPath();
+        statusCtx.roundRect(50, 48, 36, 14, 7);
+        statusCtx.fill();
+        statusCtx.shadowBlur = 0;
+
+        statusCtx.fillStyle = '#ffffff';
+        statusCtx.font = 'bold 38px sans-serif';
+        statusCtx.textAlign = 'left';
+        statusCtx.fillText('项目状态看板', 100, 64);
+
+        statusCtx.fillStyle = '#8dc0d8';
+        statusCtx.font = '22px sans-serif';
+        statusCtx.fillText('重点在建系统 26 个 ｜ ⟷ 可按住本屏沿轨道滑移', 360, 64);
+
+        statusCtx.fillStyle = '#20e3ee';
+        statusCtx.font = 'bold 24px sans-serif';
+        statusCtx.textAlign = 'right';
+        statusCtx.shadowColor = '#20e3ee';
         statusCtx.shadowBlur = 12;
+        statusCtx.fillText('综合达标率: 92.4%   |   质量健康度: +3.8% ↑', w - 60, 64);
+        statusCtx.shadowBlur = 0;
+
+        // Top Horizontal Separator
+        statusCtx.strokeStyle = 'rgba(75, 205, 245, 0.25)';
+        statusCtx.lineWidth = 2;
+        statusCtx.beginPath();
+        statusCtx.moveTo(50, 95);
+        statusCtx.lineTo(w - 50, 95);
+        statusCtx.stroke();
+
+        // ==========================================
+        // LEFT SUB-PANEL (X: 50 ~ 980): 系统运行态势 & 状态分布
+        // ==========================================
+        statusCtx.fillStyle = '#ff9f24';
+        statusCtx.font = 'bold 22px sans-serif';
+        statusCtx.textAlign = 'left';
+        statusCtx.fillText('● 重点系统交付与负荷趋势', 50, 132);
+
+        statusCtx.strokeStyle = 'rgba(60, 205, 245, 0.20)';
+        statusCtx.lineWidth = 1.2;
+        for (let gy = 175; gy <= 590; gy += 95) {
+          statusCtx.beginPath();
+          statusCtx.moveTo(50, gy);
+          statusCtx.lineTo(460, gy);
+          statusCtx.stroke();
+        }
+        statusCtx.fillStyle = '#6b9bb0';
+        statusCtx.font = '16px sans-serif';
+        ['100%', '75%', '50%', '25%', '0%'].forEach((t, i) => {
+          statusCtx.fillText(t, 50, 180 + i * 102);
+        });
+
+        // Curve 1 (Cyan)
+        statusCtx.beginPath();
+        const curve1Pts = [0.45, 0.62, 0.58, 0.82, 0.74, 0.89, 0.94];
+        curve1Pts.forEach((p, i) => {
+          const px = 105 + i * 54;
+          const py = 590 - p * 400 + Math.sin(animPhase * 0.05 + i) * 10;
+          if (i === 0) statusCtx.moveTo(px, py);
+          else statusCtx.lineTo(px, py);
+        });
+        statusCtx.strokeStyle = '#20e3ee';
+        statusCtx.lineWidth = 3.5;
+        statusCtx.shadowColor = '#20e3ee';
+        statusCtx.shadowBlur = 14;
         statusCtx.stroke();
         statusCtx.shadowBlur = 0;
 
-        if (sysData) {
-          // =========================================================================
-          // MODE B: PROJECTED SYSTEM DEEP TELEMETRY (悬停水晶方块时投射的专属深度看板)
-          // =========================================================================
-          const statusText = (sysData.status === 'normal' ? '● 正常 稳健运行' : sysData.status === 'warning' ? '▲ 预警 专项攻坚' : '🚨 风险 紧急处置');
-          const statusBadgeBg = (sysData.status === 'normal' ? 'rgba(0, 245, 255, 0.20)' : sysData.status === 'warning' ? 'rgba(255, 184, 0, 0.22)' : 'rgba(255, 20, 60, 0.25)');
-          const statusBadgeBorder = statusAccent;
+        // Curve 2 (Amber)
+        statusCtx.beginPath();
+        const curve2Pts = [0.35, 0.42, 0.55, 0.50, 0.68, 0.62, 0.76];
+        curve2Pts.forEach((p, i) => {
+          const px = 105 + i * 54;
+          const py = 590 - p * 400 + Math.cos(animPhase * 0.04 + i) * 8;
+          if (i === 0) statusCtx.moveTo(px, py);
+          else statusCtx.lineTo(px, py);
+        });
+        statusCtx.strokeStyle = '#ff9f24';
+        statusCtx.lineWidth = 2.8;
+        statusCtx.shadowColor = '#ff9f24';
+        statusCtx.shadowBlur = 10;
+        statusCtx.stroke();
+        statusCtx.shadowBlur = 0;
 
-          // 1. HEADER SECTION
-          // Status Badge Pill
-          statusCtx.fillStyle = statusBadgeBg;
-          statusCtx.beginPath();
-          statusCtx.roundRect(50, 42, 210, 44, 10);
-          statusCtx.fill();
-          statusCtx.strokeStyle = statusBadgeBorder;
-          statusCtx.lineWidth = 2.5;
-          statusCtx.shadowColor = statusBadgeBorder;
-          statusCtx.shadowBlur = 10;
-          statusCtx.stroke();
-          statusCtx.shadowBlur = 0;
+        // Bar Chart (Systems 01 ~ 08)
+        const barsData = [
+          { val: 0.65, color: '#ff9f24', label: '01' },
+          { val: 0.82, color: '#20e3ee', label: '02' },
+          { val: 0.74, color: '#20e3ee', label: '03' },
+          { val: 0.92, color: '#20e3ee', label: '04' },
+          { val: 0.52, color: '#ff3853', label: '05' },
+          { val: 0.88, color: '#20e3ee', label: '06' },
+          { val: 0.76, color: '#20e3ee', label: '07' },
+          { val: 0.95, color: '#20e3ee', label: '08' }
+        ];
+        const barStartX = 490;
+        const barWidth = 34;
+        const barGap = 16;
+        barsData.forEach((b, i) => {
+          const bx = barStartX + i * (barWidth + barGap);
+          const bh = b.val * 410;
+          const by = 590 - bh;
 
-          statusCtx.fillStyle = statusAccent;
-          statusCtx.font = 'bold 22px sans-serif';
-          statusCtx.textAlign = 'center';
-          statusCtx.fillText(statusText, 155, 72);
-
-          // System Name (Bold & Radiant)
-          statusCtx.fillStyle = '#ffffff';
-          statusCtx.font = 'bold 36px sans-serif';
-          statusCtx.textAlign = 'left';
-          statusCtx.shadowColor = statusAccent;
-          statusCtx.shadowBlur = 12;
-          statusCtx.fillText(sysData.name, 280, 74);
-          statusCtx.shadowBlur = 0;
-
-          // Code & Owner Meta
-          statusCtx.fillStyle = '#8dc0d8';
-          statusCtx.font = '20px sans-serif';
-          statusCtx.fillText(`[ ${sysData.code} ]   牵头责任: ${sysData.owner}   |   所属板块: ${sysData.category || '核心支撑'}`, 880, 74);
-
-          // Right Signal Badge
-          const signalGrad = statusCtx.createLinearGradient(w - 400, 42, w - 50, 42);
-          signalGrad.addColorStop(0, 'rgba(0, 245, 255, 0.15)');
-          signalGrad.addColorStop(1, 'rgba(0, 40, 90, 0.35)');
-          statusCtx.fillStyle = signalGrad;
-          statusCtx.beginPath();
-          statusCtx.roundRect(w - 390, 42, 340, 44, 10);
-          statusCtx.fill();
-          statusCtx.strokeStyle = 'rgba(0, 245, 255, 0.6)';
-          statusCtx.lineWidth = 2;
-          statusCtx.stroke();
-
-          statusCtx.fillStyle = '#20e3ee';
-          statusCtx.font = 'bold 18px sans-serif';
-          statusCtx.textAlign = 'center';
-          statusCtx.shadowColor = '#20e3ee';
-          statusCtx.shadowBlur = 8;
-          statusCtx.fillText('● 实时遥测链路已锁定 (LIVE)', w - 220, 70);
-          statusCtx.shadowBlur = 0;
-
-          // Horizontal Header Separator
-          statusCtx.strokeStyle = 'rgba(75, 205, 245, 0.35)';
-          statusCtx.lineWidth = 2;
-          statusCtx.beginPath();
-          statusCtx.moveTo(50, 104);
-          statusCtx.lineTo(w - 50, 104);
-          statusCtx.stroke();
-
-          // =========================================================================
-          // LEFT PANEL (X: 50 ~ 990): 4 大核心 KPI 卡片 & 24H 动态吞吐负载波浪
-          // =========================================================================
-          const kpiCards = [
-            { title: '项目综合达成率', val: sysData.prog, sub: '当前迭代 Sprint 8/12', color: statusAccent, icon: '📊' },
-            { title: '服务 SLA 可用度', val: sysData.sla || '99.999%', sub: '多活双中心容灾保障', color: '#00f5ff', icon: '🛡️' },
-            { title: '实时事务吞吐量', val: sysData.tps || '14.2 万笔/秒', sub: '峰值压力稳健', color: '#ffb800', icon: '⚡' },
-            { title: '接口端到端时延', val: sysData.latency || '1.6 ms', sub: '网络零丢包极速保障', color: '#38f5a3', icon: '⏱️' }
-          ];
-
-          // 2x2 KPI Cards
-          kpiCards.forEach((c, idx) => {
-            const row = Math.floor(idx / 2);
-            const col = idx % 2;
-            const cx = 50 + col * 475;
-            const cy = 125 + row * 115;
-            const cw = 455;
-            const ch = 100;
-
-            const cGrad = statusCtx.createLinearGradient(cx, cy, cx + cw, cy + ch);
-            cGrad.addColorStop(0, 'rgba(6, 28, 60, 0.45)');
-            cGrad.addColorStop(1, 'rgba(2, 10, 26, 0.25)');
-            statusCtx.fillStyle = cGrad;
-            statusCtx.beginPath();
-            statusCtx.roundRect(cx, cy, cw, ch, 12);
-            statusCtx.fill();
-
-            statusCtx.strokeStyle = 'rgba(56, 213, 232, 0.35)';
-            statusCtx.lineWidth = 1.5;
-            statusCtx.stroke();
-
-            // Accent Bar on left
-            statusCtx.fillStyle = c.color;
-            statusCtx.beginPath();
-            statusCtx.roundRect(cx, cy, 6, ch, [12, 0, 0, 12]);
-            statusCtx.fill();
-
-            statusCtx.fillStyle = '#a0d2e8';
-            statusCtx.font = '18px sans-serif';
-            statusCtx.textAlign = 'left';
-            statusCtx.fillText(`${c.icon}  ${c.title}`, cx + 22, cy + 34);
-
-            statusCtx.fillStyle = c.color;
-            statusCtx.font = 'bold 34px sans-serif';
-            statusCtx.shadowColor = c.color;
-            statusCtx.shadowBlur = 10;
-            statusCtx.fillText(c.val, cx + 22, cy + 76);
-            statusCtx.shadowBlur = 0;
-
-            statusCtx.fillStyle = '#6b9bb0';
-            statusCtx.font = '15px sans-serif';
-            statusCtx.textAlign = 'right';
-            statusCtx.fillText(c.sub, cx + cw - 20, cy + 74);
-          });
-
-          // Live Telemetry Waveform Box (Y: 365 ~ 635)
-          const wboxX = 50;
-          const wboxY = 365;
-          const wboxW = 930;
-          const wboxH = 265;
-
-          const wGrad = statusCtx.createLinearGradient(wboxX, wboxY, wboxX, wboxY + wboxH);
-          wGrad.addColorStop(0, 'rgba(8, 36, 75, 0.35)');
-          wGrad.addColorStop(1, 'rgba(2, 10, 26, 0.20)');
-          statusCtx.fillStyle = wGrad;
-          statusCtx.beginPath();
-          statusCtx.roundRect(wboxX, wboxY, wboxW, wboxH, 14);
-          statusCtx.fill();
-
-          statusCtx.strokeStyle = 'rgba(40, 180, 220, 0.30)';
-          statusCtx.lineWidth = 1.5;
-          statusCtx.stroke();
-
-          statusCtx.fillStyle = statusAccent;
-          statusCtx.font = 'bold 20px sans-serif';
-          statusCtx.textAlign = 'left';
-          statusCtx.fillText('● 24H 实时事务吞吐曲线与动态算力负载', wboxX + 22, wboxY + 36);
-
-          // Grid Lines
-          statusCtx.strokeStyle = 'rgba(50, 160, 210, 0.15)';
-          statusCtx.lineWidth = 1;
-          for (let gy = wboxY + 70; gy <= wboxY + 220; gy += 45) {
-            statusCtx.beginPath();
-            statusCtx.moveTo(wboxX + 20, gy);
-            statusCtx.lineTo(wboxX + wboxW - 20, gy);
-            statusCtx.stroke();
-          }
-
-          // Dynamic Animated Wave
-          const liveBaseY = wboxY + 225;
-          const liveMaxH = 145;
-          const wavePoints = [0.32, 0.45, 0.40, 0.68, 0.58, 0.85, 0.72, 0.94, 0.82, 0.88, 0.96];
-          const stepX = (wboxW - 60) / (wavePoints.length - 1);
-
-          const waveCoords = wavePoints.map((p, i) => {
-            const dy = Math.sin(animPhase * 0.06 + i * 0.8) * 12;
-            return {
-              x: wboxX + 30 + i * stepX,
-              y: liveBaseY - p * liveMaxH + dy
-            };
-          });
-
-          // Area Fill under live curve
-          statusCtx.beginPath();
-          statusCtx.moveTo(waveCoords[0].x, liveBaseY);
-          waveCoords.forEach(pt => statusCtx.lineTo(pt.x, pt.y));
-          statusCtx.lineTo(waveCoords[waveCoords.length - 1].x, liveBaseY);
-          statusCtx.closePath();
-
-          const waveAreaGrad = statusCtx.createLinearGradient(0, liveBaseY - liveMaxH, 0, liveBaseY);
-          waveAreaGrad.addColorStop(0, sysData.status === 'normal' ? 'rgba(0, 245, 255, 0.35)' : sysData.status === 'warning' ? 'rgba(255, 184, 0, 0.35)' : 'rgba(255, 20, 60, 0.35)');
-          waveAreaGrad.addColorStop(1, 'rgba(0, 20, 45, 0.02)');
-          statusCtx.fillStyle = waveAreaGrad;
-          statusCtx.fill();
-
-          // Stroke Glowing Wave
-          statusCtx.beginPath();
-          statusCtx.moveTo(waveCoords[0].x, waveCoords[0].y);
-          for (let i = 0; i < waveCoords.length - 1; i++) {
-            const xc = (waveCoords[i].x + waveCoords[i + 1].x) / 2;
-            const yc = (waveCoords[i].y + waveCoords[i + 1].y) / 2;
-            statusCtx.quadraticCurveTo(waveCoords[i].x, waveCoords[i].y, xc, yc);
-          }
-          statusCtx.lineTo(waveCoords[waveCoords.length - 1].x, waveCoords[waveCoords.length - 1].y);
-          statusCtx.strokeStyle = statusAccent;
-          statusCtx.lineWidth = 4.0;
-          statusCtx.shadowColor = statusAccent;
-          statusCtx.shadowBlur = 14;
-          statusCtx.stroke();
-          statusCtx.shadowBlur = 0;
-
-          // Glowing Dots on Peaks
-          [2, 5, 7, 10].forEach(idx => {
-            const pt = waveCoords[idx];
-            statusCtx.beginPath();
-            statusCtx.arc(pt.x, pt.y, 6.0, 0, Math.PI * 2);
-            statusCtx.fillStyle = '#ffffff';
-            statusCtx.shadowColor = statusAccent;
-            statusCtx.shadowBlur = 12;
-            statusCtx.fill();
-            statusCtx.shadowBlur = 0;
-          });
-
-          // Left Bottom Telemetry Summary (Y: 650 ~ 720)
-          statusCtx.strokeStyle = 'rgba(75, 205, 245, 0.25)';
-          statusCtx.lineWidth = 1.5;
-          statusCtx.beginPath();
-          statusCtx.moveTo(50, 650);
-          statusCtx.lineTo(980, 650);
-          statusCtx.stroke();
-
-          statusCtx.fillStyle = '#d2effc';
-          statusCtx.font = '20px sans-serif';
-          statusCtx.textAlign = 'left';
-          statusCtx.fillText(`集群部署: ${sysData.nodes || '32 节点双活集群'} ｜ 资源负载: CPU ${sysData.cpu || '42%'} / 内存 ${sysData.mem || '58%'}`, 50, 695);
-          statusCtx.textAlign = 'right';
-          statusCtx.fillStyle = '#00f5ff';
-          statusCtx.fillText('容灾可用性: RPO=0 / RTO<30s', 980, 695);
-
-          // =========================================================================
-          // CENTRAL CYBER SEPARATOR (X = 1024)
-          // =========================================================================
-          statusCtx.strokeStyle = 'rgba(80, 225, 255, 0.40)';
-          statusCtx.lineWidth = 2;
-          statusCtx.setLineDash([8, 6]);
-          statusCtx.beginPath();
-          statusCtx.moveTo(1024, 115);
-          statusCtx.lineTo(1024, 715);
-          statusCtx.stroke();
-          statusCtx.setLineDash([]);
-
-          [125, 415, 705].forEach(cy => {
-            statusCtx.fillStyle = statusAccent;
-            statusCtx.shadowColor = statusAccent;
-            statusCtx.shadowBlur = 12;
-            statusCtx.beginPath();
-            statusCtx.arc(1024, cy, 5.0, 0, Math.PI * 2);
-            statusCtx.fill();
-            statusCtx.shadowBlur = 0;
-          });
-
-          // =========================================================================
-          // RIGHT PANEL (X: 1060 ~ 1990): 质量健康评估、作战战报与风险拓扑
-          // =========================================================================
-          // Card A: 质量健康指数与代码合规度 (Y: 125 ~ 335)
-          const hCardX = 1060;
-          const hCardY = 125;
-          const hCardW = w - 1110;
-          const hCardH = 210;
-
-          const hGrad = statusCtx.createLinearGradient(hCardX, hCardY, hCardX + hCardW, hCardY + hCardH);
-          hGrad.addColorStop(0, 'rgba(6, 28, 65, 0.45)');
-          hGrad.addColorStop(1, 'rgba(2, 10, 26, 0.25)');
-          statusCtx.fillStyle = hGrad;
-          statusCtx.beginPath();
-          statusCtx.roundRect(hCardX, hCardY, hCardW, hCardH, 14);
-          statusCtx.fill();
-
-          statusCtx.strokeStyle = 'rgba(56, 213, 232, 0.35)';
-          statusCtx.lineWidth = 1.5;
-          statusCtx.stroke();
-
-          // Left Circular Gauge for Health Score
-          const gaugeCenterX = hCardX + 110;
-          const gaugeCenterY = hCardY + 105;
-          const gaugeRadius = 65;
-
-          // Background Track
-          statusCtx.beginPath();
-          statusCtx.arc(gaugeCenterX, gaugeCenterY, gaugeRadius, 0, Math.PI * 2);
-          statusCtx.strokeStyle = 'rgba(20, 60, 95, 0.5)';
-          statusCtx.lineWidth = 12;
-          statusCtx.stroke();
-
-          // Foreground Animated Score Arc
-          const scoreVal = parseFloat(sysData.healthScore || '96.5');
-          const scoreFrac = Math.min(1.0, scoreVal / 100);
-          statusCtx.beginPath();
-          statusCtx.arc(gaugeCenterX, gaugeCenterY, gaugeRadius, -Math.PI / 2, -Math.PI / 2 + scoreFrac * Math.PI * 2);
-          statusCtx.strokeStyle = statusAccent;
-          statusCtx.lineWidth = 12;
-          statusCtx.lineCap = 'round';
-          statusCtx.shadowColor = statusAccent;
-          statusCtx.shadowBlur = 14;
-          statusCtx.stroke();
-          statusCtx.shadowBlur = 0;
-          statusCtx.lineCap = 'butt';
-
-          statusCtx.fillStyle = '#ffffff';
-          statusCtx.font = 'bold 36px sans-serif';
-          statusCtx.textAlign = 'center';
-          statusCtx.fillText(`${scoreVal}`, gaugeCenterX, gaugeCenterY + 8);
-
-          statusCtx.fillStyle = '#8dc0d8';
-          statusCtx.font = '16px sans-serif';
-          statusCtx.fillText('质量健康度', gaugeCenterX, gaugeCenterY + 32);
-
-          // Right Sub-Metrics inside Health Card
-          const subMetrics = [
-            { label: '单元测试覆盖率', val: '94.8%', color: '#38f5a3', pct: 0.948 },
-            { label: '静态代码合规率', val: '98.5%', color: '#00f5ff', pct: 0.985 },
-            { label: '高危阻断缺陷项', val: sysData.status === 'risk' ? '2 项 (攻坚中)' : '0 项 (全清零)', color: sysData.status === 'risk' ? '#ff3853' : '#ffb800', pct: sysData.status === 'risk' ? 0.35 : 1.0 }
-          ];
-
-          subMetrics.forEach((sm, smIdx) => {
-            const smY = hCardY + 45 + smIdx * 54;
-            const smX = hCardX + 220;
-            const smBarW = hCardW - 250;
-
-            statusCtx.fillStyle = '#bce2f5';
-            statusCtx.font = '18px sans-serif';
-            statusCtx.textAlign = 'left';
-            statusCtx.fillText(sm.label, smX, smY);
-
-            statusCtx.fillStyle = sm.color;
-            statusCtx.font = 'bold 18px sans-serif';
-            statusCtx.textAlign = 'right';
-            statusCtx.fillText(sm.val, hCardX + hCardW - 25, smY);
-
-            // Progress bar
-            statusCtx.fillStyle = 'rgba(15, 45, 75, 0.6)';
-            statusCtx.beginPath();
-            statusCtx.roundRect(smX, smY + 8, smBarW, 8, 4);
-            statusCtx.fill();
-
-            statusCtx.fillStyle = sm.color;
-            statusCtx.shadowColor = sm.color;
-            statusCtx.shadowBlur = 8;
-            statusCtx.beginPath();
-            statusCtx.roundRect(smX, smY + 8, smBarW * sm.pct, 8, 4);
-            statusCtx.fill();
-            statusCtx.shadowBlur = 0;
-          });
-
-          // Card B: PMO 战报与实时运行情报 (Y: 355 ~ 540)
-          const bCardX = 1060;
-          const bCardY = 355;
-          const bCardW = w - 1110;
-          const bCardH = 185;
-
-          const bGrad = statusCtx.createLinearGradient(bCardX, bCardY, bCardX + bCardW, bCardY + bCardH);
-          bGrad.addColorStop(0, 'rgba(8, 32, 70, 0.45)');
-          bGrad.addColorStop(1, 'rgba(3, 12, 28, 0.30)');
+          const bGrad = statusCtx.createLinearGradient(0, by, 0, 590);
+          bGrad.addColorStop(0, b.color);
+          bGrad.addColorStop(1, 'rgba(10, 38, 70, 0.18)');
           statusCtx.fillStyle = bGrad;
           statusCtx.beginPath();
-          statusCtx.roundRect(bCardX, bCardY, bCardW, bCardH, 14);
+          statusCtx.roundRect(bx, by, barWidth, bh, [5, 5, 0, 0]);
           statusCtx.fill();
 
-          statusCtx.strokeStyle = statusAccent;
-          statusCtx.lineWidth = 2.0;
-          statusCtx.stroke();
-
-          statusCtx.fillStyle = statusAccent;
-          statusCtx.font = 'bold 22px sans-serif';
-          statusCtx.textAlign = 'left';
-          statusCtx.fillText('📢 PMO 实时战报与当前运行情报 (Operational Intel)', bCardX + 25, bCardY + 38);
-
-          // Narrative Desc Box
           statusCtx.fillStyle = '#ffffff';
-          statusCtx.font = 'bold 22px sans-serif';
-          statusCtx.fillText(`● 运行态势: ${sysData.desc}`, bCardX + 25, bCardY + 82);
-
-          statusCtx.fillStyle = '#8dc0d8';
-          statusCtx.font = '18px sans-serif';
-          statusCtx.fillText(`● 里程碑: 核心模块开发已达标 ｜ 压力测试通过 ｜ 灰度联调准备就绪`, bCardX + 25, bCardY + 120);
-          statusCtx.fillText(`● 责任保障: 由 ${sysData.owner} 负责每日站会与特战攻坚协同`, bCardX + 25, bCardY + 154);
-
-          // Card C: 风险等级与运维拓扑保障 (Y: 560 ~ 720)
-          statusCtx.strokeStyle = 'rgba(75, 205, 245, 0.25)';
-          statusCtx.lineWidth = 1.5;
-          statusCtx.beginPath();
-          statusCtx.moveTo(1060, 650);
-          statusCtx.lineTo(w - 60, 650);
-          statusCtx.stroke();
-
-          statusCtx.fillStyle = '#bce2f5';
-          statusCtx.font = '20px sans-serif';
-          statusCtx.textAlign = 'left';
-          statusCtx.fillText(`风险评级: ${sysData.riskLevel || 'L1 常规监测'} ｜ 同城双活容灾演练 100% 达标`, 1060, 695);
-          statusCtx.textAlign = 'right';
-          statusCtx.fillStyle = statusAccent;
-          statusCtx.fillText(`技术债务清零率: ${sysData.status === 'risk' ? '74.5%' : '96.8%'}`, w - 60, 695);
-
-        } else {
-          // =========================================================================
-          // MODE A: MACRO PMO OVERVIEW (常态全景监控大屏)
-          // =========================================================================
-          // MASTER HEADER
-          statusCtx.fillStyle = '#ff9f24';
-          statusCtx.shadowColor = '#ff9f24';
-          statusCtx.shadowBlur = 14;
-          statusCtx.beginPath();
-          statusCtx.roundRect(50, 48, 36, 14, 7);
-          statusCtx.fill();
-          statusCtx.shadowBlur = 0;
-
-          statusCtx.fillStyle = '#ffffff';
-          statusCtx.font = 'bold 38px sans-serif';
-          statusCtx.textAlign = 'left';
-          statusCtx.fillText('重点系统全景态势看板', 100, 64);
-
-          statusCtx.fillStyle = '#8dc0d8';
-          statusCtx.font = '22px sans-serif';
-          statusCtx.fillText('重点在建系统 26 个 ｜ 鼠标悬停任意水晶即可实时投射遥测 ｜ ⟷ 可拖拽本屏滑移', 520, 64);
-
-          statusCtx.fillStyle = '#20e3ee';
-          statusCtx.font = 'bold 24px sans-serif';
-          statusCtx.textAlign = 'right';
-          statusCtx.shadowColor = '#20e3ee';
-          statusCtx.shadowBlur = 12;
-          statusCtx.fillText('综合达标率: 94.6% ↑   |   质量健康度: +3.8% ↑', w - 60, 64);
-          statusCtx.shadowBlur = 0;
-
-          // Top Horizontal Separator
-          statusCtx.strokeStyle = 'rgba(75, 205, 245, 0.25)';
-          statusCtx.lineWidth = 2;
-          statusCtx.beginPath();
-          statusCtx.moveTo(50, 95);
-          statusCtx.lineTo(w - 50, 95);
-          statusCtx.stroke();
-
-          // LEFT SUB-PANEL (X: 50 ~ 980): 系统运行态势 & 状态分布
-          statusCtx.fillStyle = '#ff9f24';
-          statusCtx.font = 'bold 22px sans-serif';
-          statusCtx.textAlign = 'left';
-          statusCtx.fillText('● 重点系统交付与负荷趋势', 50, 132);
-
-          statusCtx.strokeStyle = 'rgba(60, 205, 245, 0.20)';
-          statusCtx.lineWidth = 1.2;
-          for (let gy = 175; gy <= 590; gy += 95) {
-            statusCtx.beginPath();
-            statusCtx.moveTo(50, gy);
-            statusCtx.lineTo(460, gy);
-            statusCtx.stroke();
-          }
-          statusCtx.fillStyle = '#6b9bb0';
-          statusCtx.font = '16px sans-serif';
-          ['100%', '75%', '50%', '25%', '0%'].forEach((t, i) => {
-            statusCtx.fillText(t, 50, 180 + i * 102);
-          });
-
-          // Curve 1 (Cyan)
-          statusCtx.beginPath();
-          const curve1Pts = [0.45, 0.62, 0.58, 0.82, 0.74, 0.89, 0.94];
-          curve1Pts.forEach((p, i) => {
-            const px = 105 + i * 54;
-            const py = 590 - p * 400 + Math.sin(animPhase * 0.05 + i) * 10;
-            if (i === 0) statusCtx.moveTo(px, py);
-            else statusCtx.lineTo(px, py);
-          });
-          statusCtx.strokeStyle = '#20e3ee';
-          statusCtx.lineWidth = 3.5;
-          statusCtx.shadowColor = '#20e3ee';
-          statusCtx.shadowBlur = 14;
-          statusCtx.stroke();
-          statusCtx.shadowBlur = 0;
-
-          // Curve 2 (Amber)
-          statusCtx.beginPath();
-          const curve2Pts = [0.35, 0.42, 0.55, 0.50, 0.68, 0.62, 0.76];
-          curve2Pts.forEach((p, i) => {
-            const px = 105 + i * 54;
-            const py = 590 - p * 400 + Math.cos(animPhase * 0.04 + i) * 8;
-            if (i === 0) statusCtx.moveTo(px, py);
-            else statusCtx.lineTo(px, py);
-          });
-          statusCtx.strokeStyle = '#ff9f24';
-          statusCtx.lineWidth = 2.8;
-          statusCtx.shadowColor = '#ff9f24';
+          statusCtx.shadowColor = b.color;
           statusCtx.shadowBlur = 10;
-          statusCtx.stroke();
-          statusCtx.shadowBlur = 0;
-
-          // Bar Chart (Systems 01 ~ 08)
-          const barsData = [
-            { val: 0.65, color: '#ff9f24', label: '01' },
-            { val: 0.82, color: '#20e3ee', label: '02' },
-            { val: 0.74, color: '#20e3ee', label: '03' },
-            { val: 0.92, color: '#20e3ee', label: '04' },
-            { val: 0.52, color: '#ff3853', label: '05' },
-            { val: 0.88, color: '#20e3ee', label: '06' },
-            { val: 0.76, color: '#20e3ee', label: '07' },
-            { val: 0.95, color: '#20e3ee', label: '08' }
-          ];
-          const barStartX = 490;
-          const barWidth = 34;
-          const barGap = 16;
-          barsData.forEach((b, i) => {
-            const bx = barStartX + i * (barWidth + barGap);
-            const bh = b.val * 410;
-            const by = 590 - bh;
-
-            const bGrad = statusCtx.createLinearGradient(0, by, 0, 590);
-            bGrad.addColorStop(0, b.color);
-            bGrad.addColorStop(1, 'rgba(10, 38, 70, 0.18)');
-            statusCtx.fillStyle = bGrad;
-            statusCtx.beginPath();
-            statusCtx.roundRect(bx, by, barWidth, bh, [5, 5, 0, 0]);
-            statusCtx.fill();
-
-            statusCtx.fillStyle = '#ffffff';
-            statusCtx.shadowColor = b.color;
-            statusCtx.shadowBlur = 10;
-            statusCtx.beginPath();
-            statusCtx.roundRect(bx + 2, by, barWidth - 4, 4, [2, 2, 0, 0]);
-            statusCtx.fill();
-            statusCtx.shadowBlur = 0;
-
-            statusCtx.fillStyle = '#78a6bc';
-            statusCtx.font = '14px sans-serif';
-            statusCtx.textAlign = 'center';
-            statusCtx.fillText(b.label, bx + barWidth / 2, 620);
-          });
-
-          // Left Sub-Panel Bottom Stats
-          statusCtx.strokeStyle = 'rgba(75, 205, 245, 0.25)';
-          statusCtx.lineWidth = 1.5;
           statusCtx.beginPath();
-          statusCtx.moveTo(50, 650);
-          statusCtx.lineTo(950, 650);
-          statusCtx.stroke();
-
-          statusCtx.fillStyle = '#d8f1fd';
-          statusCtx.font = '22px sans-serif';
-          statusCtx.textAlign = 'left';
-          statusCtx.fillText('状态分布: 正常 17 ｜ 预警 5 ｜ 风险 4', 50, 695);
-          statusCtx.textAlign = 'right';
-          statusCtx.fillStyle = '#20e3ee';
-          statusCtx.fillText('按期交付率: 95.8%', 950, 695);
-
-          // CENTRAL CYBER SEPARATOR (X = 1024)
-          statusCtx.strokeStyle = 'rgba(80, 225, 255, 0.35)';
-          statusCtx.lineWidth = 2;
-          statusCtx.setLineDash([8, 6]);
-          statusCtx.beginPath();
-          statusCtx.moveTo(1024, 115);
-          statusCtx.lineTo(1024, 715);
-          statusCtx.stroke();
-          statusCtx.setLineDash([]);
-
-          [120, 415, 710].forEach(cy => {
-            statusCtx.fillStyle = '#20e3ee';
-            statusCtx.shadowColor = '#20e3ee';
-            statusCtx.shadowBlur = 10;
-            statusCtx.beginPath();
-            statusCtx.arc(1024, cy, 4.5, 0, Math.PI * 2);
-            statusCtx.fill();
-            statusCtx.shadowBlur = 0;
-          });
-
-          // RIGHT SUB-PANEL (X: 1060 ~ 1990): 状态康度与风险收敛
-          statusCtx.fillStyle = '#20e3ee';
-          statusCtx.font = 'bold 22px sans-serif';
-          statusCtx.textAlign = 'left';
-          statusCtx.fillText('● 项目状态康度与质量评估', 1060, 132);
-
-          statusCtx.fillStyle = '#20e3ee';
-          statusCtx.font = 'bold 38px sans-serif';
-          statusCtx.textAlign = 'right';
-          statusCtx.shadowColor = '#20e3ee';
-          statusCtx.shadowBlur = 14;
-          statusCtx.fillText('86.5 分', w - 60, 140);
-          statusCtx.shadowBlur = 0;
-
-          const waveBaseY = 590;
-          const waveMaxH = 390;
-          const wavePts = [0.28, 0.42, 0.36, 0.68, 0.54, 0.82, 0.70, 0.92, 0.86, 0.95];
-          const stepX = (w - 1120) / (wavePts.length - 1);
-
-          const calculatedCoords = wavePts.map((p, i) => {
-            const dy = Math.sin(animPhase * 0.05 + i * 0.7) * 10;
-            return {
-              x: 1060 + i * stepX,
-              y: waveBaseY - p * waveMaxH + dy
-            };
-          });
-
-          statusCtx.beginPath();
-          statusCtx.moveTo(calculatedCoords[0].x, waveBaseY);
-          calculatedCoords.forEach(pt => statusCtx.lineTo(pt.x, pt.y));
-          statusCtx.lineTo(calculatedCoords[calculatedCoords.length - 1].x, waveBaseY);
-          statusCtx.closePath();
-
-          const areaGrad = statusCtx.createLinearGradient(0, waveBaseY - waveMaxH, 0, waveBaseY);
-          areaGrad.addColorStop(0, 'rgba(255, 159, 36, 0.30)');
-          areaGrad.addColorStop(0.5, 'rgba(32, 227, 238, 0.16)');
-          areaGrad.addColorStop(1, 'rgba(6, 24, 50, 0.02)');
-          statusCtx.fillStyle = areaGrad;
+          statusCtx.roundRect(bx + 2, by, barWidth - 4, 4, [2, 2, 0, 0]);
           statusCtx.fill();
-
-          // Amber Master Wave
-          statusCtx.beginPath();
-          statusCtx.moveTo(calculatedCoords[0].x, calculatedCoords[0].y);
-          for (let i = 0; i < calculatedCoords.length - 1; i++) {
-            const xc = (calculatedCoords[i].x + calculatedCoords[i + 1].x) / 2;
-            const yc = (calculatedCoords[i].y + calculatedCoords[i + 1].y) / 2;
-            statusCtx.quadraticCurveTo(calculatedCoords[i].x, calculatedCoords[i].y, xc, yc);
-          }
-          statusCtx.lineTo(calculatedCoords[calculatedCoords.length - 1].x, calculatedCoords[calculatedCoords.length - 1].y);
-          statusCtx.strokeStyle = '#ff9f24';
-          statusCtx.lineWidth = 4.2;
-          statusCtx.shadowColor = '#ff9f24';
-          statusCtx.shadowBlur = 16;
-          statusCtx.stroke();
           statusCtx.shadowBlur = 0;
 
-          // Cyan Trend Offset Wave
-          statusCtx.beginPath();
-          const cyanOffsetCoords = calculatedCoords.map(pt => ({ x: pt.x, y: pt.y + 24 }));
-          statusCtx.moveTo(cyanOffsetCoords[0].x, cyanOffsetCoords[0].y);
-          for (let i = 0; i < cyanOffsetCoords.length - 1; i++) {
-            const xc = (cyanOffsetCoords[i].x + cyanOffsetCoords[i + 1].x) / 2;
-            const yc = (cyanOffsetCoords[i].y + cyanOffsetCoords[i + 1].y) / 2;
-            statusCtx.quadraticCurveTo(cyanOffsetCoords[i].x, cyanOffsetCoords[i].y, xc, yc);
-          }
-          statusCtx.lineTo(cyanOffsetCoords[cyanOffsetCoords.length - 1].x, cyanOffsetCoords[cyanOffsetCoords.length - 1].y);
-          statusCtx.strokeStyle = '#20e3ee';
-          statusCtx.lineWidth = 3.2;
-          statusCtx.shadowColor = '#20e3ee';
-          statusCtx.shadowBlur = 14;
-          statusCtx.stroke();
-          statusCtx.shadowBlur = 0;
+          statusCtx.fillStyle = '#78a6bc';
+          statusCtx.font = '14px sans-serif';
+          statusCtx.textAlign = 'center';
+          statusCtx.fillText(b.label, bx + barWidth / 2, 620);
+        });
 
-          [3, 5, 7, 9].forEach(idx => {
-            const pt = calculatedCoords[idx];
-            statusCtx.beginPath();
-            statusCtx.arc(pt.x, pt.y, 7.0, 0, Math.PI * 2);
-            statusCtx.fillStyle = '#ffffff';
-            statusCtx.shadowColor = '#ff9f24';
-            statusCtx.shadowBlur = 14;
-            statusCtx.fill();
-            statusCtx.shadowBlur = 0;
-          });
+        // Left Sub-Panel Bottom Stats
+        statusCtx.strokeStyle = 'rgba(75, 205, 245, 0.25)';
+        statusCtx.lineWidth = 1.5;
+        statusCtx.beginPath();
+        statusCtx.moveTo(50, 650);
+        statusCtx.lineTo(950, 650);
+        statusCtx.stroke();
 
-          // Right Sub-Panel Bottom Stats
-          statusCtx.strokeStyle = 'rgba(75, 205, 245, 0.25)';
-          statusCtx.lineWidth = 1.5;
-          statusCtx.beginPath();
-          statusCtx.moveTo(1060, 650);
-          statusCtx.lineTo(w - 60, 650);
-          statusCtx.stroke();
+        statusCtx.fillStyle = '#d8f1fd';
+        statusCtx.font = '22px sans-serif';
+        statusCtx.textAlign = 'left';
+        statusCtx.fillText('状态分布: 正常 17 ｜ 预警 5 ｜ 风险 4', 50, 695);
+        statusCtx.textAlign = 'right';
+        statusCtx.fillStyle = '#20e3ee';
+        statusCtx.fillText('按期交付率: 95.8%', 950, 695);
 
-          statusCtx.fillStyle = '#92c2d6';
-          statusCtx.font = '22px sans-serif';
-          statusCtx.textAlign = 'left';
-          statusCtx.fillText('高危风险清零率: 94.2%', 1060, 695);
-          statusCtx.textAlign = 'right';
+        // ==========================================
+        // CENTRAL CYBER SEPARATOR (X = 1024)
+        // ==========================================
+        statusCtx.strokeStyle = 'rgba(80, 225, 255, 0.35)';
+        statusCtx.lineWidth = 2;
+        statusCtx.setLineDash([8, 6]);
+        statusCtx.beginPath();
+        statusCtx.moveTo(1024, 115);
+        statusCtx.lineTo(1024, 715);
+        statusCtx.stroke();
+        statusCtx.setLineDash([]);
+
+        // Central Tech Diamonds
+        [120, 415, 710].forEach(cy => {
           statusCtx.fillStyle = '#20e3ee';
-          statusCtx.fillText('技术债务收敛: 88.0%', w - 60, 695);
+          statusCtx.shadowColor = '#20e3ee';
+          statusCtx.shadowBlur = 10;
+          statusCtx.beginPath();
+          statusCtx.arc(1024, cy, 4.5, 0, Math.PI * 2);
+          statusCtx.fill();
+          statusCtx.shadowBlur = 0;
+        });
+
+        // ==========================================
+        // RIGHT SUB-PANEL (X: 1060 ~ 1990): 状态康度与风险收敛
+        // ==========================================
+        statusCtx.fillStyle = '#20e3ee';
+        statusCtx.font = 'bold 22px sans-serif';
+        statusCtx.textAlign = 'left';
+        statusCtx.fillText('● 项目状态康度与质量评估', 1060, 132);
+
+        statusCtx.fillStyle = '#20e3ee';
+        statusCtx.font = 'bold 38px sans-serif';
+        statusCtx.textAlign = 'right';
+        statusCtx.shadowColor = '#20e3ee';
+        statusCtx.shadowBlur = 14;
+        statusCtx.fillText('86.5 分', w - 60, 140);
+        statusCtx.shadowBlur = 0;
+
+        const waveBaseY = 590;
+        const waveMaxH = 390;
+        const wavePts = [0.28, 0.42, 0.36, 0.68, 0.54, 0.82, 0.70, 0.92, 0.86, 0.95];
+        const stepX = (w - 1120) / (wavePts.length - 1);
+
+        const calculatedCoords = wavePts.map((p, i) => {
+          const dy = Math.sin(animPhase * 0.05 + i * 0.7) * 10;
+          return {
+            x: 1060 + i * stepX,
+            y: waveBaseY - p * waveMaxH + dy
+          };
+        });
+
+        statusCtx.beginPath();
+        statusCtx.moveTo(calculatedCoords[0].x, waveBaseY);
+        calculatedCoords.forEach(pt => statusCtx.lineTo(pt.x, pt.y));
+        statusCtx.lineTo(calculatedCoords[calculatedCoords.length - 1].x, waveBaseY);
+        statusCtx.closePath();
+
+        const areaGrad = statusCtx.createLinearGradient(0, waveBaseY - waveMaxH, 0, waveBaseY);
+        areaGrad.addColorStop(0, 'rgba(255, 159, 36, 0.30)');
+        areaGrad.addColorStop(0.5, 'rgba(32, 227, 238, 0.16)');
+        areaGrad.addColorStop(1, 'rgba(6, 24, 50, 0.02)');
+        statusCtx.fillStyle = areaGrad;
+        statusCtx.fill();
+
+        // Amber Master Wave
+        statusCtx.beginPath();
+        statusCtx.moveTo(calculatedCoords[0].x, calculatedCoords[0].y);
+        for (let i = 0; i < calculatedCoords.length - 1; i++) {
+          const xc = (calculatedCoords[i].x + calculatedCoords[i + 1].x) / 2;
+          const yc = (calculatedCoords[i].y + calculatedCoords[i + 1].y) / 2;
+          statusCtx.quadraticCurveTo(calculatedCoords[i].x, calculatedCoords[i].y, xc, yc);
         }
+        statusCtx.lineTo(calculatedCoords[calculatedCoords.length - 1].x, calculatedCoords[calculatedCoords.length - 1].y);
+        statusCtx.strokeStyle = '#ff9f24';
+        statusCtx.lineWidth = 4.2;
+        statusCtx.shadowColor = '#ff9f24';
+        statusCtx.shadowBlur = 16;
+        statusCtx.stroke();
+        statusCtx.shadowBlur = 0;
+
+        // Cyan Trend Offset Wave
+        statusCtx.beginPath();
+        const cyanOffsetCoords = calculatedCoords.map(pt => ({ x: pt.x, y: pt.y + 24 }));
+        statusCtx.moveTo(cyanOffsetCoords[0].x, cyanOffsetCoords[0].y);
+        for (let i = 0; i < cyanOffsetCoords.length - 1; i++) {
+          const xc = (cyanOffsetCoords[i].x + cyanOffsetCoords[i + 1].x) / 2;
+          const yc = (cyanOffsetCoords[i].y + cyanOffsetCoords[i + 1].y) / 2;
+          statusCtx.quadraticCurveTo(cyanOffsetCoords[i].x, cyanOffsetCoords[i].y, xc, yc);
+        }
+        statusCtx.lineTo(cyanOffsetCoords[cyanOffsetCoords.length - 1].x, cyanOffsetCoords[cyanOffsetCoords.length - 1].y);
+        statusCtx.strokeStyle = '#20e3ee';
+        statusCtx.lineWidth = 3.2;
+        statusCtx.shadowColor = '#20e3ee';
+        statusCtx.shadowBlur = 14;
+        statusCtx.stroke();
+        statusCtx.shadowBlur = 0;
+
+        [3, 5, 7, 9].forEach(idx => {
+          const pt = calculatedCoords[idx];
+          statusCtx.beginPath();
+          statusCtx.arc(pt.x, pt.y, 7.0, 0, Math.PI * 2);
+          statusCtx.fillStyle = '#ffffff';
+          statusCtx.shadowColor = '#ff9f24';
+          statusCtx.shadowBlur = 14;
+          statusCtx.fill();
+          statusCtx.shadowBlur = 0;
+        });
+
+        // Right Sub-Panel Bottom Stats
+        statusCtx.strokeStyle = 'rgba(75, 205, 245, 0.25)';
+        statusCtx.lineWidth = 1.5;
+        statusCtx.beginPath();
+        statusCtx.moveTo(1060, 650);
+        statusCtx.lineTo(w - 60, 650);
+        statusCtx.stroke();
+
+        statusCtx.fillStyle = '#92c2d6';
+        statusCtx.font = '22px sans-serif';
+        statusCtx.textAlign = 'left';
+        statusCtx.fillText('高危风险清零率: 94.2%', 1060, 695);
+        statusCtx.textAlign = 'right';
+        statusCtx.fillStyle = '#20e3ee';
+        statusCtx.fillText('技术债务收敛: 88.0%', w - 60, 695);
 
         statusTexture.needsUpdate = true;
       }
-      updateStatusCanvas(null);
+      updateStatusCanvas();
 
       // ==========================================================================
-      // 7. RESPONSIVE TOUCH & MOUSE INTERACTION (RIGHT-CLICK PAN, 2-FINGER PAN, RAIL SLIDE)
+      // 7. RESPONSIVE TOUCH & MOUSE INTERACTION (DRAG ORBIT, PINCH ZOOM, RAIL SLIDE)
       // ==========================================================================
       const raycaster = new THREE.Raycaster();
       const mouse = new THREE.Vector2();
       let hoveredCube = null;
 
       const tooltipEl = document.getElementById('cube-tooltip');
-      if (tooltipEl) tooltipEl.style.display = 'none';
+      const ttName = document.getElementById('tt-name');
+      const ttBadge = document.getElementById('tt-badge');
+      const ttCode = document.getElementById('tt-code');
+      const ttProg = document.getElementById('tt-prog');
+      const ttOwner = document.getElementById('tt-owner');
+      const ttDesc = document.getElementById('tt-desc');
 
-      // Drag, Pan & Orbit State Variables
-      let isLeftDragging = false;
-      let isRightPanning = false;
+      let isDragging = false;
       let isTouchMoved = false;
       let draggedScreen = null;
       let screenDragVelocity = 0;
@@ -82441,40 +82028,15 @@ exports.warnOnce = warnOnce;
       let pointerDownPos = { x: 0, y: 0 };
       let pointerDownTime = 0;
       let prevPointerPos = { x: 0, y: 0 };
-
-      // Touch Pan / Pinch tracking
-      let prevTouchCenter = { x: 0, y: 0 };
-      let prevPinchDistance = 0;
+      let initialPinchDistance = 0;
 
       let currentFilterStatus = 'all';
       let currentFocusMode = 'overview';
 
-      // Spherical Orbit Coordinates relative to targetLookAt
+      // Spherical Orbit Coordinates
       let theta = Math.PI / 4.2;
       let phi = Math.PI / 3.4;
-      let orbitRadius = defaultCamPos.distanceTo(defaultLookAt);
-
-      // Helper to compute spherical camera position around targetLookAt
-      function updateCameraTargetPosition() {
-        targetCamPos.x = targetLookAt.x + orbitRadius * Math.sin(phi) * Math.sin(theta);
-        targetCamPos.y = targetLookAt.y + orbitRadius * Math.cos(phi);
-        targetCamPos.z = targetLookAt.z + orbitRadius * Math.sin(phi) * Math.cos(theta);
-      }
-
-      // Pan/Translate whole scene in 3D camera plane
-      function panCamera(deltaX, deltaY, speedFactor = 1.0) {
-        currentFocusMode = 'custom';
-        const panSpeed = orbitRadius * 0.0015 * speedFactor;
-        
-        const right = new THREE.Vector3();
-        const up = new THREE.Vector3();
-        camera.matrixWorld.extractBasis(right, up, new THREE.Vector3());
-        
-        targetLookAt.addScaledVector(right, -deltaX * panSpeed);
-        targetLookAt.addScaledVector(up, deltaY * panSpeed);
-        
-        updateCameraTargetPosition();
-      }
+      let orbitRadius = defaultCamPos.length();
 
       function getHitScreen(clientX, clientY) {
         const rect = container.getBoundingClientRect();
@@ -82487,7 +82049,7 @@ exports.warnOnce = warnOnce;
         cubeObjects.forEach(c => hitMeshes.push(c.userData.outerMesh));
         const cubeHits = raycaster.intersectObjects(hitMeshes, false);
 
-        // Strict non-recursive hit test directly on the elevated curved screen surface
+        // Strict non-recursive hit test directly on the curved screen surface
         const hits = raycaster.intersectObjects([leftCurvedScreen, statusCurvedScreen], false);
         if (hits.length > 0) {
           const hit = hits[0];
@@ -82496,8 +82058,8 @@ exports.warnOnce = warnOnce;
             return null;
           }
           // Strict physical height bounds check (must be strictly within screen interior)
-          const minY = STAGE_TOP_Y + SCREEN_ELEVATION_Y - 0.2;
-          const maxY = STAGE_TOP_Y + SCREEN_ELEVATION_Y + SCREEN_HEIGHT + 0.2;
+          const minY = STAGE_TOP_Y + 0.08;
+          const maxY = STAGE_TOP_Y + SCREEN_HEIGHT - 0.08;
           if (hit.point.y >= minY && hit.point.y <= maxY) {
             return hit.object;
           }
@@ -82505,46 +82067,30 @@ exports.warnOnce = warnOnce;
         return null;
       }
 
-      // Prevent context menu on right click
-      container.addEventListener('contextmenu', (e) => e.preventDefault());
-      window.addEventListener('contextmenu', (e) => {
-        if (e.target === container || container.contains(e.target)) e.preventDefault();
-      });
-
-      // Mouse Down Event (Left Click vs Right Click)
+      // Mouse Events
       container.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        isTouchMoved = false;
         pointerDownPos = { x: e.clientX, y: e.clientY };
         prevPointerPos = { x: e.clientX, y: e.clientY };
         pointerDownTime = Date.now();
-        isTouchMoved = false;
 
-        if (e.button === 2 || e.button === 1) {
-          // Right Click / Middle Click -> Pan Whole Scene (平移画面)
-          isRightPanning = true;
-          isLeftDragging = false;
-          container.style.cursor = 'move';
-        } else if (e.button === 0) {
-          // Left Click -> Orbit scene or slide screen along rail
-          isLeftDragging = true;
-          isRightPanning = false;
-          draggedScreen = getHitScreen(e.clientX, e.clientY);
-          if (draggedScreen) {
-            container.style.cursor = 'grabbing';
-          }
+        draggedScreen = getHitScreen(e.clientX, e.clientY);
+        if (draggedScreen) {
+          container.style.cursor = 'grabbing';
         }
       });
 
       window.addEventListener('mouseup', (e) => {
-        const wasPanning = isRightPanning;
-        isRightPanning = false;
-        isLeftDragging = false;
+        if (!isDragging) return;
+        isDragging = false;
         container.style.cursor = 'default';
 
         const elapsed = Date.now() - pointerDownTime;
         const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
         
-        // If it was a left click/tap and NOT a drag along rail or pan
-        if (e.button === 0 && !isTouchMoved && elapsed < 350 && dist < 6) {
+        // If it was a click/tap and NOT a drag along rail
+        if (!isTouchMoved && elapsed < 350 && dist < 6) {
           handlePointerClick(e.clientX, e.clientY);
         }
       });
@@ -82557,26 +82103,28 @@ exports.warnOnce = warnOnce;
         mouse.x = (clientX / container.clientWidth) * 2 - 1;
         mouse.y = -(clientY / container.clientHeight) * 2 + 1;
 
-        const deltaX = e.clientX - prevPointerPos.x;
-        const deltaY = e.clientY - prevPointerPos.y;
-        if (Math.hypot(deltaX, deltaY) > 3) isTouchMoved = true;
+        if (isDragging) {
+          const deltaX = e.clientX - prevPointerPos.x;
+          const deltaY = e.clientY - prevPointerPos.y;
+          if (Math.hypot(deltaX, deltaY) > 3) isTouchMoved = true;
 
-        if (isRightPanning) {
-          // MOUSE RIGHT-CLICK DRAGGING -> PAN ENTIRE SCENE (平移整个画面)
-          panCamera(deltaX, deltaY, 1.0);
-        } else if (isLeftDragging) {
           if (draggedScreen) {
             // SLIDE SCREEN ALONG CIRCULAR STAGE TRACK!
             const slideAngle = -deltaX * 0.007;
             draggedScreen.rotation.y += slideAngle;
             screenDragVelocity = slideAngle;
           } else {
-            // Orbit Scene Camera around current targetLookAt
+            // Orbit Scene Camera
             currentFocusMode = 'custom';
             theta -= deltaX * 0.006;
             phi = Math.max(0.15, Math.min(Math.PI / 2.05, phi - deltaY * 0.005));
-            updateCameraTargetPosition();
+
+            targetCamPos.x = orbitRadius * Math.sin(phi) * Math.sin(theta);
+            targetCamPos.y = orbitRadius * Math.cos(phi) + 1.2;
+            targetCamPos.z = orbitRadius * Math.sin(phi) * Math.cos(theta);
           }
+
+          prevPointerPos = { x: e.clientX, y: e.clientY };
         } else {
           // Hover Cursor update for track draggable screen strictly within screen interior
           const hitScr = getHitScreen(e.clientX, e.clientY);
@@ -82585,9 +82133,12 @@ exports.warnOnce = warnOnce;
           } else {
             container.style.cursor = 'default';
           }
-        }
 
-        prevPointerPos = { x: e.clientX, y: e.clientY };
+          if (hoveredCube && tooltipEl) {
+            tooltipEl.style.left = Math.min(e.clientX, window.innerWidth - 270) + 'px';
+            tooltipEl.style.top = Math.max(80, Math.min(clientY, window.innerHeight - 120)) + 'px';
+          }
+        }
       });
 
       // Mouse Wheel Zoom
@@ -82595,14 +82146,15 @@ exports.warnOnce = warnOnce;
         e.preventDefault();
         currentFocusMode = 'custom';
         orbitRadius = Math.max(10, Math.min(45, orbitRadius + e.deltaY * 0.03));
-        updateCameraTargetPosition();
+        targetCamPos.x = orbitRadius * Math.sin(phi) * Math.sin(theta);
+        targetCamPos.y = orbitRadius * Math.cos(phi) + 1.2;
+        targetCamPos.z = orbitRadius * Math.sin(phi) * Math.cos(theta);
       }, { passive: false });
 
-      // Mobile Touch Events (1 Finger Orbit/Slide vs 2 Fingers Pan/Zoom)
+      // Mobile Touch Events
       container.addEventListener('touchstart', (e) => {
         if (e.touches.length === 1) {
-          isLeftDragging = true;
-          isRightPanning = false;
+          isDragging = true;
           isTouchMoved = false;
           pointerDownPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
           prevPointerPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -82610,18 +82162,17 @@ exports.warnOnce = warnOnce;
 
           draggedScreen = getHitScreen(e.touches[0].clientX, e.touches[0].clientY);
         } else if (e.touches.length === 2) {
-          isLeftDragging = false;
+          isDragging = false;
           draggedScreen = null;
-          isTouchMoved = true;
-          const t0 = e.touches[0];
-          const t1 = e.touches[1];
-          prevTouchCenter = { x: (t0.clientX + t1.clientX) / 2, y: (t0.clientY + t1.clientY) / 2 };
-          prevPinchDistance = Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY);
+          initialPinchDistance = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
         }
       }, { passive: true });
 
       container.addEventListener('touchmove', (e) => {
-        if (e.touches.length === 1 && isLeftDragging) {
+        if (e.touches.length === 1 && isDragging) {
           const deltaX = e.touches[0].clientX - prevPointerPos.x;
           const deltaY = e.touches[0].clientY - prevPointerPos.y;
           if (Math.hypot(deltaX, deltaY) > 3) isTouchMoved = true;
@@ -82635,39 +82186,32 @@ exports.warnOnce = warnOnce;
             currentFocusMode = 'custom';
             theta -= deltaX * 0.008;
             phi = Math.max(0.15, Math.min(Math.PI / 2.05, phi - deltaY * 0.006));
-            updateCameraTargetPosition();
+
+            targetCamPos.x = orbitRadius * Math.sin(phi) * Math.sin(theta);
+            targetCamPos.y = orbitRadius * Math.cos(phi) + 1.2;
+            targetCamPos.z = orbitRadius * Math.sin(phi) * Math.cos(theta);
           }
 
           prevPointerPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
         } else if (e.touches.length === 2) {
-          const t0 = e.touches[0];
-          const t1 = e.touches[1];
-          const currentCenter = { x: (t0.clientX + t1.clientX) / 2, y: (t0.clientY + t1.clientY) / 2 };
-          const currentPinchDistance = Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY);
-
-          // 1. Mobile Two-Finger Pan: Drag whole scene when two fingers move together (双指同向拖动平移画面)
-          const deltaCenterX = currentCenter.x - prevTouchCenter.x;
-          const deltaCenterY = currentCenter.y - prevTouchCenter.y;
-          if (Math.hypot(deltaCenterX, deltaCenterY) > 1.2) {
-            panCamera(deltaCenterX, deltaCenterY, 1.2);
+          const currentDistance = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          if (initialPinchDistance > 0) {
+            const pinchDiff = initialPinchDistance - currentDistance;
+            orbitRadius = Math.max(10, Math.min(45, orbitRadius + pinchDiff * 0.05));
+            targetCamPos.x = orbitRadius * Math.sin(phi) * Math.sin(theta);
+            targetCamPos.y = orbitRadius * Math.cos(phi) + 1.2;
+            targetCamPos.z = orbitRadius * Math.sin(phi) * Math.cos(theta);
           }
-
-          // 2. Mobile Pinch Zoom (双指捏合缩放)
-          const pinchDiff = currentPinchDistance - prevPinchDistance;
-          if (Math.abs(pinchDiff) > 1.5) {
-            currentFocusMode = 'custom';
-            orbitRadius = Math.max(10, Math.min(45, orbitRadius - pinchDiff * 0.05));
-            updateCameraTargetPosition();
-          }
-
-          prevTouchCenter = currentCenter;
-          prevPinchDistance = currentPinchDistance;
+          initialPinchDistance = currentDistance;
         }
       }, { passive: true });
 
       container.addEventListener('touchend', (e) => {
-        if (isLeftDragging && e.changedTouches.length > 0) {
-          isLeftDragging = false;
+        if (isDragging && e.changedTouches.length > 0) {
+          isDragging = false;
           const touch = e.changedTouches[0];
           const elapsed = Date.now() - pointerDownTime;
           const dist = Math.hypot(touch.clientX - pointerDownPos.x, touch.clientY - pointerDownPos.y);
@@ -82692,7 +82236,7 @@ exports.warnOnce = warnOnce;
           return;
         }
 
-        // 2. Check 3D Cubes -> Tap locks focus & projects to Status Screen
+        // 2. Check 3D Cubes
         const hitMeshes = [];
         cubeObjects.forEach(c => hitMeshes.push(c.userData.outerMesh));
         const cubeHits = raycaster.intersectObjects(hitMeshes, false);
@@ -82701,9 +82245,25 @@ exports.warnOnce = warnOnce;
           targetLookAt.copy(cube.position);
           targetCamPos.set(cube.position.x + 8.5, cube.position.y + 7.5, cube.position.z + 10.5);
           currentFocusMode = 'cube';
-          hoveredCube = cube;
-          updateStatusCanvas(cube.userData);
+
+          const uData = cube.userData;
+          ttName.textContent = uData.name;
+          ttBadge.textContent = (uData.status === 'normal' ? '正常' : uData.status === 'warning' ? '预警' : '风险');
+          ttBadge.className = 'tooltip-status ' + (uData.status === 'normal' ? 'cyan' : uData.status === 'warning' ? 'orange' : 'red');
+          ttCode.textContent = uData.code;
+          ttProg.textContent = uData.prog;
+          ttOwner.textContent = uData.owner;
+          ttDesc.textContent = uData.desc;
+
+          if (tooltipEl) {
+            tooltipEl.style.left = Math.min(clientX, window.innerWidth - 270) + 'px';
+            tooltipEl.style.top = Math.max(80, Math.min(clientY, window.innerHeight - 120)) + 'px';
+            tooltipEl.style.display = 'block';
+          }
+          return;
         }
+
+        if (tooltipEl) tooltipEl.style.display = 'none';
       }
 
       // EXACT ORTHOGONAL FRONT-ON FOCUS (DYNAMICALLY COMPUTES FROM SCREEN'S CURRENT POSITION ON TRACK)
@@ -82714,31 +82274,28 @@ exports.warnOnce = warnOnce;
         });
 
         if (view === 'overview') {
+          targetCamPos.copy(defaultCamPos);
           targetLookAt.copy(defaultLookAt);
           theta = Math.PI / 4.2;
           phi = Math.PI / 3.4;
-          orbitRadius = defaultCamPos.distanceTo(defaultLookAt);
-          updateCameraTargetPosition();
         } else if (view === 'meeting') {
           const rot = leftCurvedScreen.rotation.y;
           const screenCenter = new THREE.Vector3(SCREEN_RADIUS * Math.sin(rot), SCREEN_CENTER_Y, SCREEN_RADIUS * Math.cos(rot));
-          targetLookAt.set(screenCenter.x, SCREEN_CENTER_Y, screenCenter.z);
+          targetLookAt.set(screenCenter.x, 2.2, screenCenter.z);
           const camOppositeDist = 6.8;
-          const camHeight = SCREEN_CENTER_Y + 0.6;
+          const camHeight = 6.2;
           targetCamPos.set(-camOppositeDist * Math.sin(rot), camHeight, -camOppositeDist * Math.cos(rot));
-          theta = Math.atan2(targetCamPos.x - targetLookAt.x, targetCamPos.z - targetLookAt.z);
-          orbitRadius = targetCamPos.distanceTo(targetLookAt);
-          phi = Math.acos(Math.max(-1, Math.min(1, (targetCamPos.y - targetLookAt.y) / orbitRadius)));
+          theta = Math.atan2(targetCamPos.x, targetCamPos.z);
+          phi = Math.acos(Math.max(-1, Math.min(1, (targetCamPos.y - 1.2) / orbitRadius)));
         } else if (view === 'status') {
           const rot = statusCurvedScreen.rotation.y;
           const screenCenter = new THREE.Vector3(SCREEN_RADIUS * Math.sin(rot), SCREEN_CENTER_Y, SCREEN_RADIUS * Math.cos(rot));
-          targetLookAt.set(screenCenter.x * 0.96, SCREEN_CENTER_Y, screenCenter.z * 0.96);
-          const camOppositeDist = 8.8;
-          const camHeight = SCREEN_CENTER_Y + 0.9;
+          targetLookAt.set(screenCenter.x * 0.96, 2.3, screenCenter.z * 0.96);
+          const camOppositeDist = 8.5;
+          const camHeight = 7.6;
           targetCamPos.set(-camOppositeDist * Math.sin(rot), camHeight, -camOppositeDist * Math.cos(rot));
-          theta = Math.atan2(targetCamPos.x - targetLookAt.x, targetCamPos.z - targetLookAt.z);
-          orbitRadius = targetCamPos.distanceTo(targetLookAt);
-          phi = Math.acos(Math.max(-1, Math.min(1, (targetCamPos.y - targetLookAt.y) / orbitRadius)));
+          theta = Math.atan2(targetCamPos.x, targetCamPos.z);
+          phi = Math.acos(Math.max(-1, Math.min(1, (targetCamPos.y - 1.2) / orbitRadius)));
         }
       }
 
@@ -82764,7 +82321,6 @@ exports.warnOnce = warnOnce;
 
       // 8. Main Animation Loop
       let clockTime = 0;
-      let lastHoveredCube = null;
 
       function animate() {
         requestAnimationFrame(animate);
@@ -82777,7 +82333,7 @@ exports.warnOnce = warnOnce;
         camera.lookAt(currentLookAt);
 
         // Screen Momentum on Track after dragging
-        if (!isLeftDragging && !isRightPanning && Math.abs(screenDragVelocity) > 0.0001) {
+        if (!isDragging && Math.abs(screenDragVelocity) > 0.0001) {
           if (draggedScreen) {
             draggedScreen.rotation.y += screenDragVelocity;
           }
@@ -82789,13 +82345,14 @@ exports.warnOnce = warnOnce;
         }
 
         // Gentle cinematic auto-rotation when idle in overview mode
-        if (!isLeftDragging && !isRightPanning && currentFocusMode === 'overview' && !hoveredCube) {
+        if (!isDragging && currentFocusMode === 'overview') {
           theta += 0.0010;
-          updateCameraTargetPosition();
+          targetCamPos.x = orbitRadius * Math.sin(phi) * Math.sin(theta);
+          targetCamPos.z = orbitRadius * Math.sin(phi) * Math.cos(theta);
         }
 
         // 1. Raycasting Hover Detection for Mouse Users
-        if (!('ontouchstart' in window) && !isRightPanning) {
+        if (!('ontouchstart' in window)) {
           raycaster.setFromCamera(mouse, camera);
           const hitMeshes = [];
           cubeObjects.forEach(c => hitMeshes.push(c.userData.outerMesh));
@@ -82805,21 +82362,29 @@ exports.warnOnce = warnOnce;
             const targetCube = intersects[0].object.parent;
             if (hoveredCube !== targetCube) {
               hoveredCube = targetCube;
+
+              const uData = hoveredCube.userData;
+              ttName.textContent = uData.name;
+              ttBadge.textContent = (uData.status === 'normal' ? '正常' : uData.status === 'warning' ? '预警' : '风险');
+              ttBadge.className = 'tooltip-status ' + (uData.status === 'normal' ? 'cyan' : uData.status === 'warning' ? 'orange' : 'red');
+              ttCode.textContent = uData.code;
+              ttProg.textContent = uData.prog;
+              ttOwner.textContent = uData.owner;
+              ttDesc.textContent = uData.desc;
+
+              if (tooltipEl) tooltipEl.style.display = 'block';
             }
           } else {
-            if (hoveredCube && currentFocusMode !== 'cube') {
+            if (hoveredCube) {
               hoveredCube = null;
+              if (tooltipEl) tooltipEl.style.display = 'none';
             }
           }
         }
 
-        // Project hovered system's deep telemetry onto the large Status Screen Canvas
-        if (hoveredCube !== lastHoveredCube || animPhase % 2 === 0) {
-          updateStatusCanvas(hoveredCube ? hoveredCube.userData : null);
-          lastHoveredCube = hoveredCube;
-        }
-
-        // 2. Dynamic Chromatic Edge Breathing & Hover Highlight
+        // 2. Dynamic Chromatic Edge Breathing:
+        // Regular Exhale (呼) is softened and restrained (呼气不过亮)
+        // Hovered Cube becomes the MAXIMUM RADIANT BRIGHTEST (悬停时最亮!)
         cubeObjects.forEach((cube) => {
           const isMatch = (currentFilterStatus === 'all' || cube.userData.status === currentFilterStatus);
           const isHovered = (hoveredCube === cube);
@@ -82850,7 +82415,7 @@ exports.warnOnce = warnOnce;
               cube.userData.outerMesh.material.emissiveIntensity = 0.95;
               cube.userData.outerMesh.material.opacity = 0.82;
 
-              // Inner Core: Radiant Full Pulse (呼大吸小)
+              // Inner Core: Radiant Full Pulse
               cube.userData.innerMesh.material.opacity = 0.90;
               cube.userData.innerMesh.scale.set(1.22, 1.22, 1.22);
 
@@ -82896,6 +82461,11 @@ exports.warnOnce = warnOnce;
             cube.scale.set(1.0, 1.0, 1.0);
           }
         });
+
+        // Update 3D Curved HUD Canvas Textures
+        if (animPhase % 2 === 0) {
+          updateStatusCanvas();
+        }
 
         renderer.render(scene, camera);
       }
