@@ -793,11 +793,11 @@
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"/></svg>
           <span>全景环视</span>
         </button>
-        <button class="quick-nav-btn" data-view="meeting" title="正面直视 会议管理屏">
-          <span>左翼 · 会议管理</span>
-        </button>
         <button class="quick-nav-btn" data-view="status" title="正面直视 项目状态看板">
-          <span>右翼 · 项目状态看板</span>
+          <span>项目状态看板</span>
+        </button>
+        <button class="quick-nav-btn" data-view="meeting" title="正面直视 会议管理屏">
+          <span>会议管理屏</span>
         </button>
       </div>
 
@@ -822,7 +822,6 @@
       </div>
     </div>
 
-    <!-- 3D CUBE HOVER / TAP TOOLTIP (Superseded by Large Curved Screen Live Telemetry Projection) -->
     <div class="cube-hud-tooltip" id="cube-tooltip" style="display:none !important; visibility:hidden; pointer-events:none;">
       <div class="tooltip-header">
         <span class="tooltip-title" id="tt-name">核心业务系统 4.0</span>
@@ -81574,7 +81573,7 @@ exports.warnOnce = warnOnce;
       }
 
       // --- SCREEN 1: LEFT SECTOR SCREEN (会议管理) ---
-      let leftRotY = -Math.PI * 0.55;
+      let leftRotY = Math.PI * 0.94; // Rotated counter-clockwise into central background adjacent to Status Screen
       const leftCanvas = document.createElement('canvas');
       leftCanvas.width = 1024;
       leftCanvas.height = 768;
@@ -81725,7 +81724,7 @@ exports.warnOnce = warnOnce;
       updateLeftCanvas();
 
       // --- SCREEN 2: MERGED SUPER-WIDE SCREEN (项目状态看板 / 悬停项目实时遥测大屏) ---
-      let statusRotY = Math.PI * 0.48; // Defaults adjacent to Red/Risk cluster on the right
+      let statusRotY = -Math.PI * 0.38; // Defaults to Center-Left in overview, at far end of Red cluster, facing directly toward camera
       const statusCanvas = document.createElement('canvas');
       statusCanvas.width = 2048;
       statusCanvas.height = 768;
@@ -82808,7 +82807,7 @@ exports.warnOnce = warnOnce;
           const meetAng = leftCurvedScreen.rotation.y;
           const angDiff = Math.abs(Math.atan2(Math.sin(meetAng - camAng), Math.cos(meetAng - camAng)));
           if (angDiff < 0.85) {
-            leftCurvedScreen.rotation.y = -Math.PI * 0.55;
+            leftCurvedScreen.rotation.y = Math.PI * 0.94;
           }
 
           // Synchronize orbit spherical coordinates for continuous seamless user dragging
