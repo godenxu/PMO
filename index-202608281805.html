@@ -81309,7 +81309,6 @@ exports.warnOnce = warnOnce;
 
       // ==========================================================================
       // 5. HONEYCOMB CUBE MATRIX (26 SYSTEMS - RICH TELEMETRY & STATUS DATA)
-      //    [MAXIMUM RADIANCE: SHARP WHITE LASER BEVEL GLINT & EXPANSIVE DUAL GAUSSIAN GLOW HALOS]
       // ==========================================================================
       const rawSystemDataList = [
         // Row 0 (1 cube)
@@ -81355,7 +81354,7 @@ exports.warnOnce = warnOnce;
 
       const rowCounts = [1, 4, 5, 6, 5, 4, 1];
       const CUBE_SIZE = 1.36;
-      const CORE_SIZE = 0.88;
+      const CORE_SIZE = 0.86;
       const spacingX = 1.62;
       const spacingZ = 1.45;
 
@@ -81367,54 +81366,30 @@ exports.warnOnce = warnOnce;
       const innerCoreGeo = new THREE.BoxGeometry(CORE_SIZE, CORE_SIZE, CORE_SIZE);
       const boxEdgesGeo = new THREE.EdgesGeometry(outerBoxGeo);
 
-      // Saturated Pure Cyber Neon Palettes (Perceptually Luminance-Balanced for Cyan, Gold & Ruby Red)
+      // Saturated Neon Glow Themes (Blue -> Intense Blue, Gold -> Intense Gold, Red -> Intense Red)
       const statusThemes = {
         normal: {
-          baseColor: 0x063450,
-          glowColor: 0x00f0ff,
-          dimColor: 0x127a9e,
-          coreColor: 0x48f8ff,
-          edgeGlowColor: 0x86ffff,
-          whiteGlintColor: 0xffffff
+          baseColor: 0x06283c,
+          glowColor: 0x00f5ff,
+          dimColor: 0x0a6888,
+          coreColor: 0x0ad0ec,
+          edgeGlowColor: 0x48ffff
         },
         warning: {
-          baseColor: 0x582c02,
-          glowColor: 0xffb808, // Intense Blazing Golden Amber
-          dimColor: 0xd47008,
-          coreColor: 0xffea54, // Radiant Solar Yellow Core
-          edgeGlowColor: 0xfff498,
-          whiteGlintColor: 0xfffcf0
+          baseColor: 0x3d2004,
+          glowColor: 0xffb800,
+          dimColor: 0x884805,
+          coreColor: 0xffaa00,
+          edgeGlowColor: 0xffe248
         },
         risk: {
-          baseColor: 0x5e0412,
-          glowColor: 0xff1a46, // Intense Pure Neon Crimson Ruby
-          dimColor: 0xdc143a,
-          coreColor: 0xff6686, // Luminous High-Photon Red Core
-          edgeGlowColor: 0xffa4ba,
-          whiteGlintColor: 0xfff2f6
+          baseColor: 0x3d060e,
+          glowColor: 0xff143c,
+          dimColor: 0x881020,
+          coreColor: 0xff2244,
+          edgeGlowColor: 0xff4d68
         }
       };
-
-      // 256x256 High-Resolution Exponential Gaussian Radial Glow Texture
-      const createGaussianGlowTexture = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = 256;
-        canvas.height = 256;
-        const ctx = canvas.getContext('2d');
-        const grad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-        grad.addColorStop(0.0, 'rgba(255, 255, 255, 1.0)');
-        grad.addColorStop(0.16, 'rgba(255, 255, 255, 0.94)');
-        grad.addColorStop(0.36, 'rgba(255, 255, 255, 0.70)');
-        grad.addColorStop(0.58, 'rgba(255, 255, 255, 0.36)');
-        grad.addColorStop(0.78, 'rgba(255, 255, 255, 0.12)');
-        grad.addColorStop(1.0, 'rgba(255, 255, 255, 0.0)');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 256, 256);
-        const tex = new THREE.CanvasTexture(canvas);
-        tex.needsUpdate = true;
-        return tex;
-      };
-      const gaussianGlowTexture = createGaussianGlowTexture();
 
       let itemIndex = 0;
       rowCounts.forEach((count, rowIdx) => {
@@ -81437,6 +81412,7 @@ exports.warnOnce = warnOnce;
 
           const theme = statusThemes[data.status];
 
+          // Pseudo-random dispersed phase and speed so adjacent cubes and rows breathe independently
           const pseudoPhase = (((itemIndex + 1) * 1.61803398875 + colIdx * 0.732 + rowIdx * 1.414) % 1.0) * Math.PI * 2;
           const breathSpeed = 1.60 + (((itemIndex + 1) * 17 + colIdx * 7 + rowIdx * 11) % 9) * 0.05;
 
@@ -81451,109 +81427,66 @@ exports.warnOnce = warnOnce;
             baseColor: new THREE.Color(theme.baseColor),
             glowColor: new THREE.Color(theme.glowColor),
             dimColor: new THREE.Color(theme.dimColor),
-            coreColor: new THREE.Color(theme.coreColor),
-            edgeGlowColor: new THREE.Color(theme.edgeGlowColor),
-            whiteGlintColor: new THREE.Color(theme.whiteGlintColor)
+            edgeGlowColor: new THREE.Color(theme.edgeGlowColor)
           };
 
-          // 1. Outer Crystal Shell - Luminous Refractive Crystal Prism (更亮、更透)
+          // Outer Crystal Shell - Translucent glass crystal with depth occlusion
           const outerMat = new THREE.MeshPhongMaterial({
             color: theme.baseColor,
-            emissive: theme.glowColor,
-            emissiveIntensity: 0.42,
+            emissive: theme.dimColor,
+            emissiveIntensity: 0.18,
             transparent: true,
-            opacity: 0.64,
-            shininess: 240,
+            opacity: 0.65,
+            shininess: 150,
             specular: 0xffffff,
             depthWrite: true
           });
           const outerMesh = new THREE.Mesh(outerBoxGeo, outerMat);
-          outerMesh.renderOrder = 2;
+          outerMesh.renderOrder = 1;
           cubeHolder.add(outerMesh);
 
-          // 2. DUAL-LAYER SHARP COLD WHITE LASER BEVEL HIGHLIGHTS:
-          // Layer A: Saturated Status Laser Edge Line
+          // Outer Laser Bevel Edges - Major Glow Actor (发光主要在外部边缘侧)
           const edgeLinesMat = new THREE.LineBasicMaterial({
-            color: theme.edgeGlowColor,
+            color: theme.dimColor,
             transparent: true,
-            opacity: 0.90
+            opacity: 0.45
           });
           const edgeLines = new THREE.LineSegments(boxEdgesGeo, edgeLinesMat);
-          edgeLines.renderOrder = 3;
+          edgeLines.renderOrder = 2;
           cubeHolder.add(edgeLines);
 
-          // Layer B: Razor-Sharp Diamond Cold White Laser Bevel Highlight (强光冷白激光倒角)
-          const whiteEdgeMat = new THREE.LineBasicMaterial({
-            color: 0xffffff,
-            transparent: true,
-            opacity: 0.85,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
-          });
-          const whiteEdgeLines = new THREE.LineSegments(boxEdgesGeo, whiteEdgeMat);
-          whiteEdgeLines.renderOrder = 4;
-          whiteEdgeLines.scale.set(1.004, 1.004, 1.004);
-          cubeHolder.add(whiteEdgeLines);
-
-          // 3. Inner Core Cube - Luminous Heart Pulsation (呼大吸小)
+          // Inner Core Cube - Luminous Core that scales up on exhale and down on inhale (呼大吸小)
           const coreMat = new THREE.MeshBasicMaterial({
             color: theme.coreColor,
             transparent: true,
-            opacity: 0.88,
+            opacity: 0.75,
             blending: THREE.AdditiveBlending
           });
           const innerMesh = new THREE.Mesh(innerCoreGeo, coreMat);
-          innerMesh.renderOrder = 1;
+          innerMesh.renderOrder = 0;
           cubeHolder.add(innerMesh);
 
-          // 4. Socket Well on the Chip Surface
+          // Socket Well on the Chip Surface directly under this cube
           const socketFrameGeo = new THREE.RingGeometry(CUBE_SIZE * 0.50, CUBE_SIZE * 0.58, 4);
           socketFrameGeo.rotateZ(Math.PI / 4);
-          const socketFrameMat = new THREE.MeshBasicMaterial({ color: 0x20e3ee, side: THREE.DoubleSide, transparent: true, opacity: 0.75 });
+          const socketFrameMat = new THREE.MeshBasicMaterial({ color: 0x20e3ee, side: THREE.DoubleSide, transparent: true, opacity: 0.70 });
           const socketMesh = new THREE.Mesh(socketFrameGeo, socketFrameMat);
           socketMesh.rotation.x = -Math.PI / 2;
           socketMesh.position.set(posX, STAGE_TOP_Y + 0.318, posZ);
           chipStageGroup.add(socketMesh);
 
-          // 5. ENHANCED EXPANSIVE DUAL GAUSSIAN GLOW HALO SYSTEM (底部柔和高斯光晕增强):
-          // Halo 1 (Expansive Outer Atmospheric Pool - 3.6x footprint)
-          const outerHaloGeo = new THREE.PlaneGeometry(CUBE_SIZE * 3.6, CUBE_SIZE * 3.6);
-          const outerHaloMat = new THREE.MeshBasicMaterial({
-            map: gaussianGlowTexture,
-            color: theme.glowColor,
-            side: THREE.DoubleSide,
-            transparent: true,
-            opacity: 0.55,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
-          });
-          const padDisc = new THREE.Mesh(outerHaloGeo, outerHaloMat);
+          // Glowing Status Pad under socket
+          const padDiscGeo = new THREE.CircleGeometry(CUBE_SIZE * 0.50, 16);
+          const padDiscMat = new THREE.MeshBasicMaterial({ color: theme.glowColor, side: THREE.DoubleSide, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending });
+          const padDisc = new THREE.Mesh(padDiscGeo, padDiscMat);
           padDisc.rotation.x = -Math.PI / 2;
-          padDisc.position.set(posX, STAGE_TOP_Y + 0.315, posZ);
+          padDisc.position.set(posX, STAGE_TOP_Y + 0.316, posZ);
           chipStageGroup.add(padDisc);
-
-          // Halo 2 (High-Intensity Inner Core Glow - 1.9x footprint)
-          const innerHaloGeo = new THREE.PlaneGeometry(CUBE_SIZE * 1.9, CUBE_SIZE * 1.9);
-          const innerHaloMat = new THREE.MeshBasicMaterial({
-            map: gaussianGlowTexture,
-            color: theme.coreColor,
-            side: THREE.DoubleSide,
-            transparent: true,
-            opacity: 0.70,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
-          });
-          const innerHalo = new THREE.Mesh(innerHaloGeo, innerHaloMat);
-          innerHalo.rotation.x = -Math.PI / 2;
-          innerHalo.position.set(posX, STAGE_TOP_Y + 0.317, posZ);
-          chipStageGroup.add(innerHalo);
 
           cubeHolder.userData.outerMesh = outerMesh;
           cubeHolder.userData.innerMesh = innerMesh;
           cubeHolder.userData.edgeLines = edgeLines;
-          cubeHolder.userData.whiteEdgeLines = whiteEdgeLines;
           cubeHolder.userData.padDisc = padDisc;
-          cubeHolder.userData.innerHalo = innerHalo;
 
           cubesGroup.add(cubeHolder);
           cubeObjects.push(cubeHolder);
@@ -81561,6 +81494,7 @@ exports.warnOnce = warnOnce;
           itemIndex++;
         }
       });
+
       // ==========================================================================
       // 6. TWO SURROUNDING 3D CURVED SCREENS (ELEVATED EXPANSIVELY ABOVE GROUND)
       // ==========================================================================
@@ -82590,7 +82524,7 @@ exports.warnOnce = warnOnce;
           const minY = STAGE_TOP_Y + SCREEN_ELEVATION_Y - 0.2;
           const maxY = STAGE_TOP_Y + SCREEN_ELEVATION_Y + SCREEN_HEIGHT + 0.2;
           if (hit.point.y >= minY && hit.point.y <= maxY) {
-            return { screen: hit.object, point: hit.point };
+            return hit.object;
           }
         }
         return null;
@@ -82602,28 +82536,6 @@ exports.warnOnce = warnOnce;
         if (e.target === container || container.contains(e.target)) e.preventDefault();
       });
 
-      // EXACT RAYCAST HIT-POINT GEOMETRIC NORMAL DISCRIMINATOR (基于鼠标实际击中点几何法线的绝对精准正反面判定)
-      let dragSessionSign = -1.0;
-
-      function computeScreenDragSign(hitPoint) {
-        if (!hitPoint) return -1.0;
-        // Inward cylinder normal at the exact hit point (pointing towards central vertical axis (0, y, 0))
-        const inwardNx = -hitPoint.x;
-        const inwardNz = -hitPoint.z;
-
-        // View ray vector from camera position to the exact hit point
-        const viewVx = hitPoint.x - camera.position.x;
-        const viewVz = hitPoint.z - camera.position.z;
-
-        // Dot product: if ray is travelling against inward normal (< 0), camera faces FRONT (内凹正面); else BACK (外凸背面)
-        const dot = viewVx * inwardNx + viewVz * inwardNz;
-        const isFront = (dot < 0);
-
-        // FRONT: Drag Left -> Counter-Clockwise (+rotY), Drag Right -> Clockwise (-rotY) -> sign = -1.0
-        // BACK: Drag Left -> Clockwise (-rotY), Drag Right -> Counter-Clockwise (+rotY) -> sign = +1.0
-        return isFront ? -1.0 : 1.0;
-      }
-
       // Mouse Down Event (Left Click = Pan/Slide, Right Click = Rotate Orbit)
       container.addEventListener('mousedown', (e) => {
         pointerDownPos = { x: e.clientX, y: e.clientY };
@@ -82633,10 +82545,8 @@ exports.warnOnce = warnOnce;
 
         if (e.button === 0) {
           // Left Click -> Pan scene (平移画面) OR Slide Screen if clicked on screen
-          const hitInfo = getHitScreen(e.clientX, e.clientY);
-          if (hitInfo) {
-            draggedScreen = hitInfo.screen;
-            dragSessionSign = computeScreenDragSign(hitInfo.point); // 100% 精准锁定鼠标实际点击点的正反面物理手势方向
+          draggedScreen = getHitScreen(e.clientX, e.clientY);
+          if (draggedScreen) {
             container.style.cursor = 'grabbing';
           } else {
             isLeftPanning = true;
@@ -82651,8 +82561,6 @@ exports.warnOnce = warnOnce;
       });
 
       window.addEventListener('mouseup', (e) => {
-        draggedScreen = null;
-        screenDragVelocity = 0;
         isLeftPanning = false;
         isRightOrbiting = false;
         container.style.cursor = 'default';
@@ -82679,9 +82587,10 @@ exports.warnOnce = warnOnce;
         if (Math.hypot(deltaX, deltaY) > 3) isTouchMoved = true;
 
         if (draggedScreen) {
-          // SLIDE SCREEN ALONG CIRCULAR STAGE TRACK (使用按下时锁定的方向，全程丝滑无抖动)!
-          const slideAngle = deltaX * 0.007 * dragSessionSign;
+          // SLIDE SCREEN ALONG CIRCULAR STAGE TRACK!
+          const slideAngle = -deltaX * 0.007;
           draggedScreen.rotation.y += slideAngle;
+          screenDragVelocity = slideAngle;
         } else if (isLeftPanning) {
           // MOUSE LEFT-CLICK DRAGGING -> PAN ENTIRE SCENE (左键平移画面)
           panCamera(deltaX, deltaY, 1.0);
@@ -82693,8 +82602,8 @@ exports.warnOnce = warnOnce;
           updateCameraTargetPosition();
         } else {
           // Hover Cursor update for track draggable screen strictly within screen interior
-          const hitInfo = getHitScreen(e.clientX, e.clientY);
-          if (hitInfo) {
+          const hitScr = getHitScreen(e.clientX, e.clientY);
+          if (hitScr) {
             container.style.cursor = 'grab';
           } else {
             container.style.cursor = 'default';
@@ -82722,13 +82631,7 @@ exports.warnOnce = warnOnce;
           prevPointerPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
           pointerDownTime = Date.now();
 
-          const hitInfo = getHitScreen(e.touches[0].clientX, e.touches[0].clientY);
-          if (hitInfo) {
-            draggedScreen = hitInfo.screen;
-            dragSessionSign = computeScreenDragSign(hitInfo.point); // 100% 精准锁定触控实际点击点的正反面物理手势方向
-          } else {
-            draggedScreen = null;
-          }
+          draggedScreen = getHitScreen(e.touches[0].clientX, e.touches[0].clientY);
         } else if (e.touches.length === 2) {
           isLeftPanning = false;
           draggedScreen = null;
@@ -82747,9 +82650,10 @@ exports.warnOnce = warnOnce;
           if (Math.hypot(deltaX, deltaY) > 3) isTouchMoved = true;
 
           if (draggedScreen) {
-            // Touch Slide Screen along Rail (使用按下时锁定的方向，全程丝滑无抖动)
-            const slideAngle = deltaX * 0.009 * dragSessionSign;
+            // Touch Slide Screen along Rail
+            const slideAngle = -deltaX * 0.009;
             draggedScreen.rotation.y += slideAngle;
+            screenDragVelocity = slideAngle;
           } else {
             // 1-Finger Touch Pan
             panCamera(deltaX, deltaY, 1.0);
@@ -82786,8 +82690,6 @@ exports.warnOnce = warnOnce;
       }, { passive: true });
 
       container.addEventListener('touchend', (e) => {
-        draggedScreen = null;
-        screenDragVelocity = 0;
         if (isLeftPanning && e.changedTouches.length > 0) {
           isLeftPanning = false;
           const touch = e.changedTouches[0];
@@ -82881,9 +82783,9 @@ exports.warnOnce = warnOnce;
         raycaster.setFromCamera(mouse, camera);
 
         // 1. Check 3D Curved Screens (Strict non-recursive, within screen interior)
-        const hitInfo = getHitScreen(clientX, clientY);
-        if (hitInfo && hitInfo.screen.userData && hitInfo.screen.userData.targetView) {
-          setFocusView(hitInfo.screen.userData.targetView);
+        const hitScreen = getHitScreen(clientX, clientY);
+        if (hitScreen && hitScreen.userData && hitScreen.userData.targetView) {
+          setFocusView(hitScreen.userData.targetView);
           return;
         }
 
@@ -83011,10 +82913,16 @@ exports.warnOnce = warnOnce;
           leftHudMat.opacity = THREE.MathUtils.lerp(leftHudMat.opacity, 0.82, 0.1);
         }
 
-        // No post-release inertia: screens stop immediately upon releasing mouse/touch button
-        screenDragVelocity = 0;
-        if (!isLeftPanning && !isRightOrbiting && !draggedScreen) {
-          // Normal idle state
+        // Screen Momentum on Track after dragging
+        if (!isLeftPanning && !isRightOrbiting && Math.abs(screenDragVelocity) > 0.0001) {
+          if (draggedScreen) {
+            draggedScreen.rotation.y += screenDragVelocity;
+          }
+          screenDragVelocity *= 0.92;
+          if (Math.abs(screenDragVelocity) < 0.0001) {
+            screenDragVelocity = 0;
+            draggedScreen = null;
+          }
         }
 
         // Gentle cinematic auto-rotation when idle in overview mode
@@ -83048,7 +82956,7 @@ exports.warnOnce = warnOnce;
           lastHoveredCube = hoveredCube;
         }
 
-        // 2. Dynamic Chromatic Edge Breathing & Hover Highlight (高亮冷白激光高光 + 强效双层高斯光晕)
+        // 2. Dynamic Chromatic Edge Breathing & Hover Highlight
         cubeObjects.forEach((cube) => {
           const isMatch = (currentFilterStatus === 'all' || cube.userData.status === currentFilterStatus);
           const isHovered = (hoveredCube === cube);
@@ -83069,81 +82977,46 @@ exports.warnOnce = warnOnce;
           if (isMatch) {
             cube.userData.outerMesh.material.depthWrite = true;
             if (isHovered) {
-              // --- HOVERED CUBE: MAXIMUM RADIANT BRIGHTNESS (黄色/红色光晕专门超高增益提亮) ---
-              const isNormal = (cube.userData.status === 'normal');
-              const isWarn = (cube.userData.status === 'warning');
-              const isRisk = (cube.userData.status === 'risk');
-
-              // Outer Laser Edges: Full Neon Laser
+              // --- HOVERED CUBE: MAXIMUM RADIANT BRIGHTNESS (鼠标悬停时最亮) ---
+              // Outer Laser 12 Edges: Maximum full neon laser brightness
               cube.userData.edgeLines.material.color.copy(cube.userData.edgeGlowColor);
               cube.userData.edgeLines.material.opacity = 1.0;
 
-              // White Laser Glint: Blinding Pure Diamond White Bevel Highlight (100% 满额白光激光倒角)
-              if (cube.userData.whiteEdgeLines) {
-                cube.userData.whiteEdgeLines.material.opacity = 1.0;
-              }
-
-              // Outer Crystal Shell: Balanced Luminosity (Yellow/Red receive extra photon boost)
-              const hoverEmissive = isNormal ? 1.35 : (isWarn ? 1.75 : 1.90);
+              // Outer Crystal Shell: Radiant crystal glass highlight
               cube.userData.outerMesh.material.emissive.copy(cube.userData.glowColor);
-              cube.userData.outerMesh.material.emissiveIntensity = hoverEmissive;
-              cube.userData.outerMesh.material.opacity = isNormal ? 0.90 : 0.95;
+              cube.userData.outerMesh.material.emissiveIntensity = 0.95;
+              cube.userData.outerMesh.material.opacity = 0.82;
 
               // Inner Core: Radiant Full Pulse (呼大吸小)
-              cube.userData.innerMesh.material.opacity = 1.0;
-              const coreHoverScale = isNormal ? 1.26 : 1.32;
-              cube.userData.innerMesh.scale.set(coreHoverScale, coreHoverScale, coreHoverScale);
+              cube.userData.innerMesh.material.opacity = 0.90;
+              cube.userData.innerMesh.scale.set(1.22, 1.22, 1.22);
 
-              // Dual Gaussian Glow Halos below: Enhanced Footprint & Full Radiance for Yellow and Red
-              const haloOuterOpacity = isNormal ? 0.92 : 1.0;
-              const haloInnerOpacity = 1.0;
-              const haloOuterScale = isNormal ? 1.42 : 1.68; // Wider and more radiant pool for yellow/red
-              const haloInnerScale = isNormal ? 1.35 : 1.52;
-
-              if (cube.userData.padDisc) {
-                cube.userData.padDisc.material.opacity = haloOuterOpacity;
-                cube.userData.padDisc.scale.set(haloOuterScale, haloOuterScale, haloOuterScale);
-              }
-              if (cube.userData.innerHalo) {
-                cube.userData.innerHalo.material.opacity = haloInnerOpacity;
-                cube.userData.innerHalo.scale.set(haloInnerScale, haloInnerScale, haloInnerScale);
-              }
+              // Socket Pad below
+              if (cube.userData.padDisc) cube.userData.padDisc.material.opacity = 0.60;
 
               // Scale up cube smoothly
               cube.scale.set(1.12, 1.12, 1.12);
             } else {
-              // --- NORMAL BREATHING: Ultra-Luminescent Crystal & Enhanced White Glint / Expansive Halos ---
-              // Outer Laser Edges: Inhale 0.75 -> Exhale 1.0
-              const curEdgeColor = cube.userData.glowColor.clone().lerp(cube.userData.edgeGlowColor, edgeGlow * 0.70);
+              // --- NORMAL BREATHING: Translucent Glass Crystal with Softened Exhale ---
+              // Outer Laser 12 Edges: Inhale 0.45 -> Exhale 0.78
+              const curEdgeColor = cube.userData.dimColor.clone().lerp(cube.userData.edgeGlowColor, edgeGlow * 0.70);
               cube.userData.edgeLines.material.color.copy(curEdgeColor);
-              cube.userData.edgeLines.material.opacity = 0.75 + edgeGlow * 0.25;
+              cube.userData.edgeLines.material.opacity = 0.45 + edgeGlow * 0.33;
 
-              // Sharp Cold White Laser Glint Highlight: Inhale 0.65 -> Exhale 0.95 (超清晰锐利冷白高光)
-              if (cube.userData.whiteEdgeLines) {
-                cube.userData.whiteEdgeLines.material.opacity = 0.65 + edgeGlow * 0.30;
-              }
-
-              // Outer Crystal Shell: Luminous translucent crystal (0.40 ~ 0.75 emissive intensity)
-              const curEmissiveColor = cube.userData.dimColor.clone().lerp(cube.userData.glowColor, edgeGlow * 0.75);
+              // Outer Crystal Shell: Luminous translucent glass crystal (0.62 ~ 0.70 opacity)
+              const curEmissiveColor = cube.userData.dimColor.clone().lerp(cube.userData.glowColor, edgeGlow * 0.65);
               cube.userData.outerMesh.material.emissive.copy(curEmissiveColor);
-              cube.userData.outerMesh.material.emissiveIntensity = 0.40 + edgeGlow * 0.35;
-              cube.userData.outerMesh.material.opacity = 0.60 + edgeGlow * 0.10;
+              cube.userData.outerMesh.material.emissiveIntensity = 0.12 + edgeGlow * 0.30;
+              cube.userData.outerMesh.material.opacity = 0.62 + edgeGlow * 0.08;
 
-              // Inner Core: Prominent "呼大吸小" breathing pulsation (0.80 Inhale -> 1.24 Exhale)
-              cube.userData.innerMesh.material.opacity = 0.55 + edgeGlow * 0.40;
-              const coreScale = 0.80 + edgeGlow * 0.44;
+              // Inner Core: Prominent "呼大吸小" breathing pulsation (0.76 Inhale -> 1.20 Exhale)
+              cube.userData.innerMesh.material.opacity = 0.35 + edgeGlow * 0.45;
+              const coreScale = 0.76 + edgeGlow * 0.44;
               cube.userData.innerMesh.scale.set(coreScale, coreScale, coreScale);
 
-              // Dual Gaussian Glow Halos below: Expansive breathing radiance pool
+              // Socket Pad below
               if (cube.userData.padDisc) {
-                cube.userData.padDisc.material.opacity = 0.45 + edgeGlow * 0.38;
-                const haloScale = 0.95 + edgeGlow * 0.22;
-                cube.userData.padDisc.scale.set(haloScale, haloScale, haloScale);
-              }
-              if (cube.userData.innerHalo) {
-                cube.userData.innerHalo.material.opacity = 0.58 + edgeGlow * 0.38;
-                const innerHaloScale = 0.92 + edgeGlow * 0.20;
-                cube.userData.innerHalo.scale.set(innerHaloScale, innerHaloScale, innerHaloScale);
+                cube.userData.padDisc.material.opacity = 0.10 + edgeGlow * 0.18;
               }
 
               // Reset scale
@@ -83152,13 +83025,11 @@ exports.warnOnce = warnOnce;
           } else {
             // Inactive filtered cubes remain dimmed
             cube.userData.outerMesh.material.depthWrite = false;
-            cube.userData.outerMesh.material.opacity = 0.08;
+            cube.userData.outerMesh.material.opacity = 0.10;
             cube.userData.outerMesh.material.emissiveIntensity = 0.02;
-            cube.userData.edgeLines.material.opacity = 0.08;
-            if (cube.userData.whiteEdgeLines) cube.userData.whiteEdgeLines.material.opacity = 0.0;
-            cube.userData.innerMesh.material.opacity = 0.05;
+            cube.userData.edgeLines.material.opacity = 0.10;
+            cube.userData.innerMesh.material.opacity = 0.06;
             if (cube.userData.padDisc) cube.userData.padDisc.material.opacity = 0.02;
-            if (cube.userData.innerHalo) cube.userData.innerHalo.material.opacity = 0.02;
             cube.scale.set(1.0, 1.0, 1.0);
           }
         });
