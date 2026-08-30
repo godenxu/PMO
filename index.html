@@ -81015,7 +81015,8 @@ exports.warnOnce = warnOnce;
         return 38;
       }
 
-      const camera = new THREE.PerspectiveCamera(calculateFOV(initialAspect), initialAspect, 0.1, 150);
+      // Near plane adjusted from 0.1 to 0.8 (10x boost in depth buffer precision on mobile GPUs)
+      const camera = new THREE.PerspectiveCamera(calculateFOV(initialAspect), initialAspect, 0.8, 150);
       
       const defaultCamPos = new THREE.Vector3(14.8, 17.2, 20.8);
       const defaultLookAt = new THREE.Vector3(0, 2.8, 0);
@@ -81028,10 +81029,15 @@ exports.warnOnce = warnOnce;
       const targetLookAt = defaultLookAt.clone();
       const currentLookAt = defaultLookAt.clone();
 
-      // 2. WebGL Renderer
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+      // 2. WebGL Renderer with Logarithmic Depth Buffer (彻底消除移动端远近深度竞争与共面闪烁)
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+        powerPreference: 'high-performance',
+        logarithmicDepthBuffer: true
+      });
       renderer.setSize(width, height);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.5));
       container.appendChild(renderer.domElement);
 
       // 3. Lighting Setup
@@ -81081,38 +81087,62 @@ exports.warnOnce = warnOnce;
       stageCylinder.position.y = STAGE_TOP_Y - 0.45 / 2;
       stageGroup.add(stageCylinder);
 
-      // Stage Deck Glowing Bevel Edge
+      // Stage Deck Glowing Bevel Edge (物理阶梯高度 + 深度写入关闭)
       const stageEdgeGeo = new THREE.RingGeometry(STAGE_RADIUS - 0.08, STAGE_RADIUS + 0.05, 64);
-      const stageEdgeMat = new THREE.MeshBasicMaterial({ color: 0x20e3ee, side: THREE.DoubleSide, transparent: true, opacity: 0.95 });
+      const stageEdgeMat = new THREE.MeshBasicMaterial({
+        color: 0x20e3ee,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.95,
+        depthWrite: false
+      });
       const stageEdge = new THREE.Mesh(stageEdgeGeo, stageEdgeMat);
       stageEdge.rotation.x = -Math.PI / 2;
-      stageEdge.position.y = STAGE_TOP_Y + 0.005;
+      stageEdge.position.y = STAGE_TOP_Y + 0.016;
       stageGroup.add(stageEdge);
 
       // Screen Mounting Track Rail (Radius = 8.8) with High-Tech Magnetic Levitation Groove
       const SCREEN_RADIUS = 8.8;
       const mountTrackGeo = new THREE.RingGeometry(SCREEN_RADIUS - 0.16, SCREEN_RADIUS + 0.16, 96);
-      const mountTrackMat = new THREE.MeshBasicMaterial({ color: 0x36d5e8, side: THREE.DoubleSide, transparent: true, opacity: 0.75 });
+      const mountTrackMat = new THREE.MeshBasicMaterial({
+        color: 0x36d5e8,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.75,
+        depthWrite: false
+      });
       const mountTrack = new THREE.Mesh(mountTrackGeo, mountTrackMat);
       mountTrack.rotation.x = -Math.PI / 2;
-      mountTrack.position.y = STAGE_TOP_Y + 0.01;
+      mountTrack.position.y = STAGE_TOP_Y + 0.026;
       stageGroup.add(mountTrack);
 
       // Magnetic Track Guideway Inner Glow Line
       const guideRingGeo = new THREE.RingGeometry(SCREEN_RADIUS - 0.02, SCREEN_RADIUS + 0.02, 96);
-      const guideRingMat = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.9 });
+      const guideRingMat = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.90,
+        depthWrite: false
+      });
       const guideRing = new THREE.Mesh(guideRingGeo, guideRingMat);
       guideRing.rotation.x = -Math.PI / 2;
-      guideRing.position.y = STAGE_TOP_Y + 0.012;
+      guideRing.position.y = STAGE_TOP_Y + 0.036;
       stageGroup.add(guideRing);
 
       // Inner Sci-Fi Concentric Grid Rings on Deck
-      [6.4, 4.2, 2.0].forEach(r => {
+      [6.4, 4.2, 2.0].forEach((r, idx) => {
         const ringGeo = new THREE.RingGeometry(r - 0.03, r + 0.03, 64);
-        const ringMat = new THREE.MeshBasicMaterial({ color: 0x1aa0c2, side: THREE.DoubleSide, transparent: true, opacity: 0.35 });
+        const ringMat = new THREE.MeshBasicMaterial({
+          color: 0x1aa0c2,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.35,
+          depthWrite: false
+        });
         const ring = new THREE.Mesh(ringGeo, ringMat);
         ring.rotation.x = -Math.PI / 2;
-        ring.position.y = STAGE_TOP_Y + 0.008;
+        ring.position.y = STAGE_TOP_Y + 0.018 + idx * 0.002;
         stageGroup.add(ring);
       });
 
@@ -81456,7 +81486,7 @@ exports.warnOnce = warnOnce;
             whiteGlintColor: new THREE.Color(theme.whiteGlintColor)
           };
 
-          // 1. Outer Crystal Shell - Luminous Refractive Crystal Prism (更亮、更透)
+          // 1. Outer Crystal Shell - Luminous Refractive Crystal Prism (开启 polygonOffset 彻底消除底棱闪烁)
           const outerMat = new THREE.MeshPhongMaterial({
             color: theme.baseColor,
             emissive: theme.glowColor,
@@ -81465,18 +81495,22 @@ exports.warnOnce = warnOnce;
             opacity: 0.64,
             shininess: 240,
             specular: 0xffffff,
-            depthWrite: true
+            depthWrite: true,
+            polygonOffset: true,
+            polygonOffsetFactor: 1.0,
+            polygonOffsetUnits: 1.0
           });
           const outerMesh = new THREE.Mesh(outerBoxGeo, outerMat);
           outerMesh.renderOrder = 2;
           cubeHolder.add(outerMesh);
 
           // 2. DUAL-LAYER SHARP COLD WHITE LASER BEVEL HIGHLIGHTS:
-          // Layer A: Saturated Status Laser Edge Line
+          // Layer A: Saturated Status Laser Edge Line (depthWrite: false 杜绝与玻璃体共面冲突)
           const edgeLinesMat = new THREE.LineBasicMaterial({
             color: theme.edgeGlowColor,
             transparent: true,
-            opacity: 0.90
+            opacity: 0.90,
+            depthWrite: false
           });
           const edgeLines = new THREE.LineSegments(boxEdgesGeo, edgeLinesMat);
           edgeLines.renderOrder = 3;
@@ -81500,19 +81534,26 @@ exports.warnOnce = warnOnce;
             color: theme.coreColor,
             transparent: true,
             opacity: 0.88,
-            blending: THREE.AdditiveBlending
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
           });
           const innerMesh = new THREE.Mesh(innerCoreGeo, coreMat);
           innerMesh.renderOrder = 1;
           cubeHolder.add(innerMesh);
 
-          // 4. Socket Well on the Chip Surface
+          // 4. Socket Well on the Chip Surface (depthWrite: false 防止与芯片表面冲突)
           const socketFrameGeo = new THREE.RingGeometry(CUBE_SIZE * 0.50, CUBE_SIZE * 0.58, 4);
           socketFrameGeo.rotateZ(Math.PI / 4);
-          const socketFrameMat = new THREE.MeshBasicMaterial({ color: 0x20e3ee, side: THREE.DoubleSide, transparent: true, opacity: 0.75 });
+          const socketFrameMat = new THREE.MeshBasicMaterial({
+            color: 0x20e3ee,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.75,
+            depthWrite: false
+          });
           const socketMesh = new THREE.Mesh(socketFrameGeo, socketFrameMat);
           socketMesh.rotation.x = -Math.PI / 2;
-          socketMesh.position.set(posX, STAGE_TOP_Y + 0.318, posZ);
+          socketMesh.position.set(posX, STAGE_TOP_Y + 0.320, posZ);
           chipStageGroup.add(socketMesh);
 
           // 5. ENHANCED EXPANSIVE DUAL GAUSSIAN GLOW HALO SYSTEM (底部柔和高斯光晕增强):
