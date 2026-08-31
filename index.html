@@ -535,8 +535,11 @@
       flex-direction: column;
       align-items: center;
       gap: clamp(3px, 0.6vh, 6px);
-      pointer-events: auto;
+      pointer-events: none;
       max-width: 96vw;
+    }
+    .milestone-nodes-row {
+      pointer-events: auto;
     }
     .timeline-title {
       font-size: clamp(13px, 1.8vw, 19px);
@@ -82920,24 +82923,14 @@ exports.warnOnce = warnOnce;
         setFocusView('overview');
       }
 
-      // Pointer Click / Tap Handler (CINEMATIC FOCUS: FOREGROUND CUBE + BACKGROUND FULL STATUS BOARD)
-      function handlePointerClick(clientX, clientY) {
+      // High-Precision 3D Cube Hit Detection (3D精确光线投射 + 移动端指尖2D投影吸附)
+      function findHitCube(clientX, clientY) {
         const rect = container.getBoundingClientRect();
         mouse.x = ((clientX - rect.left) / container.clientWidth) * 2 - 1;
         mouse.y = -((clientY - rect.top) / container.clientHeight) * 2 + 1;
-
         raycaster.setFromCamera(mouse, camera);
 
-        // 1. Check 3D Curved Screens (Strict non-recursive, within screen interior)
-        const hitInfo = getHitScreen(clientX, clientY);
-        if (hitInfo && hitInfo.screen.userData && hitInfo.screen.userData.targetView) {
-          hoveredCube = null;
-          updateStatusCanvas(null);
-          setFocusView(hitInfo.screen.userData.targetView);
-          return;
-        }
-
-        // 2. Check 3D Cubes -> Tap locks optimal cinematic shot: Clicked Cube in Foreground + Status Screen in Background
+        // 1. Exact 3D Mesh Intersection (优先精确命中检测)
         const hitMeshes = [];
         cubeObjects.forEach(c => {
           if (c.userData.outerMesh) hitMeshes.push(c.userData.outerMesh);
@@ -82945,21 +82938,51 @@ exports.warnOnce = warnOnce;
         });
         const cubeHits = raycaster.intersectObjects(hitMeshes, false);
         if (cubeHits.length > 0) {
-          const cube = cubeHits[0].object.parent;
-          
+          return cubeHits[0].object.parent;
+        }
+
+        // 2. Mobile Touch Finger-Tip Proximity Tolerance (针对移动端手指微偏的 36px 智能吸附)
+        let closestCube = null;
+        let minScreenDist = ('ontouchstart' in window) ? 36 : 14;
+        const tempV = new THREE.Vector3();
+
+        cubeObjects.forEach(c => {
+          tempV.copy(c.position);
+          tempV.y += CUBE_HEIGHT * 0.5;
+          tempV.project(camera);
+
+          // Only test objects in front of camera lens
+          if (tempV.z < 1.0) {
+            const sx = ((tempV.x + 1) / 2) * container.clientWidth + rect.left;
+            const sy = ((-tempV.y + 1) / 2) * container.clientHeight + rect.top;
+            const sDist = Math.hypot(clientX - sx, clientY - sy);
+            if (sDist < minScreenDist) {
+              minScreenDist = sDist;
+              closestCube = c;
+            }
+          }
+        });
+
+        return closestCube;
+      }
+
+      // Pointer Click / Tap Handler (CINEMATIC FOCUS: FOREGROUND CUBE + BACKGROUND FULL STATUS BOARD)
+      function handlePointerClick(clientX, clientY) {
+        // 1. 优先检测前景水晶方块 (CUBES HAVE HIGHEST PRIORITY OVER BACKGROUND SCREENS)
+        const targetCube = findHitCube(clientX, clientY);
+
+        if (targetCube) {
           // 如果当前已聚焦在此水晶上，再次点击则取消聚焦 (Toggle Deselect / Cancel)
-          if (currentFocusMode === 'cube' && hoveredCube === cube) {
+          if (currentFocusMode === 'cube' && hoveredCube === targetCube) {
             cancelCubeFocus();
             return;
           }
 
-          const { camPos, lookAt } = computeProjectOptimalView(cube);
+          const { camPos, lookAt } = computeProjectOptimalView(targetCube);
           targetCamPos.copy(camPos);
           targetLookAt.copy(lookAt);
 
           // SIGHTLINE OCCLUSION PREVENTION (智能视线避让与遮挡防护):
-          // If the Meeting Screen was dragged into the sightline corridor between camera and status screen,
-          // smoothly yield/reset it to its safe non-interfering position (-0.55*PI)
           const camAng = Math.atan2(targetCamPos.x, targetCamPos.z);
           const meetAng = leftCurvedScreen.rotation.y;
           const angDiff = Math.abs(Math.atan2(Math.sin(meetAng - camAng), Math.cos(meetAng - camAng)));
@@ -82973,13 +82996,23 @@ exports.warnOnce = warnOnce;
           phi = Math.acos(Math.max(-1, Math.min(1, (targetCamPos.y - targetLookAt.y) / orbitRadius)));
 
           currentFocusMode = 'cube';
-          hoveredCube = cube;
-          updateStatusCanvas(cube.userData);
-        } else {
-          // 点击了水晶以外的空白区域/舞台 -> 如果当前处于水晶聚焦状态，则取消聚焦并恢复全景视角
-          if (currentFocusMode === 'cube' || hoveredCube) {
-            cancelCubeFocus();
-          }
+          hoveredCube = targetCube;
+          updateStatusCanvas(targetCube.userData);
+          return;
+        }
+
+        // 2. 若未点中水晶，再检测背景 3D 大屏 (Check Background Screens)
+        const hitInfo = getHitScreen(clientX, clientY);
+        if (hitInfo && hitInfo.screen.userData && hitInfo.screen.userData.targetView) {
+          hoveredCube = null;
+          updateStatusCanvas(null);
+          setFocusView(hitInfo.screen.userData.targetView);
+          return;
+        }
+
+        // 3. 点击了水晶与大屏以外的空白区域/舞台 -> 取消聚焦并恢复全景视角
+        if (currentFocusMode === 'cube' || hoveredCube) {
+          cancelCubeFocus();
         }
       }
 
