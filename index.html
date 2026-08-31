@@ -82891,8 +82891,8 @@ exports.warnOnce = warnOnce;
           lookAtScreenWeight = 0.65;
         }
 
-        const camDist = 7.6 * distMultiplier;
-        const camHeight = cube.position.y + 4.0 * heightMultiplier;
+        const camDist = 8.8 * distMultiplier;
+        const camHeight = cube.position.y + 3.6 * heightMultiplier;
 
         const camPos = new THREE.Vector3(
           cube.position.x + dirX * camDist,
@@ -82902,11 +82902,19 @@ exports.warnOnce = warnOnce;
 
         const lookAt = new THREE.Vector3(
           cube.position.x * (1.0 - lookAtScreenWeight) + screenCenter.x * lookAtScreenWeight,
-          cube.position.y * 0.22 + SCREEN_CENTER_Y * 0.78,
+          cube.position.y * 0.40 + SCREEN_CENTER_Y * 0.60,
           cube.position.z * (1.0 - lookAtScreenWeight) + screenCenter.z * lookAtScreenWeight
         );
 
         return { camPos, lookAt };
+      }
+
+      // Defocus / Deselect Cube Function (取消水晶对焦并恢复全局概览)
+      function cancelCubeFocus() {
+        hoveredCube = null;
+        lastHoveredCube = null;
+        updateStatusCanvas(null);
+        setFocusView('overview');
       }
 
       // Pointer Click / Tap Handler (CINEMATIC FOCUS: FOREGROUND CUBE + BACKGROUND FULL STATUS BOARD)
@@ -82920,6 +82928,8 @@ exports.warnOnce = warnOnce;
         // 1. Check 3D Curved Screens (Strict non-recursive, within screen interior)
         const hitInfo = getHitScreen(clientX, clientY);
         if (hitInfo && hitInfo.screen.userData && hitInfo.screen.userData.targetView) {
+          hoveredCube = null;
+          updateStatusCanvas(null);
           setFocusView(hitInfo.screen.userData.targetView);
           return;
         }
@@ -82931,6 +82941,12 @@ exports.warnOnce = warnOnce;
         if (cubeHits.length > 0) {
           const cube = cubeHits[0].object.parent;
           
+          // 如果当前已聚焦在此水晶上，再次点击则取消聚焦 (Toggle Deselect / Cancel)
+          if (currentFocusMode === 'cube' && hoveredCube === cube) {
+            cancelCubeFocus();
+            return;
+          }
+
           const { camPos, lookAt } = computeProjectOptimalView(cube);
           targetCamPos.copy(camPos);
           targetLookAt.copy(lookAt);
@@ -82953,6 +82969,11 @@ exports.warnOnce = warnOnce;
           currentFocusMode = 'cube';
           hoveredCube = cube;
           updateStatusCanvas(cube.userData);
+        } else {
+          // 点击了水晶以外的空白区域/舞台 -> 如果当前处于水晶聚焦状态，则取消聚焦并恢复全景视角
+          if (currentFocusMode === 'cube' || hoveredCube) {
+            cancelCubeFocus();
+          }
         }
       }
 
@@ -82984,12 +83005,61 @@ exports.warnOnce = warnOnce;
           phi = Math.acos(Math.max(-1, Math.min(1, (targetCamPos.y - targetLookAt.y) / orbitRadius)));
         } else if (view === 'status') {
           const rot = statusCurvedScreen.rotation.y;
-          const screenCenter = new THREE.Vector3(SCREEN_RADIUS * Math.sin(rot), SCREEN_CENTER_Y, SCREEN_RADIUS * Math.cos(rot));
-          targetLookAt.set(screenCenter.x * 0.96, SCREEN_CENTER_Y, screenCenter.z * 0.96);
-          const mobileScale = aspect < 0.6 ? 1.55 : (aspect < 0.9 ? 1.30 : 1.0);
-          const camOppositeDist = 8.8 * mobileScale;
-          const camHeight = SCREEN_CENTER_Y + 0.9 * mobileScale;
-          targetCamPos.set(-camOppositeDist * Math.sin(rot), camHeight, -camOppositeDist * Math.cos(rot));
+          
+          // DYNAMIC STATUS VIEWPORT CALIBRATION:
+          // 1. Status screen in UPPER half (filling horizontally ~88-90% with slight margin on top/left/right)
+          // 2. All cubes in LOWER half (100% fully visible with slightly elevated pitch angle)
+          let distScale = 1.0;
+          let camH = 4.8;
+          let lookY = 2.30;
+          let lookShift = 0.0;
+          
+          if (aspect < 0.6) {
+            // Mobile Portrait (e.g. 9:16)
+            distScale = 1.45;
+            camH = 9.20;
+            lookY = 2.70;
+            lookShift = 0.4;
+          } else if (aspect < 0.9) {
+            // Foldable / Narrow Tablet Portrait
+            distScale = 1.22;
+            camH = 7.80;
+            lookY = 2.72;
+            lookShift = 0.3;
+          } else if (aspect < 1.2) {
+            // Square / iPad Portrait
+            distScale = 1.12;
+            camH = 7.00;
+            lookY = 2.72;
+            lookShift = 0.2;
+          } else if (aspect < 1.5) {
+            // Small Laptop / 4:3
+            distScale = 1.02;
+            camH = 5.90;
+            lookY = 2.70;
+            lookShift = 0.1;
+          } else {
+            // Standard 16:9 Desktop / Ultrawide (完全零底部留白：镜头显著升高俯瞰，大屏撑满上半区，水晶阵列撑满下半区直抵底边)
+            distScale = 1.0;
+            camH = 5.48;
+            lookY = 2.72;
+            lookShift = 0.0;
+          }
+
+          const camDist = 12.2 * distScale;
+
+          targetCamPos.set(
+            -camDist * Math.sin(rot),
+            camH,
+            -camDist * Math.cos(rot)
+          );
+
+          targetLookAt.set(
+            lookShift * Math.sin(rot),
+            lookY,
+            lookShift * Math.cos(rot)
+          );
+
           theta = Math.atan2(targetCamPos.x - targetLookAt.x, targetCamPos.z - targetLookAt.z);
           orbitRadius = targetCamPos.distanceTo(targetLookAt);
           phi = Math.acos(Math.max(-1, Math.min(1, (targetCamPos.y - targetLookAt.y) / orbitRadius)));
