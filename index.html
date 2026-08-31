@@ -82608,25 +82608,17 @@ exports.warnOnce = warnOnce;
       }
 
       function getHitScreen(clientX, clientY) {
+        // If a crystal cube is under cursor or touch, cubes always take priority
+        if (findHitCube(clientX, clientY)) return null;
+
         const rect = container.getBoundingClientRect();
         mouse.x = ((clientX - rect.left) / container.clientWidth) * 2 - 1;
         mouse.y = -((clientY - rect.top) / container.clientHeight) * 2 + 1;
         raycaster.setFromCamera(mouse, camera);
 
-        // Check if cursor is over a crystal cube in front
-        const hitMeshes = [];
-        cubeObjects.forEach(c => hitMeshes.push(c.userData.outerMesh));
-        const cubeHits = raycaster.intersectObjects(hitMeshes, false);
-
-        // Strict non-recursive hit test directly on the elevated curved screen surface
         const hits = raycaster.intersectObjects([leftCurvedScreen, statusCurvedScreen], false);
         if (hits.length > 0) {
           const hit = hits[0];
-          // If cube is closer in the line of sight, don't drag the screen
-          if (cubeHits.length > 0 && cubeHits[0].distance < hit.distance) {
-            return null;
-          }
-          // Strict physical height bounds check (must be strictly within screen interior)
           const minY = STAGE_TOP_Y + SCREEN_ELEVATION_Y - 0.2;
           const maxY = STAGE_TOP_Y + SCREEN_ELEVATION_Y + SCREEN_HEIGHT + 0.2;
           if (hit.point.y >= minY && hit.point.y <= maxY) {
@@ -82700,8 +82692,8 @@ exports.warnOnce = warnOnce;
         const elapsed = Date.now() - pointerDownTime;
         const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
         
-        // If it was a left click and NOT a drag along rail or pan (Tap tolerance < 8px, elapsed < 450ms)
-        if (e.button === 0 && dist < 8 && elapsed < 450) {
+        // If it was a left click and NOT a drag along rail or pan (Tap tolerance < 10px, elapsed < 500ms)
+        if (e.button === 0 && dist < 10 && elapsed < 500) {
           handlePointerClick(e.clientX, e.clientY);
         }
       });
@@ -82830,13 +82822,13 @@ exports.warnOnce = warnOnce;
       container.addEventListener('touchend', (e) => {
         draggedScreen = null;
         screenDragVelocity = 0;
-        if (isLeftPanning && e.changedTouches.length > 0) {
-          isLeftPanning = false;
+        isLeftPanning = false;
+        if (e.changedTouches && e.changedTouches.length > 0) {
           const touch = e.changedTouches[0];
           const elapsed = Date.now() - pointerDownTime;
           const dist = Math.hypot(touch.clientX - pointerDownPos.x, touch.clientY - pointerDownPos.y);
-          // High-precision Mobile Tap Recognition (dist < 20px, elapsed < 550ms)
-          if (dist < 20 && elapsed < 550) {
+          // 移动端轻触 100% 触发 (位移 < 28px，时间 < 650ms)
+          if (dist < 28 && elapsed < 650) {
             handlePointerClick(touch.clientX, touch.clientY);
           }
         }
@@ -82941,9 +82933,9 @@ exports.warnOnce = warnOnce;
           return cubeHits[0].object.parent;
         }
 
-        // 2. Mobile Touch Finger-Tip Proximity Tolerance (针对移动端手指微偏的 36px 智能吸附)
+        // 2. Mobile Touch Finger-Tip Proximity Tolerance (针对移动端手指微偏的 48px 智能吸附)
         let closestCube = null;
-        let minScreenDist = ('ontouchstart' in window) ? 36 : 14;
+        let minScreenDist = 48; // 移动端 48px 宽松大拇指吸附半径
         const tempV = new THREE.Vector3();
 
         cubeObjects.forEach(c => {
@@ -82951,8 +82943,8 @@ exports.warnOnce = warnOnce;
           tempV.y += CUBE_HEIGHT * 0.5;
           tempV.project(camera);
 
-          // Only test objects in front of camera lens
-          if (tempV.z < 1.0) {
+          // Must be in front of the camera in view frustum
+          if (tempV.z >= -1.0 && tempV.z <= 1.0) {
             const sx = ((tempV.x + 1) / 2) * container.clientWidth + rect.left;
             const sy = ((-tempV.y + 1) / 2) * container.clientHeight + rect.top;
             const sDist = Math.hypot(clientX - sx, clientY - sy);
