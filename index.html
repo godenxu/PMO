@@ -82682,6 +82682,14 @@ exports.warnOnce = warnOnce;
         }
       });
 
+      let lastUnifiedClickTime = 0;
+      function triggerUnifiedClick(clientX, clientY) {
+        const now = Date.now();
+        if (now - lastUnifiedClickTime < 220) return; // 防抖，避免 touchend 与 click 双重触发
+        lastUnifiedClickTime = now;
+        handlePointerClick(clientX, clientY);
+      }
+
       window.addEventListener('mouseup', (e) => {
         draggedScreen = null;
         screenDragVelocity = 0;
@@ -82692,10 +82700,15 @@ exports.warnOnce = warnOnce;
         const elapsed = Date.now() - pointerDownTime;
         const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
         
-        // If it was a left click and NOT a drag along rail or pan (Tap tolerance < 10px, elapsed < 500ms)
-        if (e.button === 0 && dist < 10 && elapsed < 500) {
-          handlePointerClick(e.clientX, e.clientY);
+        // If it was a left click and NOT a drag along rail or pan (Tap tolerance < 12px, elapsed < 500ms)
+        if (e.button === 0 && dist < 12 && elapsed < 500) {
+          triggerUnifiedClick(e.clientX, e.clientY);
         }
+      });
+
+      // 原生 Click 事件双重保障 (Direct Fallback for All Mobile Browsers)
+      container.addEventListener('click', (e) => {
+        triggerUnifiedClick(e.clientX, e.clientY);
       });
 
       window.addEventListener('mousemove', (e) => {
@@ -82829,13 +82842,13 @@ exports.warnOnce = warnOnce;
           const dist = Math.hypot(touch.clientX - pointerDownPos.x, touch.clientY - pointerDownPos.y);
           // 移动端轻触 100% 触发 (位移 < 28px，时间 < 650ms)
           if (dist < 28 && elapsed < 650) {
-            handlePointerClick(touch.clientX, touch.clientY);
+            triggerUnifiedClick(touch.clientX, touch.clientY);
           }
         }
       });
 
       // =========================================================================
-      // DYNAMIC PROJECT OPTIMAL VIEWPORT (自适应屏幕宽度/比例，确保大屏完整呈现)
+      // DYNAMIC PROJECT OPTIMAL VIEWPORT (自适应屏幕宽度/比例，确保前景水晶与背景大屏完美呈现)
       // =========================================================================
       function computeProjectOptimalView(cube, customAspect) {
         const aspect = (customAspect !== undefined) ? customAspect : (container.clientWidth / container.clientHeight);
@@ -82855,42 +82868,31 @@ exports.warnOnce = warnOnce;
         const dirX = dx / horizDist;
         const dirZ = dz / horizDist;
 
-        // DYNAMIC CAMERA DISTANCE & HEIGHT SCALING:
-        // As screen width gets narrower (mobile portrait, aspect < 0.65), camera smoothly pulls back further
-        // and raises higher so the whole 128-degree curved status board fits 100% horizontally and vertically!
-        let distMultiplier = 1.0;
-        let heightMultiplier = 1.0;
-        let lookAtScreenWeight = 0.65;
+        let camDist = 8.5;
+        let camHeight = cube.position.y + 3.2;
+        let lookAtWeight = 0.50; // Weight towards background screen
 
-        if (aspect < 0.55) {
-          // Mobile Portrait (e.g. iPhone portrait, Android portrait)
-          distMultiplier = 1.68;
-          heightMultiplier = 1.45;
-          lookAtScreenWeight = 0.74;
-        } else if (aspect < 0.85) {
-          // Narrow Tablet Portrait / Foldable Phone
-          distMultiplier = 1.42;
-          heightMultiplier = 1.30;
-          lookAtScreenWeight = 0.71;
-        } else if (aspect < 1.15) {
-          // Square / iPad Portrait
-          distMultiplier = 1.22;
-          heightMultiplier = 1.18;
-          lookAtScreenWeight = 0.68;
-        } else if (aspect < 1.50) {
-          // Tablet Landscape / Small Laptop
-          distMultiplier = 1.06;
-          heightMultiplier = 1.05;
-          lookAtScreenWeight = 0.66;
+        if (aspect < 0.6) {
+          // 手机竖屏 (Mobile Portrait): 显著推进特写对焦，水晶清晰醒目，大屏在上方呈现
+          camDist = 6.4;
+          camHeight = cube.position.y + 2.5;
+          lookAtWeight = 0.25;
+        } else if (aspect < 0.9) {
+          // 折叠屏/竖版平板 (Foldable / Tablet Portrait)
+          camDist = 7.2;
+          camHeight = cube.position.y + 2.8;
+          lookAtWeight = 0.35;
+        } else if (aspect < 1.2) {
+          // iPad / 方屏
+          camDist = 8.0;
+          camHeight = cube.position.y + 3.0;
+          lookAtWeight = 0.45;
         } else {
-          // Standard Desktop / Ultrawide
-          distMultiplier = 1.0;
-          heightMultiplier = 1.0;
-          lookAtScreenWeight = 0.65;
+          // 电脑宽屏 (Desktop 16:9 / Ultrawide)
+          camDist = 8.8;
+          camHeight = cube.position.y + 3.6;
+          lookAtWeight = 0.55;
         }
-
-        const camDist = 8.8 * distMultiplier;
-        const camHeight = cube.position.y + 3.6 * heightMultiplier;
 
         const camPos = new THREE.Vector3(
           cube.position.x + dirX * camDist,
@@ -82899,9 +82901,9 @@ exports.warnOnce = warnOnce;
         );
 
         const lookAt = new THREE.Vector3(
-          cube.position.x * (1.0 - lookAtScreenWeight) + screenCenter.x * lookAtScreenWeight,
-          cube.position.y * 0.40 + SCREEN_CENTER_Y * 0.60,
-          cube.position.z * (1.0 - lookAtScreenWeight) + screenCenter.z * lookAtScreenWeight
+          cube.position.x * (1.0 - lookAtWeight) + screenCenter.x * lookAtWeight,
+          cube.position.y * (1.0 - lookAtWeight) + (SCREEN_CENTER_Y - 0.5) * lookAtWeight,
+          cube.position.z * (1.0 - lookAtWeight) + screenCenter.z * lookAtWeight
         );
 
         return { camPos, lookAt };
