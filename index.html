@@ -82697,8 +82697,8 @@ exports.warnOnce = warnOnce;
         const elapsed = Date.now() - pointerDownTime;
         const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
         
-        // If it was a left click and NOT a drag along rail or pan
-        if (e.button === 0 && !isTouchMoved && elapsed < 350 && dist < 6) {
+        // If it was a left click and NOT a drag along rail or pan (Tap tolerance < 8px, elapsed < 450ms)
+        if (e.button === 0 && dist < 8 && elapsed < 450) {
           handlePointerClick(e.clientX, e.clientY);
         }
       });
@@ -82713,13 +82713,14 @@ exports.warnOnce = warnOnce;
 
         const deltaX = e.clientX - prevPointerPos.x;
         const deltaY = e.clientY - prevPointerPos.y;
-        if (Math.hypot(deltaX, deltaY) > 3) isTouchMoved = true;
+        const totalMove = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+        if (totalMove > 6) isTouchMoved = true;
 
         if (draggedScreen) {
           // SLIDE SCREEN ALONG CIRCULAR STAGE TRACK (使用按下时锁定的方向，全程丝滑无抖动)!
           const slideAngle = deltaX * 0.007 * dragSessionSign;
           draggedScreen.rotation.y += slideAngle;
-        } else if (isLeftPanning) {
+        } else if (isLeftPanning && isTouchMoved) {
           // MOUSE LEFT-CLICK DRAGGING -> PAN ENTIRE SCENE (左键平移画面)
           panCamera(deltaX, deltaY, 1.0);
         } else if (isRightOrbiting) {
@@ -82781,14 +82782,15 @@ exports.warnOnce = warnOnce;
         if (e.touches.length === 1) {
           const deltaX = e.touches[0].clientX - prevPointerPos.x;
           const deltaY = e.touches[0].clientY - prevPointerPos.y;
-          if (Math.hypot(deltaX, deltaY) > 3) isTouchMoved = true;
+          const totalDist = Math.hypot(e.touches[0].clientX - pointerDownPos.x, e.touches[0].clientY - pointerDownPos.y);
+          if (totalDist > 12) isTouchMoved = true;
 
           if (draggedScreen) {
             // Touch Slide Screen along Rail (使用按下时锁定的方向，全程丝滑无抖动)
             const slideAngle = deltaX * 0.009 * dragSessionSign;
             draggedScreen.rotation.y += slideAngle;
-          } else {
-            // 1-Finger Touch Pan
+          } else if (isTouchMoved) {
+            // 1-Finger Touch Pan (only pan when clearly moved > 12px)
             panCamera(deltaX, deltaY, 1.0);
           }
 
@@ -82830,7 +82832,8 @@ exports.warnOnce = warnOnce;
           const touch = e.changedTouches[0];
           const elapsed = Date.now() - pointerDownTime;
           const dist = Math.hypot(touch.clientX - pointerDownPos.x, touch.clientY - pointerDownPos.y);
-          if (!isTouchMoved && elapsed < 350 && dist < 12) {
+          // High-precision Mobile Tap Recognition (dist < 20px, elapsed < 550ms)
+          if (dist < 20 && elapsed < 550) {
             handlePointerClick(touch.clientX, touch.clientY);
           }
         }
@@ -82936,7 +82939,10 @@ exports.warnOnce = warnOnce;
 
         // 2. Check 3D Cubes -> Tap locks optimal cinematic shot: Clicked Cube in Foreground + Status Screen in Background
         const hitMeshes = [];
-        cubeObjects.forEach(c => hitMeshes.push(c.userData.outerMesh));
+        cubeObjects.forEach(c => {
+          if (c.userData.outerMesh) hitMeshes.push(c.userData.outerMesh);
+          if (c.userData.innerMesh) hitMeshes.push(c.userData.innerMesh);
+        });
         const cubeHits = raycaster.intersectObjects(hitMeshes, false);
         if (cubeHits.length > 0) {
           const cube = cubeHits[0].object.parent;
