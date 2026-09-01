@@ -946,7 +946,7 @@
 
     <!-- BOTTOM-RIGHT VERSION BADGE (UTC+8 YYYYMMDDHHmm) -->
     <div class="bottom-right-version">
-      <span>v202609010933</span>
+      <span>v202609010946</span>
     </div>
 
 
@@ -82594,14 +82594,26 @@ exports.warnOnce = warnOnce;
       updateStatusCanvas(null);
 
       // ==========================================================================
-      // 7. RESPONSIVE TOUCH & MOUSE INTERACTION (MOBILE TOUCH DRAG & ORBIT ENGINE)
+      // 7. HIGH-PERFORMANCE INTERACTION & RENDER PIPELINE (ZERO-ALLOCATION & EVENT-DRIVEN)
       // ==========================================================================
       const raycaster = new THREE.Raycaster();
       const mouse = new THREE.Vector2();
       let hoveredCube = null;
+      let lastHoveredCube = null;
+      let isMouseMovedSinceLastFrame = false;
 
       const tooltipEl = document.getElementById('cube-tooltip');
       if (tooltipEl) tooltipEl.style.display = 'none';
+
+      // Pre-allocated Static Mesh Arrays (Prevents GC spikes every frame)
+      const staticCubeOuterMeshes = cubeObjects.map(c => c.userData.outerMesh).filter(Boolean);
+
+      // Pre-allocated Temporary Math Objects for 60fps Loop
+      const _tempColorA = new THREE.Color();
+      const _tempColorB = new THREE.Color();
+      const _tempMeetingCenter = new THREE.Vector3();
+      const _tempCamToMeeting = new THREE.Vector3();
+      const _tempCamDir = new THREE.Vector3();
 
       // Drag, Pan & Orbit State Variables
       let isLeftPanning = false;
@@ -82647,7 +82659,7 @@ exports.warnOnce = warnOnce;
         updateCameraTargetPosition();
       }
 
-      // HIGHLY ROBUST 3D SCREEN HIT DETECTOR (Supports both Desktop & Mobile Touch with Recursive Hierarchy Traversal)
+      // HIGHLY ROBUST 3D SCREEN HIT DETECTOR
       function getHitScreen(clientX, clientY) {
         const rect = container.getBoundingClientRect();
         mouse.x = ((clientX - rect.left) / container.clientWidth) * 2 - 1;
@@ -82675,11 +82687,7 @@ exports.warnOnce = warnOnce;
         const screenHitDist = screenHits[0].distance;
 
         // 2. Check if a crystal cube is in foreground directly blocking this ray
-        const hitMeshes = [];
-        cubeObjects.forEach(c => {
-          if (c.userData.outerMesh) hitMeshes.push(c.userData.outerMesh);
-        });
-        const cubeHits = raycaster.intersectObjects(hitMeshes, false);
+        const cubeHits = raycaster.intersectObjects(staticCubeOuterMeshes, false);
         if (cubeHits.length > 0 && cubeHits[0].distance < screenHitDist - 0.25) {
           return null; // A cube is in front of the screen
         }
@@ -82768,6 +82776,7 @@ exports.warnOnce = warnOnce;
 
         mouse.x = (clientX / container.clientWidth) * 2 - 1;
         mouse.y = -(clientY / container.clientHeight) * 2 + 1;
+        isMouseMovedSinceLastFrame = true;
 
         const deltaX = e.clientX - prevPointerPos.x;
         const deltaY = e.clientY - prevPointerPos.y;
@@ -82941,35 +82950,31 @@ exports.warnOnce = warnOnce;
         const dirX = dx / horizDist;
         const dirZ = dz / horizDist;
 
-        let camDist = 8.5;
-        let camHeight = cube.position.y + 3.2;
-        let lookAtWeight = 0.50; // Weight towards background screen
+        let camDist = 6.2;
+        let camHeight = 3.35;
+        let lookAtWeight = 0.22;
 
         if (aspect < 0.6) {
-          // 手机竖屏 (Mobile Portrait): 显著推进特写对焦，水晶清晰醒目，大屏在上方呈现
-          camDist = 6.4;
-          camHeight = cube.position.y + 2.5;
-          lookAtWeight = 0.25;
-        } else if (aspect < 0.9) {
-          // 折叠屏/竖版平板 (Foldable / Tablet Portrait)
-          camDist = 7.2;
-          camHeight = cube.position.y + 2.8;
+          camDist = 8.5;
+          camHeight = 4.20;
           lookAtWeight = 0.35;
+        } else if (aspect < 0.9) {
+          camDist = 7.6;
+          camHeight = 3.80;
+          lookAtWeight = 0.28;
         } else if (aspect < 1.2) {
-          // iPad / 方屏
-          camDist = 8.0;
-          camHeight = cube.position.y + 3.0;
-          lookAtWeight = 0.45;
+          camDist = 6.8;
+          camHeight = 3.55;
+          lookAtWeight = 0.25;
         } else {
-          // 电脑宽屏 (Desktop 16:9 / Ultrawide)
-          camDist = 8.8;
-          camHeight = cube.position.y + 3.6;
-          lookAtWeight = 0.55;
+          camDist = 6.2;
+          camHeight = 3.35;
+          lookAtWeight = 0.22;
         }
 
         const camPos = new THREE.Vector3(
           cube.position.x + dirX * camDist,
-          camHeight,
+          cube.position.y + camHeight,
           cube.position.z + dirZ * camDist
         );
 
@@ -82982,7 +82987,6 @@ exports.warnOnce = warnOnce;
         return { camPos, lookAt };
       }
 
-      // Defocus / Deselect Cube Function (取消水晶对焦并恢复全局概览)
       function cancelCubeFocus() {
         hoveredCube = null;
         lastHoveredCube = null;
@@ -82990,27 +82994,23 @@ exports.warnOnce = warnOnce;
         setFocusView('overview');
       }
 
-      // High-Precision 3D Cube Hit Detection (3D精确光线投射 + 移动端指尖2D投影吸附)
-      function findHitCube(clientX, clientY) {
+      function findHitCube(clientX, clientY, allowProximity = true) {
         const rect = container.getBoundingClientRect();
         mouse.x = ((clientX - rect.left) / container.clientWidth) * 2 - 1;
         mouse.y = -((clientY - rect.top) / container.clientHeight) * 2 + 1;
         raycaster.setFromCamera(mouse, camera);
 
-        // 1. Exact 3D Mesh Intersection (优先精确命中检测)
-        const hitMeshes = [];
-        cubeObjects.forEach(c => {
-          if (c.userData.outerMesh) hitMeshes.push(c.userData.outerMesh);
-          if (c.userData.innerMesh) hitMeshes.push(c.userData.innerMesh);
-        });
-        const cubeHits = raycaster.intersectObjects(hitMeshes, false);
+        // 1. Exact 3D Mesh Intersection
+        const cubeHits = raycaster.intersectObjects(staticCubeOuterMeshes, false);
         if (cubeHits.length > 0) {
           return cubeHits[0].object.parent;
         }
 
-        // 2. Mobile Touch Finger-Tip Proximity Tolerance (针对移动端手指微偏的 48px 智能吸附)
+        if (!allowProximity) return null;
+
+        // 2. Mobile Touch Finger-Tip Proximity Tolerance (18px tight radius)
         let closestCube = null;
-        let minScreenDist = 48; // 移动端 48px 宽松大拇指吸附半径
+        let minScreenDist = 18;
         const tempV = new THREE.Vector3();
 
         cubeObjects.forEach(c => {
@@ -83018,7 +83018,6 @@ exports.warnOnce = warnOnce;
           tempV.y += CUBE_HEIGHT * 0.5;
           tempV.project(camera);
 
-          // Must be in front of the camera in view frustum
           if (tempV.z >= -1.0 && tempV.z <= 1.0) {
             const sx = ((tempV.x + 1) / 2) * container.clientWidth + rect.left;
             const sy = ((-tempV.y + 1) / 2) * container.clientHeight + rect.top;
@@ -83033,13 +83032,10 @@ exports.warnOnce = warnOnce;
         return closestCube;
       }
 
-      // Pointer Click / Tap Handler (CINEMATIC FOCUS: FOREGROUND CUBE + BACKGROUND FULL STATUS BOARD)
       function handlePointerClick(clientX, clientY) {
-        // 1. 优先检测前景水晶方块 (CUBES HAVE HIGHEST PRIORITY OVER BACKGROUND SCREENS)
-        const targetCube = findHitCube(clientX, clientY);
-
+        // 1. Priority 1: Check Crystal Cubes
+        const targetCube = findHitCube(clientX, clientY, true);
         if (targetCube) {
-          // 如果当前已聚焦在此水晶上，再次点击则取消聚焦 (Toggle Deselect / Cancel)
           if (currentFocusMode === 'cube' && hoveredCube === targetCube) {
             cancelCubeFocus();
             return;
@@ -83049,41 +83045,34 @@ exports.warnOnce = warnOnce;
           targetCamPos.copy(camPos);
           targetLookAt.copy(lookAt);
 
-          // SIGHTLINE OCCLUSION PREVENTION (智能视线避让与遮挡防护):
-          const camAng = Math.atan2(targetCamPos.x, targetCamPos.z);
-          const meetAng = leftCurvedScreen.rotation.y;
-          const angDiff = Math.abs(Math.atan2(Math.sin(meetAng - camAng), Math.cos(meetAng - camAng)));
-          if (angDiff < 0.85) {
-            leftCurvedScreen.rotation.y = Math.PI * 0.94;
-          }
-
-          // Synchronize orbit spherical coordinates for continuous seamless user dragging
           orbitRadius = targetCamPos.distanceTo(targetLookAt);
           theta = Math.atan2(targetCamPos.x - targetLookAt.x, targetCamPos.z - targetLookAt.z);
           phi = Math.acos(Math.max(-1, Math.min(1, (targetCamPos.y - targetLookAt.y) / orbitRadius)));
 
           currentFocusMode = 'cube';
           hoveredCube = targetCube;
+          lastHoveredCube = targetCube;
           updateStatusCanvas(targetCube.userData);
           return;
         }
 
-        // 2. 若未点中水晶，再检测背景 3D 大屏 (Check Background Screens)
+        // 2. Priority 2: Check Background 3D Screens
         const hitInfo = getHitScreen(clientX, clientY);
         if (hitInfo && hitInfo.screen.userData && hitInfo.screen.userData.targetView) {
           hoveredCube = null;
+          lastHoveredCube = null;
           updateStatusCanvas(null);
           setFocusView(hitInfo.screen.userData.targetView);
           return;
         }
 
-        // 3. 点击了水晶与大屏以外的空白区域/舞台 -> 取消聚焦并恢复全景视角
+        // 3. Click Empty Space: Cancel Focus
         if (currentFocusMode === 'cube' || hoveredCube) {
           cancelCubeFocus();
         }
       }
 
-      // EXACT ORTHOGONAL FRONT-ON FOCUS (DYNAMICALLY COMPUTES FROM SCREEN'S CURRENT POSITION ON TRACK)
+      // EXACT ORTHOGONAL FRONT-ON FOCUS
       function setFocusView(view) {
         currentFocusMode = view;
         document.querySelectorAll('.quick-nav-btn').forEach(b => {
@@ -83112,40 +83101,32 @@ exports.warnOnce = warnOnce;
         } else if (view === 'status') {
           const rot = statusCurvedScreen.rotation.y;
           
-          // DYNAMIC STATUS VIEWPORT CALIBRATION:
-          // 1. Status screen in UPPER half (filling horizontally ~88-90% with slight margin on top/left/right)
-          // 2. All cubes in LOWER half (100% fully visible with slightly elevated pitch angle)
           let distScale = 1.0;
           let camH = 4.8;
           let lookY = 2.30;
           let lookShift = 0.0;
           
           if (aspect < 0.6) {
-            // Mobile Portrait (e.g. 9:16)
             distScale = 1.45;
             camH = 9.20;
             lookY = 2.70;
             lookShift = 0.4;
           } else if (aspect < 0.9) {
-            // Foldable / Narrow Tablet Portrait
             distScale = 1.22;
             camH = 7.80;
             lookY = 2.72;
             lookShift = 0.3;
           } else if (aspect < 1.2) {
-            // Square / iPad Portrait
             distScale = 1.12;
             camH = 7.00;
             lookY = 2.72;
             lookShift = 0.2;
           } else if (aspect < 1.5) {
-            // Small Laptop / 4:3
             distScale = 1.02;
             camH = 5.90;
             lookY = 2.70;
             lookShift = 0.1;
           } else {
-            // Standard 16:9 Desktop / Ultrawide (完全零底部留白：镜头显著升高俯瞰，大屏撑满上半区，水晶阵列撑满下半区直抵底边)
             distScale = 1.0;
             camH = 5.48;
             lookY = 2.72;
@@ -83181,7 +83162,7 @@ exports.warnOnce = warnOnce;
 
       document.getElementById('btn-home')?.addEventListener('click', () => setFocusView('overview'));
 
-      // Filter Buttons (Merged seamlessly into Top Bar)
+      // Filter Buttons
       const filterBtns = document.querySelectorAll('.filter-btn');
       filterBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -83192,31 +83173,25 @@ exports.warnOnce = warnOnce;
         });
       });
 
-      // 8. Main Animation Loop
+      // 8. Main High-Performance Animation Loop
       let clockTime = 0;
-      let lastHoveredCube = null;
 
       function animate() {
         requestAnimationFrame(animate);
         clockTime += 0.016;
-        animPhase++;
 
         // Smooth Camera Interpolation
         camera.position.lerp(targetCamPos, 0.06);
         currentLookAt.lerp(targetLookAt, 0.06);
         camera.lookAt(currentLookAt);
 
-        // Dynamic Sightline Transparency Protection:
-        // If in 'cube' project optimal view, ensure Meeting Screen never occludes Status Screen or Matrix
+        // Dynamic Sightline Transparency Protection
         if (currentFocusMode === 'cube') {
-          // Check if meeting screen is in the forward viewing hemisphere of the camera
-          const meetingCenter = new THREE.Vector3(SCREEN_RADIUS * Math.sin(leftCurvedScreen.rotation.y), SCREEN_CENTER_Y, SCREEN_RADIUS * Math.cos(leftCurvedScreen.rotation.y));
-          const camToMeeting = meetingCenter.clone().sub(camera.position).normalize();
-          const camDir = new THREE.Vector3();
-          camera.getWorldDirection(camDir);
-          const dot = camToMeeting.dot(camDir);
+          _tempMeetingCenter.set(SCREEN_RADIUS * Math.sin(leftCurvedScreen.rotation.y), SCREEN_CENTER_Y, SCREEN_RADIUS * Math.cos(leftCurvedScreen.rotation.y));
+          _tempCamToMeeting.copy(_tempMeetingCenter).sub(camera.position).normalize();
+          camera.getWorldDirection(_tempCamDir);
+          const dot = _tempCamToMeeting.dot(_tempCamDir);
           if (dot > 0.3) {
-            // Meeting screen is in front of camera view -> Soften to ghost transparency
             leftHudMat.opacity = THREE.MathUtils.lerp(leftHudMat.opacity, 0.20, 0.1);
           } else {
             leftHudMat.opacity = THREE.MathUtils.lerp(leftHudMat.opacity, 0.82, 0.1);
@@ -83225,24 +83200,17 @@ exports.warnOnce = warnOnce;
           leftHudMat.opacity = THREE.MathUtils.lerp(leftHudMat.opacity, 0.82, 0.1);
         }
 
-        // No post-release inertia: screens stop immediately upon releasing mouse/touch button
-        screenDragVelocity = 0;
-        if (!isLeftPanning && !isRightOrbiting && !draggedScreen) {
-          // Normal idle state
-        }
-
         // Gentle cinematic auto-rotation when idle in overview mode
-        if (!isLeftPanning && !isRightOrbiting && currentFocusMode === 'overview' && !hoveredCube) {
+        if (!isLeftPanning && !isRightOrbiting && !isDraggingScreen && currentFocusMode === 'overview' && !hoveredCube) {
           theta += 0.0010;
           updateCameraTargetPosition();
         }
 
-        // 1. Raycasting Hover Detection for Mouse Users
-        if (!('ontouchstart' in window) && !isLeftPanning && !isRightOrbiting) {
+        // 1. Raycasting Hover Detection (ONLY runs when mouse actually moves - ZERO idle raycasting!)
+        if (isMouseMovedSinceLastFrame && !('ontouchstart' in window) && !isLeftPanning && !isRightOrbiting && !isDraggingScreen) {
+          isMouseMovedSinceLastFrame = false;
           raycaster.setFromCamera(mouse, camera);
-          const hitMeshes = [];
-          cubeObjects.forEach(c => hitMeshes.push(c.userData.outerMesh));
-          const intersects = raycaster.intersectObjects(hitMeshes, false);
+          const intersects = raycaster.intersectObjects(staticCubeOuterMeshes, false);
 
           if (intersects.length > 0) {
             const targetCube = intersects[0].object.parent;
@@ -83256,62 +83224,51 @@ exports.warnOnce = warnOnce;
           }
         }
 
-        // Project hovered system's deep telemetry onto the large Status Screen Canvas
-        if (hoveredCube !== lastHoveredCube || animPhase % 2 === 0) {
+        // 2. Event-Driven Canvas Texture Update (ONLY updates when hovered target changes - ZERO continuous 188MB/s re-uploads!)
+        if (hoveredCube !== lastHoveredCube) {
           updateStatusCanvas(hoveredCube ? hoveredCube.userData : null);
           lastHoveredCube = hoveredCube;
         }
 
-        // 2. Dynamic Chromatic Edge Breathing & Hover Highlight (高亮冷白激光高光 + 强效双层高斯光晕)
+        // 3. Dynamic Chromatic Edge Breathing & Hover Highlight (Zero-Allocation Color Mutation)
         cubeObjects.forEach((cube) => {
           const isMatch = (currentFilterStatus === 'all' || cube.userData.status === currentFilterStatus);
           const isHovered = (hoveredCube === cube);
           const phase = cube.userData.phase;
           const speed = cube.userData.breathSpeed || 1.8;
           
-          // Organic breath sine [-1, 1] with individual speed and phase
           const rawSine = Math.sin(clockTime * speed + phase);
-          
-          // Gentle vertical floating motion (hovered cube raises slightly for focus)
           const targetY = cube.userData.baseY + (isHovered ? 0.22 : rawSine * 0.10);
           cube.position.y += (targetY - cube.position.y) * 0.12;
 
-          // Normalized breath factor [0.0 = 吸, 1.0 = 呼]
           const breath = (rawSine + 1.0) / 2.0;
           const edgeGlow = Math.pow(breath, 1.8);
 
           if (isMatch) {
             cube.userData.outerMesh.material.depthWrite = true;
             if (isHovered) {
-              // --- HOVERED CUBE: MAXIMUM RADIANT BRIGHTNESS (黄色/红色光晕专门超高增益提亮) ---
               const isNormal = (cube.userData.status === 'normal');
               const isWarn = (cube.userData.status === 'warning');
-              const isRisk = (cube.userData.status === 'risk');
 
-              // Outer Laser Edges: Full Neon Laser
               cube.userData.edgeLines.material.color.copy(cube.userData.edgeGlowColor);
               cube.userData.edgeLines.material.opacity = 1.0;
 
-              // White Laser Glint: Blinding Pure Diamond White Bevel Highlight (100% 满额白光激光倒角)
               if (cube.userData.whiteEdgeLines) {
                 cube.userData.whiteEdgeLines.material.opacity = 1.0;
               }
 
-              // Outer Crystal Shell: Balanced Luminosity (Yellow/Red receive extra photon boost)
               const hoverEmissive = isNormal ? 1.35 : (isWarn ? 1.75 : 1.90);
               cube.userData.outerMesh.material.emissive.copy(cube.userData.glowColor);
               cube.userData.outerMesh.material.emissiveIntensity = hoverEmissive;
               cube.userData.outerMesh.material.opacity = isNormal ? 0.90 : 0.95;
 
-              // Inner Core: Radiant Full Pulse (呼大吸小)
               cube.userData.innerMesh.material.opacity = 1.0;
               const coreHoverScale = isNormal ? 1.26 : 1.32;
               cube.userData.innerMesh.scale.set(coreHoverScale, coreHoverScale, coreHoverScale);
 
-              // Dual Gaussian Glow Halos below: Enhanced Footprint & Full Radiance for Yellow and Red
               const haloOuterOpacity = isNormal ? 0.92 : 1.0;
               const haloInnerOpacity = 1.0;
-              const haloOuterScale = isNormal ? 1.42 : 1.68; // Wider and more radiant pool for yellow/red
+              const haloOuterScale = isNormal ? 1.42 : 1.68;
               const haloInnerScale = isNormal ? 1.35 : 1.52;
 
               if (cube.userData.padDisc) {
@@ -83323,32 +83280,26 @@ exports.warnOnce = warnOnce;
                 cube.userData.innerHalo.scale.set(haloInnerScale, haloInnerScale, haloInnerScale);
               }
 
-              // Scale up cube smoothly
               cube.scale.set(1.12, 1.12, 1.12);
             } else {
-              // --- NORMAL BREATHING: Ultra-Luminescent Crystal & Enhanced White Glint / Expansive Halos ---
-              // Outer Laser Edges: Inhale 0.75 -> Exhale 1.0
-              const curEdgeColor = cube.userData.glowColor.clone().lerp(cube.userData.edgeGlowColor, edgeGlow * 0.70);
-              cube.userData.edgeLines.material.color.copy(curEdgeColor);
+              // Re-use pre-allocated color objects without .clone() allocations!
+              _tempColorA.copy(cube.userData.glowColor).lerp(cube.userData.edgeGlowColor, edgeGlow * 0.70);
+              cube.userData.edgeLines.material.color.copy(_tempColorA);
               cube.userData.edgeLines.material.opacity = 0.75 + edgeGlow * 0.25;
 
-              // Sharp Cold White Laser Glint Highlight: Inhale 0.65 -> Exhale 0.95 (超清晰锐利冷白高光)
               if (cube.userData.whiteEdgeLines) {
                 cube.userData.whiteEdgeLines.material.opacity = 0.65 + edgeGlow * 0.30;
               }
 
-              // Outer Crystal Shell: Luminous translucent crystal (0.40 ~ 0.75 emissive intensity)
-              const curEmissiveColor = cube.userData.dimColor.clone().lerp(cube.userData.glowColor, edgeGlow * 0.75);
-              cube.userData.outerMesh.material.emissive.copy(curEmissiveColor);
+              _tempColorB.copy(cube.userData.dimColor).lerp(cube.userData.glowColor, edgeGlow * 0.75);
+              cube.userData.outerMesh.material.emissive.copy(_tempColorB);
               cube.userData.outerMesh.material.emissiveIntensity = 0.40 + edgeGlow * 0.35;
               cube.userData.outerMesh.material.opacity = 0.60 + edgeGlow * 0.10;
 
-              // Inner Core: Prominent "呼大吸小" breathing pulsation (0.80 Inhale -> 1.24 Exhale)
               cube.userData.innerMesh.material.opacity = 0.55 + edgeGlow * 0.40;
               const coreScale = 0.80 + edgeGlow * 0.44;
               cube.userData.innerMesh.scale.set(coreScale, coreScale, coreScale);
 
-              // Dual Gaussian Glow Halos below: Expansive breathing radiance pool
               if (cube.userData.padDisc) {
                 cube.userData.padDisc.material.opacity = 0.45 + edgeGlow * 0.38;
                 const haloScale = 0.95 + edgeGlow * 0.22;
@@ -83360,20 +83311,18 @@ exports.warnOnce = warnOnce;
                 cube.userData.innerHalo.scale.set(innerHaloScale, innerHaloScale, innerHaloScale);
               }
 
-              // Reset scale
               cube.scale.set(1.0, 1.0, 1.0);
             }
           } else {
-            // Inactive filtered cubes remain dimmed
+            // Filter non-matching cubes
             cube.userData.outerMesh.material.depthWrite = false;
             cube.userData.outerMesh.material.opacity = 0.08;
-            cube.userData.outerMesh.material.emissiveIntensity = 0.02;
-            cube.userData.edgeLines.material.opacity = 0.08;
-            if (cube.userData.whiteEdgeLines) cube.userData.whiteEdgeLines.material.opacity = 0.0;
-            cube.userData.innerMesh.material.opacity = 0.05;
-            if (cube.userData.padDisc) cube.userData.padDisc.material.opacity = 0.02;
-            if (cube.userData.innerHalo) cube.userData.innerHalo.material.opacity = 0.02;
-            cube.scale.set(1.0, 1.0, 1.0);
+            cube.userData.innerMesh.material.opacity = 0.06;
+            cube.userData.edgeLines.material.opacity = 0.12;
+            if (cube.userData.whiteEdgeLines) cube.userData.whiteEdgeLines.material.opacity = 0.05;
+            if (cube.userData.padDisc) cube.userData.padDisc.material.opacity = 0.06;
+            if (cube.userData.innerHalo) cube.userData.innerHalo.material.opacity = 0.08;
+            cube.scale.set(0.95, 0.95, 0.95);
           }
         });
 
@@ -83381,7 +83330,7 @@ exports.warnOnce = warnOnce;
       }
       animate();
 
-      // Dynamic Responsive Resize & Orientation Handler
+            // Dynamic Responsive Resize & Orientation Handler
       function handleResize() {
         const newW = container.clientWidth;
         const newH = container.clientHeight;
