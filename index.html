@@ -82552,7 +82552,7 @@ exports.warnOnce = warnOnce;
       updateStatusCanvas(null);
 
       // ==========================================================================
-      // 7. RESPONSIVE TOUCH & MOUSE INTERACTION (LEFT-CLICK PAN, RIGHT-CLICK ORBIT)
+      // 7. RESPONSIVE TOUCH & MOUSE INTERACTION (SCREEN TRACK ORBIT + SCENE PAN / ROTATE)
       // ==========================================================================
       const raycaster = new THREE.Raycaster();
       const mouse = new THREE.Vector2();
@@ -82562,12 +82562,13 @@ exports.warnOnce = warnOnce;
       if (tooltipEl) tooltipEl.style.display = 'none';
 
       // Drag, Pan & Orbit State Variables
-      // RULE: Left-Click = Pan (平移) / Click Select; Right-Click = Orbit (旋转)
+      // RULE: Drag Screen = Rotate Screen along Circular Track; Drag Background = Pan Scene; Right-Click / 2-Finger = Orbit View
       let isLeftPanning = false;
       let isRightOrbiting = false;
-      let isTouchMoved = false;
+      let isDraggingScreen = false;
+      let isPointerMoved = false;
       let draggedScreen = null;
-      let screenDragVelocity = 0;
+      let dragSessionSign = 1.0;
 
       let pointerDownPos = { x: 0, y: 0 };
       let pointerDownTime = 0;
@@ -82607,23 +82608,30 @@ exports.warnOnce = warnOnce;
         updateCameraTargetPosition();
       }
 
+      // ROBUST 3D SCREEN RAYCAST HIT DETECTION
       function getHitScreen(clientX, clientY) {
-        // If a crystal cube is under cursor or touch, cubes always take priority
-        if (findHitCube(clientX, clientY)) return null;
-
         const rect = container.getBoundingClientRect();
         mouse.x = ((clientX - rect.left) / container.clientWidth) * 2 - 1;
         mouse.y = -((clientY - rect.top) / container.clientHeight) * 2 + 1;
         raycaster.setFromCamera(mouse, camera);
 
-        const hits = raycaster.intersectObjects([leftCurvedScreen, statusCurvedScreen], false);
-        if (hits.length > 0) {
-          const hit = hits[0];
-          const minY = STAGE_TOP_Y + SCREEN_ELEVATION_Y - 0.2;
-          const maxY = STAGE_TOP_Y + SCREEN_ELEVATION_Y + SCREEN_HEIGHT + 0.2;
-          if (hit.point.y >= minY && hit.point.y <= maxY) {
-            return { screen: hit.object, point: hit.point };
+        // Check 3D cube mesh intersections (foreground priority)
+        const hitMeshes = [];
+        cubeObjects.forEach(c => {
+          if (c.userData.outerMesh) hitMeshes.push(c.userData.outerMesh);
+        });
+        const cubeHits = raycaster.intersectObjects(hitMeshes, false);
+
+        // Check curved screens (both Left Meeting Screen & Status Screen)
+        const screenHits = raycaster.intersectObjects([leftCurvedScreen, statusCurvedScreen], false);
+
+        if (screenHits.length > 0) {
+          const screenHit = screenHits[0];
+          // If a crystal cube was hit closer to the camera than the screen, user clicked the cube
+          if (cubeHits.length > 0 && cubeHits[0].distance < screenHit.distance - 0.2) {
+            return null;
           }
+          return { screen: screenHit.object, point: screenHit.point };
         }
         return null;
       }
@@ -82634,50 +82642,50 @@ exports.warnOnce = warnOnce;
         if (e.target === container || container.contains(e.target)) e.preventDefault();
       });
 
-      // EXACT RAYCAST HIT-POINT GEOMETRIC NORMAL DISCRIMINATOR (基于鼠标实际击中点几何法线的绝对精准正反面判定)
-      let dragSessionSign = -1.0;
-
+      // EXACT TANGENT VECTOR SCREEN-SPACE PROJECTION FORMULA
+      // Computes the exact 100% natural drag sign so dragging mouse RIGHT always slides screen RIGHT from ANY camera angle!
       function computeScreenDragSign(hitPoint) {
-        if (!hitPoint) return -1.0;
-        // Inward cylinder normal at the exact hit point (pointing towards central vertical axis (0, y, 0))
-        const inwardNx = -hitPoint.x;
-        const inwardNz = -hitPoint.z;
+        if (!hitPoint) return 1.0;
+        // Tangent vector along circular track at hit point in direction of increasing rotY: T = (z, 0, -x)
+        const tx = hitPoint.z;
+        const tz = -hitPoint.x;
 
-        // View ray vector from camera position to the exact hit point
-        const viewVx = hitPoint.x - camera.position.x;
-        const viewVz = hitPoint.z - camera.position.z;
+        // Camera screen-space RIGHT unit vector in world space
+        const camRight = new THREE.Vector3();
+        camera.matrixWorld.extractBasis(camRight, new THREE.Vector3(), new THREE.Vector3());
 
-        // Dot product: if ray is travelling against inward normal (< 0), camera faces FRONT (内凹正面); else BACK (外凸背面)
-        const dot = viewVx * inwardNx + viewVz * inwardNz;
-        const isFront = (dot < 0);
-
-        // FRONT: Drag Left -> Counter-Clockwise (+rotY), Drag Right -> Clockwise (-rotY) -> sign = -1.0
-        // BACK: Drag Left -> Clockwise (-rotY), Drag Right -> Counter-Clockwise (+rotY) -> sign = +1.0
-        return isFront ? -1.0 : 1.0;
+        // Dot product between track tangent and camera right vector
+        const dot = tx * camRight.x + tz * camRight.z;
+        return dot >= 0 ? 1.0 : -1.0;
       }
 
-      // Mouse Down Event (Left Click = Pan/Slide, Right Click = Rotate Orbit)
+      // Mouse Down Event (Left Click = Pan Scene or Drag Screen, Right Click = Rotate Orbit)
       container.addEventListener('mousedown', (e) => {
         pointerDownPos = { x: e.clientX, y: e.clientY };
         prevPointerPos = { x: e.clientX, y: e.clientY };
         pointerDownTime = Date.now();
-        isTouchMoved = false;
+        isPointerMoved = false;
 
         if (e.button === 0) {
-          // Left Click -> Pan scene (平移画面) OR Slide Screen if clicked on screen
+          // Left Click
           const hitInfo = getHitScreen(e.clientX, e.clientY);
           if (hitInfo) {
             draggedScreen = hitInfo.screen;
-            dragSessionSign = computeScreenDragSign(hitInfo.point); // 100% 精准锁定鼠标实际点击点的正反面物理手势方向
+            isDraggingScreen = true;
+            isLeftPanning = false;
+            dragSessionSign = computeScreenDragSign(hitInfo.point);
             container.style.cursor = 'grabbing';
           } else {
+            draggedScreen = null;
+            isDraggingScreen = false;
             isLeftPanning = true;
             container.style.cursor = 'move';
           }
         } else if (e.button === 2 || e.button === 1) {
-          // Right Click / Middle Click -> Rotate Orbit (旋转画面)
+          // Right Click / Middle Click -> Rotate Orbit
           isRightOrbiting = true;
           isLeftPanning = false;
+          isDraggingScreen = false;
           container.style.cursor = 'grab';
         }
       });
@@ -82685,30 +82693,34 @@ exports.warnOnce = warnOnce;
       let lastUnifiedClickTime = 0;
       function triggerUnifiedClick(clientX, clientY) {
         const now = Date.now();
-        if (now - lastUnifiedClickTime < 220) return; // 防抖，避免 touchend 与 click 双重触发
+        if (now - lastUnifiedClickTime < 250) return;
         lastUnifiedClickTime = now;
         handlePointerClick(clientX, clientY);
       }
 
       window.addEventListener('mouseup', (e) => {
+        const elapsed = Date.now() - pointerDownTime;
+        const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+        const wasDraggingScreen = isDraggingScreen;
+
+        isDraggingScreen = false;
         draggedScreen = null;
-        screenDragVelocity = 0;
         isLeftPanning = false;
         isRightOrbiting = false;
         container.style.cursor = 'default';
 
-        const elapsed = Date.now() - pointerDownTime;
-        const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
-        
-        // If it was a left click and NOT a drag along rail or pan (Tap tolerance < 12px, elapsed < 500ms)
-        if (e.button === 0 && dist < 12 && elapsed < 500) {
+        // Tap/Click Detection: Only trigger click if user did NOT drag (dist < 8px, elapsed < 400ms)
+        if (e.button === 0 && dist < 8 && elapsed < 400 && !isPointerMoved && !wasDraggingScreen) {
           triggerUnifiedClick(e.clientX, e.clientY);
         }
       });
 
-      // 原生 Click 事件双重保障 (Direct Fallback for All Mobile Browsers)
+      // Native Click Event Fallback for Mobile / Touch
       container.addEventListener('click', (e) => {
-        triggerUnifiedClick(e.clientX, e.clientY);
+        const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+        if (dist < 8 && !isPointerMoved) {
+          triggerUnifiedClick(e.clientX, e.clientY);
+        }
       });
 
       window.addEventListener('mousemove', (e) => {
@@ -82722,28 +82734,33 @@ exports.warnOnce = warnOnce;
         const deltaX = e.clientX - prevPointerPos.x;
         const deltaY = e.clientY - prevPointerPos.y;
         const totalMove = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
-        if (totalMove > 6) isTouchMoved = true;
+        if (totalMove > 4) isPointerMoved = true;
 
-        if (draggedScreen) {
-          // SLIDE SCREEN ALONG CIRCULAR STAGE TRACK (使用按下时锁定的方向，全程丝滑无抖动)!
-          const slideAngle = deltaX * 0.007 * dragSessionSign;
+        if (isDraggingScreen && draggedScreen) {
+          // SLIDE SCREEN ALONG CIRCULAR TRACK ACCORDING TO NATURAL GESTURE DIRECTION
+          const slideAngle = deltaX * 0.0075 * dragSessionSign;
           draggedScreen.rotation.y += slideAngle;
-        } else if (isLeftPanning && isTouchMoved) {
-          // MOUSE LEFT-CLICK DRAGGING -> PAN ENTIRE SCENE (左键平移画面)
+        } else if (isLeftPanning && isPointerMoved) {
+          // MOUSE LEFT-CLICK DRAGGING -> PAN ENTIRE SCENE
           panCamera(deltaX, deltaY, 1.0);
         } else if (isRightOrbiting) {
-          // MOUSE RIGHT-CLICK DRAGGING -> ROTATE / ORBIT SCENE (右键旋转画面)
+          // MOUSE RIGHT-CLICK DRAGGING -> ROTATE / ORBIT SCENE
           currentFocusMode = 'custom';
           theta -= deltaX * 0.006;
           phi = Math.max(0.15, Math.min(Math.PI / 2.05, phi - deltaY * 0.005));
           updateCameraTargetPosition();
         } else {
-          // Hover Cursor update for track draggable screen strictly within screen interior
+          // Hover Cursor update
           const hitInfo = getHitScreen(e.clientX, e.clientY);
           if (hitInfo) {
             container.style.cursor = 'grab';
           } else {
-            container.style.cursor = 'default';
+            const hitCube = findHitCube(e.clientX, e.clientY, false);
+            if (hitCube) {
+              container.style.cursor = 'pointer';
+            } else {
+              container.style.cursor = 'default';
+            }
           }
         }
 
@@ -82758,12 +82775,12 @@ exports.warnOnce = warnOnce;
         updateCameraTargetPosition();
       }, { passive: false });
 
-      // Mobile Touch Events (1 Finger Pan/Slide vs 2 Fingers Rotate/Zoom)
+      // Mobile Touch Events (1 Finger Pan / Slide vs 2 Fingers Rotate / Zoom)
       container.addEventListener('touchstart', (e) => {
         if (e.touches.length === 1) {
           isLeftPanning = true;
           isRightOrbiting = false;
-          isTouchMoved = false;
+          isPointerMoved = false;
           pointerDownPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
           prevPointerPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
           pointerDownTime = Date.now();
@@ -82771,14 +82788,18 @@ exports.warnOnce = warnOnce;
           const hitInfo = getHitScreen(e.touches[0].clientX, e.touches[0].clientY);
           if (hitInfo) {
             draggedScreen = hitInfo.screen;
-            dragSessionSign = computeScreenDragSign(hitInfo.point); // 100% 精准锁定触控实际点击点的正反面物理手势方向
+            isDraggingScreen = true;
+            isLeftPanning = false;
+            dragSessionSign = computeScreenDragSign(hitInfo.point);
           } else {
             draggedScreen = null;
+            isDraggingScreen = false;
           }
         } else if (e.touches.length === 2) {
           isLeftPanning = false;
+          isDraggingScreen = false;
           draggedScreen = null;
-          isTouchMoved = true;
+          isPointerMoved = true;
           const t0 = e.touches[0];
           const t1 = e.touches[1];
           prevTouchCenter = { x: (t0.clientX + t1.clientX) / 2, y: (t0.clientY + t1.clientY) / 2 };
@@ -82791,14 +82812,14 @@ exports.warnOnce = warnOnce;
           const deltaX = e.touches[0].clientX - prevPointerPos.x;
           const deltaY = e.touches[0].clientY - prevPointerPos.y;
           const totalDist = Math.hypot(e.touches[0].clientX - pointerDownPos.x, e.touches[0].clientY - pointerDownPos.y);
-          if (totalDist > 12) isTouchMoved = true;
+          if (totalDist > 8) isPointerMoved = true;
 
-          if (draggedScreen) {
-            // Touch Slide Screen along Rail (使用按下时锁定的方向，全程丝滑无抖动)
+          if (isDraggingScreen && draggedScreen) {
+            // Touch Slide Screen along Circular Track
             const slideAngle = deltaX * 0.009 * dragSessionSign;
             draggedScreen.rotation.y += slideAngle;
-          } else if (isTouchMoved) {
-            // 1-Finger Touch Pan (only pan when clearly moved > 12px)
+          } else if (isPointerMoved) {
+            // 1-Finger Touch Pan
             panCamera(deltaX, deltaY, 1.0);
           }
 
@@ -82809,7 +82830,7 @@ exports.warnOnce = warnOnce;
           const currentCenter = { x: (t0.clientX + t1.clientX) / 2, y: (t0.clientY + t1.clientY) / 2 };
           const currentPinchDistance = Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY);
 
-          // 1. Mobile Two-Finger Orbit: Rotate scene when two fingers move together (双指滑动旋转视角)
+          // 1. Mobile Two-Finger Orbit
           const deltaCenterX = currentCenter.x - prevTouchCenter.x;
           const deltaCenterY = currentCenter.y - prevTouchCenter.y;
           if (Math.hypot(deltaCenterX, deltaCenterY) > 1.2) {
@@ -82819,7 +82840,7 @@ exports.warnOnce = warnOnce;
             updateCameraTargetPosition();
           }
 
-          // 2. Mobile Pinch Zoom (双指捏合缩放)
+          // 2. Mobile Pinch Zoom
           const pinchDiff = currentPinchDistance - prevPinchDistance;
           if (Math.abs(pinchDiff) > 1.5) {
             currentFocusMode = 'custom';
@@ -82833,15 +82854,17 @@ exports.warnOnce = warnOnce;
       }, { passive: true });
 
       container.addEventListener('touchend', (e) => {
+        const wasDragging = isDraggingScreen;
+        isDraggingScreen = false;
         draggedScreen = null;
-        screenDragVelocity = 0;
         isLeftPanning = false;
+
         if (e.changedTouches && e.changedTouches.length > 0) {
           const touch = e.changedTouches[0];
           const elapsed = Date.now() - pointerDownTime;
           const dist = Math.hypot(touch.clientX - pointerDownPos.x, touch.clientY - pointerDownPos.y);
-          // 移动端轻触 100% 触发 (位移 < 28px，时间 < 650ms)
-          if (dist < 28 && elapsed < 650) {
+          // Tap Detection for Mobile
+          if (dist < 12 && elapsed < 450 && !wasDragging) {
             triggerUnifiedClick(touch.clientX, touch.clientY);
           }
         }
@@ -83137,7 +83160,8 @@ exports.warnOnce = warnOnce;
         // If in 'cube' project optimal view, ensure Meeting Screen never occludes Status Screen or Matrix
         if (currentFocusMode === 'cube') {
           // Check if meeting screen is in the forward viewing hemisphere of the camera
-          const camToMeeting = leftCurvedScreen.position.clone().sub(camera.position).normalize();
+          const meetingCenter = new THREE.Vector3(SCREEN_RADIUS * Math.sin(leftCurvedScreen.rotation.y), SCREEN_CENTER_Y, SCREEN_RADIUS * Math.cos(leftCurvedScreen.rotation.y));
+          const camToMeeting = meetingCenter.clone().sub(camera.position).normalize();
           const camDir = new THREE.Vector3();
           camera.getWorldDirection(camDir);
           const dot = camToMeeting.dot(camDir);
