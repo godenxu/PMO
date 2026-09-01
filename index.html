@@ -684,6 +684,42 @@
       color: #ffffff;
     }
 
+  
+    /* BOTTOM-RIGHT VERSION BADGE */
+    .bottom-right-version {
+      position: absolute;
+      right: clamp(12px, 2vw, 24px);
+      bottom: clamp(8px, 1.4vh, 16px);
+      z-index: 40;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      background: rgba(6, 24, 48, 0.55);
+      border: 1px solid rgba(64, 196, 238, 0.2);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      font-size: clamp(10.5px, 0.95vw, 12px);
+      color: rgba(142, 208, 235, 0.75);
+      letter-spacing: 0.08em;
+      font-family: monospace, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      white-space: nowrap;
+      text-shadow: 0 0 8px rgba(32, 227, 238, 0.25);
+    }
+    @media (max-width: 480px) {
+      .bottom-right-version {
+        bottom: 6px;
+        right: 8px;
+        padding: 2px 7px;
+        font-size: 10px;
+      }
+    }
+    .orbit-svg-container, .orbit-svg-container * {
+      pointer-events: none !important;
+    }
+
   </style>
 </head>
 <body>
@@ -907,6 +943,12 @@
     <div class="bottom-left-copyright">
       <span>® 设计：黄菲影，开发：徐捷</span>
     </div>
+
+    <!-- BOTTOM-RIGHT VERSION BADGE (UTC+8 YYYYMMDDHHmm) -->
+    <div class="bottom-right-version">
+      <span>v202609010933</span>
+    </div>
+
 
   </main>
 
@@ -82552,7 +82594,7 @@ exports.warnOnce = warnOnce;
       updateStatusCanvas(null);
 
       // ==========================================================================
-      // 7. RESPONSIVE TOUCH & MOUSE INTERACTION (SCREEN TRACK ORBIT + SCENE PAN / ROTATE)
+      // 7. RESPONSIVE TOUCH & MOUSE INTERACTION (MOBILE TOUCH DRAG & ORBIT ENGINE)
       // ==========================================================================
       const raycaster = new THREE.Raycaster();
       const mouse = new THREE.Vector2();
@@ -82562,7 +82604,6 @@ exports.warnOnce = warnOnce;
       if (tooltipEl) tooltipEl.style.display = 'none';
 
       // Drag, Pan & Orbit State Variables
-      // RULE: Drag Screen = Rotate Screen along Circular Track; Drag Background = Pan Scene; Right-Click / 2-Finger = Orbit View
       let isLeftPanning = false;
       let isRightOrbiting = false;
       let isDraggingScreen = false;
@@ -82574,7 +82615,7 @@ exports.warnOnce = warnOnce;
       let pointerDownTime = 0;
       let prevPointerPos = { x: 0, y: 0 };
 
-      // Touch Pan / Pinch tracking
+      // Touch Tracking
       let prevTouchCenter = { x: 0, y: 0 };
       let prevPinchDistance = 0;
 
@@ -82586,14 +82627,12 @@ exports.warnOnce = warnOnce;
       let phi = Math.PI / 3.4;
       let orbitRadius = defaultCamPos.distanceTo(defaultLookAt);
 
-      // Helper to compute spherical camera position around targetLookAt
       function updateCameraTargetPosition() {
         targetCamPos.x = targetLookAt.x + orbitRadius * Math.sin(phi) * Math.sin(theta);
         targetCamPos.y = targetLookAt.y + orbitRadius * Math.cos(phi);
         targetCamPos.z = targetLookAt.z + orbitRadius * Math.sin(phi) * Math.cos(theta);
       }
 
-      // Pan/Translate whole scene in 3D camera plane
       function panCamera(deltaX, deltaY, speedFactor = 1.0) {
         currentFocusMode = 'custom';
         const panSpeed = orbitRadius * 0.0015 * speedFactor;
@@ -82608,58 +82647,68 @@ exports.warnOnce = warnOnce;
         updateCameraTargetPosition();
       }
 
-      // ROBUST 3D SCREEN RAYCAST HIT DETECTION
+      // HIGHLY ROBUST 3D SCREEN HIT DETECTOR (Supports both Desktop & Mobile Touch with Recursive Hierarchy Traversal)
       function getHitScreen(clientX, clientY) {
         const rect = container.getBoundingClientRect();
         mouse.x = ((clientX - rect.left) / container.clientWidth) * 2 - 1;
         mouse.y = -((clientY - rect.top) / container.clientHeight) * 2 + 1;
         raycaster.setFromCamera(mouse, camera);
 
-        // Check 3D cube mesh intersections (foreground priority)
+        // 1. Raycast on curved screens (recursive = true catches screen mesh, borders, and frames)
+        const screenHits = raycaster.intersectObjects([leftCurvedScreen, statusCurvedScreen], true);
+        if (screenHits.length === 0) return null;
+
+        // Resolve top-level screen object
+        let hitObj = screenHits[0].object;
+        let rootScreen = null;
+        let curr = hitObj;
+        while (curr) {
+          if (curr === leftCurvedScreen || curr === statusCurvedScreen) {
+            rootScreen = curr;
+            break;
+          }
+          curr = curr.parent;
+        }
+        if (!rootScreen) return null;
+
+        const screenHitPoint = screenHits[0].point;
+        const screenHitDist = screenHits[0].distance;
+
+        // 2. Check if a crystal cube is in foreground directly blocking this ray
         const hitMeshes = [];
         cubeObjects.forEach(c => {
           if (c.userData.outerMesh) hitMeshes.push(c.userData.outerMesh);
         });
         const cubeHits = raycaster.intersectObjects(hitMeshes, false);
-
-        // Check curved screens (both Left Meeting Screen & Status Screen)
-        const screenHits = raycaster.intersectObjects([leftCurvedScreen, statusCurvedScreen], false);
-
-        if (screenHits.length > 0) {
-          const screenHit = screenHits[0];
-          // If a crystal cube was hit closer to the camera than the screen, user clicked the cube
-          if (cubeHits.length > 0 && cubeHits[0].distance < screenHit.distance - 0.2) {
-            return null;
-          }
-          return { screen: screenHit.object, point: screenHit.point };
+        if (cubeHits.length > 0 && cubeHits[0].distance < screenHitDist - 0.25) {
+          return null; // A cube is in front of the screen
         }
-        return null;
+
+        return { screen: rootScreen, point: screenHitPoint };
       }
 
-      // Prevent context menu on right click
+      // Context menu prevention
       container.addEventListener('contextmenu', (e) => e.preventDefault());
       window.addEventListener('contextmenu', (e) => {
         if (e.target === container || container.contains(e.target)) e.preventDefault();
       });
 
       // EXACT TANGENT VECTOR SCREEN-SPACE PROJECTION FORMULA
-      // Computes the exact 100% natural drag sign so dragging mouse RIGHT always slides screen RIGHT from ANY camera angle!
       function computeScreenDragSign(hitPoint) {
         if (!hitPoint) return 1.0;
-        // Tangent vector along circular track at hit point in direction of increasing rotY: T = (z, 0, -x)
         const tx = hitPoint.z;
         const tz = -hitPoint.x;
 
-        // Camera screen-space RIGHT unit vector in world space
         const camRight = new THREE.Vector3();
         camera.matrixWorld.extractBasis(camRight, new THREE.Vector3(), new THREE.Vector3());
 
-        // Dot product between track tangent and camera right vector
         const dot = tx * camRight.x + tz * camRight.z;
         return dot >= 0 ? 1.0 : -1.0;
       }
 
-      // Mouse Down Event (Left Click = Pan Scene or Drag Screen, Right Click = Rotate Orbit)
+      // =========================================================================
+      // MOUSE CONTROLS (Desktop)
+      // =========================================================================
       container.addEventListener('mousedown', (e) => {
         pointerDownPos = { x: e.clientX, y: e.clientY };
         prevPointerPos = { x: e.clientX, y: e.clientY };
@@ -82667,7 +82716,6 @@ exports.warnOnce = warnOnce;
         isPointerMoved = false;
 
         if (e.button === 0) {
-          // Left Click
           const hitInfo = getHitScreen(e.clientX, e.clientY);
           if (hitInfo) {
             draggedScreen = hitInfo.screen;
@@ -82682,7 +82730,6 @@ exports.warnOnce = warnOnce;
             container.style.cursor = 'move';
           }
         } else if (e.button === 2 || e.button === 1) {
-          // Right Click / Middle Click -> Rotate Orbit
           isRightOrbiting = true;
           isLeftPanning = false;
           isDraggingScreen = false;
@@ -82709,16 +82756,7 @@ exports.warnOnce = warnOnce;
         isRightOrbiting = false;
         container.style.cursor = 'default';
 
-        // Tap/Click Detection: Only trigger click if user did NOT drag (dist < 8px, elapsed < 400ms)
         if (e.button === 0 && dist < 8 && elapsed < 400 && !isPointerMoved && !wasDraggingScreen) {
-          triggerUnifiedClick(e.clientX, e.clientY);
-        }
-      });
-
-      // Native Click Event Fallback for Mobile / Touch
-      container.addEventListener('click', (e) => {
-        const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
-        if (dist < 8 && !isPointerMoved) {
           triggerUnifiedClick(e.clientX, e.clientY);
         }
       });
@@ -82737,20 +82775,16 @@ exports.warnOnce = warnOnce;
         if (totalMove > 4) isPointerMoved = true;
 
         if (isDraggingScreen && draggedScreen) {
-          // SLIDE SCREEN ALONG CIRCULAR TRACK ACCORDING TO NATURAL GESTURE DIRECTION
           const slideAngle = deltaX * 0.0075 * dragSessionSign;
           draggedScreen.rotation.y += slideAngle;
         } else if (isLeftPanning && isPointerMoved) {
-          // MOUSE LEFT-CLICK DRAGGING -> PAN ENTIRE SCENE
           panCamera(deltaX, deltaY, 1.0);
         } else if (isRightOrbiting) {
-          // MOUSE RIGHT-CLICK DRAGGING -> ROTATE / ORBIT SCENE
           currentFocusMode = 'custom';
           theta -= deltaX * 0.006;
           phi = Math.max(0.15, Math.min(Math.PI / 2.05, phi - deltaY * 0.005));
           updateCameraTargetPosition();
         } else {
-          // Hover Cursor update
           const hitInfo = getHitScreen(e.clientX, e.clientY);
           if (hitInfo) {
             container.style.cursor = 'grab';
@@ -82767,7 +82801,6 @@ exports.warnOnce = warnOnce;
         prevPointerPos = { x: e.clientX, y: e.clientY };
       });
 
-      // Mouse Wheel Zoom
       container.addEventListener('wheel', (e) => {
         e.preventDefault();
         currentFocusMode = 'custom';
@@ -82775,17 +82808,18 @@ exports.warnOnce = warnOnce;
         updateCameraTargetPosition();
       }, { passive: false });
 
-      // Mobile Touch Events (1 Finger Pan / Slide vs 2 Fingers Rotate / Zoom)
+      // =========================================================================
+      // MOBILE TOUCH CONTROLS (Single-Finger Screen Drag / Pan & Two-Finger Orbit / Zoom)
+      // =========================================================================
       container.addEventListener('touchstart', (e) => {
         if (e.touches.length === 1) {
-          isLeftPanning = true;
-          isRightOrbiting = false;
-          isPointerMoved = false;
-          pointerDownPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-          prevPointerPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          const touch = e.touches[0];
+          pointerDownPos = { x: touch.clientX, y: touch.clientY };
+          prevPointerPos = { x: touch.clientX, y: touch.clientY };
           pointerDownTime = Date.now();
+          isPointerMoved = false;
 
-          const hitInfo = getHitScreen(e.touches[0].clientX, e.touches[0].clientY);
+          const hitInfo = getHitScreen(touch.clientX, touch.clientY);
           if (hitInfo) {
             draggedScreen = hitInfo.screen;
             isDraggingScreen = true;
@@ -82794,6 +82828,7 @@ exports.warnOnce = warnOnce;
           } else {
             draggedScreen = null;
             isDraggingScreen = false;
+            isLeftPanning = true;
           }
         } else if (e.touches.length === 2) {
           isLeftPanning = false;
@@ -82805,26 +82840,41 @@ exports.warnOnce = warnOnce;
           prevTouchCenter = { x: (t0.clientX + t1.clientX) / 2, y: (t0.clientY + t1.clientY) / 2 };
           prevPinchDistance = Math.hypot(t0.clientX - t1.clientX, t0.clientY - t1.clientY);
         }
-      }, { passive: true });
+      }, { passive: false });
 
       container.addEventListener('touchmove', (e) => {
         if (e.touches.length === 1) {
-          const deltaX = e.touches[0].clientX - prevPointerPos.x;
-          const deltaY = e.touches[0].clientY - prevPointerPos.y;
-          const totalDist = Math.hypot(e.touches[0].clientX - pointerDownPos.x, e.touches[0].clientY - pointerDownPos.y);
-          if (totalDist > 8) isPointerMoved = true;
+          const touch = e.touches[0];
+          const deltaX = touch.clientX - prevPointerPos.x;
+          const deltaY = touch.clientY - prevPointerPos.y;
+          const totalDist = Math.hypot(touch.clientX - pointerDownPos.x, touch.clientY - pointerDownPos.y);
+          if (totalDist > 5) isPointerMoved = true;
+
+          // If touchstart slightly missed, re-check hit during initial 10px move
+          if (!isDraggingScreen && !draggedScreen && totalDist < 14) {
+            const hitInfo = getHitScreen(touch.clientX, touch.clientY);
+            if (hitInfo) {
+              draggedScreen = hitInfo.screen;
+              isDraggingScreen = true;
+              isLeftPanning = false;
+              dragSessionSign = computeScreenDragSign(hitInfo.point);
+            }
+          }
 
           if (isDraggingScreen && draggedScreen) {
-            // Touch Slide Screen along Circular Track
-            const slideAngle = deltaX * 0.009 * dragSessionSign;
+            // Drag screen along track
+            if (e.cancelable) e.preventDefault();
+            const slideAngle = deltaX * 0.0090 * dragSessionSign;
             draggedScreen.rotation.y += slideAngle;
           } else if (isPointerMoved) {
             // 1-Finger Touch Pan
+            if (e.cancelable) e.preventDefault();
             panCamera(deltaX, deltaY, 1.0);
           }
 
-          prevPointerPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          prevPointerPos = { x: touch.clientX, y: touch.clientY };
         } else if (e.touches.length === 2) {
+          if (e.cancelable) e.preventDefault();
           const t0 = e.touches[0];
           const t1 = e.touches[1];
           const currentCenter = { x: (t0.clientX + t1.clientX) / 2, y: (t0.clientY + t1.clientY) / 2 };
@@ -82851,7 +82901,7 @@ exports.warnOnce = warnOnce;
           prevTouchCenter = currentCenter;
           prevPinchDistance = currentPinchDistance;
         }
-      }, { passive: true });
+      }, { passive: false });
 
       container.addEventListener('touchend', (e) => {
         const wasDragging = isDraggingScreen;
@@ -82864,7 +82914,7 @@ exports.warnOnce = warnOnce;
           const elapsed = Date.now() - pointerDownTime;
           const dist = Math.hypot(touch.clientX - pointerDownPos.x, touch.clientY - pointerDownPos.y);
           // Tap Detection for Mobile
-          if (dist < 12 && elapsed < 450 && !wasDragging) {
+          if (dist < 10 && elapsed < 400 && !wasDragging) {
             triggerUnifiedClick(touch.clientX, touch.clientY);
           }
         }
