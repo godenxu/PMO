@@ -1189,13 +1189,103 @@
     .pm-activity-time { color: #7fa8bf; flex-shrink: 0; }
     .pm-activity-text { color: #c3e3f2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    @media (max-width: 900px), (max-height: 560px) {
+    /* Mid-size fallback (small desktop windows / tablets): keep the dashboard
+       grid but let it scroll instead of trying to cram into one screen. */
+    @media (max-width: 900px) and (min-width: 761px), (max-height: 560px) and (min-width: 761px) {
       .project-modal-panel { height: 92vh; }
       .project-modal-body {
         grid-template-columns: 1fr 1fr;
         grid-template-rows: auto auto auto;
         overflow-y: auto;
       }
+      .pm-col { min-height: 220px; }
+    }
+
+    /* Phone layout: single scrollable column, own font scale (the desktop
+       dashboard's enlarged text is unreadable/overflowing at this width),
+       charts get explicit heights since they can no longer rely on a fixed
+       parent height to size via flex:1. */
+    @media (max-width: 760px) {
+      /* Top padding must clear the app's own header bar: .main-viewport (the
+         modal's DOM ancestor) is a position:absolute, z-index:10 element,
+         which traps this fixed-position overlay inside its own stacking
+         context - the modal's z-index:320 only wins against siblings within
+         that context, never against the sibling <header> (z-index:50) at the
+         top level. Desktop avoids this by leaving room above the panel;
+         mobile must do the same rather than sitting flush at inset:0. */
+      .project-modal-overlay {
+        padding: clamp(52px, 7vh, 68px) 0 0 0;
+        align-items: stretch;
+      }
+      .project-modal-panel {
+        width: 100%;
+        min-height: 0;
+        border-radius: 0;
+      }
+      .project-modal-header { padding: 12px 14px; }
+      .pm-status-dot { width: 11px; height: 11px; }
+      .pm-name { font-size: 17px; }
+      .pm-sub { font-size: 11.5px; margin-top: 1px; }
+      .project-modal-close { width: 30px; height: 30px; font-size: 17px; }
+
+      .pm-subheader {
+        flex-wrap: wrap;
+        padding: 7px 14px;
+        gap: 2px 10px;
+        font-size: 11.5px;
+      }
+      .pm-subheader-desc { flex-basis: 100%; white-space: normal; }
+      .pm-subheader-owner { font-size: 11px; }
+
+      .project-modal-body {
+        display: block;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 12px 14px 20px;
+      }
+      .pm-col { display: block; margin-bottom: 12px; }
+      .pm-col:last-child { margin-bottom: 0; }
+
+      /* KPIs: 2-column wrap grid instead of a tall single column */
+      .pm-kpi-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .pm-kpi-tile { flex: none; padding: 7px 10px; }
+      .pm-kpi-icon { font-size: 12px; }
+      .pm-kpi-label { font-size: 10.5px; }
+      .pm-kpi-value { font-size: 14.5px; }
+
+      .pm-block-title { font-size: 12.5px; margin-bottom: 5px; }
+
+      /* Chart blocks: stack vertically, each gets a real fixed-ish height
+         (flex:1 has nothing to fill when the column height is auto) */
+      .pm-col-charts1, .pm-col-charts2 { display: flex; flex-direction: column; gap: 10px; }
+      /* !important needed: the desktop layout sets inline style="flex:1" (etc.)
+         on these blocks directly in the HTML, which otherwise beats any
+         class-based override here regardless of selector specificity. */
+      .pm-col-charts1 .pm-block, .pm-col-charts2 .pm-block { flex: none !important; height: 190px; }
+
+      .pm-col-side { display: flex; flex-direction: column; gap: 10px; }
+      .pm-col-side .pm-block { flex: none !important; }
+
+      .pm-milestones { max-height: none; }
+      .pm-milestone-title { font-size: 12.5px; }
+      .pm-milestone-meta { font-size: 10.5px; }
+
+      .pm-risks { justify-content: flex-start; }
+      .pm-risk-title { font-size: 12px; }
+      .pm-risk-sev { font-size: 10px; }
+      .pm-risk-desc {
+        font-size: 11px;
+        white-space: normal;
+        display: block;
+        -webkit-line-clamp: unset;
+      }
+
+      .pm-activity { justify-content: flex-start; gap: 10px; }
+      .pm-activity-item { font-size: 11.5px; flex-wrap: wrap; }
+      /* Text always drops to its own full-width line (rather than only when
+         it happens not to fit) so every entry reads consistently instead of
+         the date/dot looking orphaned above a wrapped line. */
+      .pm-activity-text { white-space: normal; flex-basis: 100%; margin-left: 13px; margin-top: 1px; }
     }
 
     /* BOTTOM-RIGHT VERSION BADGE */
@@ -83592,8 +83682,15 @@ exports.warnOnce = warnOnce;
         const screenHits = raycaster.intersectObjects([leftCurvedScreen, statusCurvedScreen], true);
         if (screenHits.length === 0) return null;
 
+        // Prefer an actual hit on the screen's own glass mesh (carries uv data)
+        // over a decorative border/mount child - a child can occasionally report
+        // a spurious near-zero-distance hit that would otherwise mask the real
+        // mesh intersection and silently drop the uv needed for item hit-testing.
+        const meshHit = screenHits.find(h => h.object === leftCurvedScreen || h.object === statusCurvedScreen);
+        const primary = meshHit || screenHits[0];
+
         // Resolve top-level screen object
-        let hitObj = screenHits[0].object;
+        let hitObj = primary.object;
         let rootScreen = null;
         let curr = hitObj;
         while (curr) {
@@ -83605,8 +83702,8 @@ exports.warnOnce = warnOnce;
         }
         if (!rootScreen) return null;
 
-        const screenHitPoint = screenHits[0].point;
-        const screenHitDist = screenHits[0].distance;
+        const screenHitPoint = primary.point;
+        const screenHitDist = primary.distance;
 
         // 2. Check if a crystal cube is in foreground directly blocking this ray
         const cubeHits = raycaster.intersectObjects(staticCubeOuterMeshes, false);
@@ -83614,7 +83711,7 @@ exports.warnOnce = warnOnce;
           return null; // A cube is in front of the screen
         }
 
-        return { screen: rootScreen, point: screenHitPoint, uv: (screenHits[0].object === rootScreen ? screenHits[0].uv : null) };
+        return { screen: rootScreen, point: screenHitPoint, uv: (primary.object === rootScreen ? primary.uv : null) };
       }
 
       // Maps a curved-screen raycast UV hit to which of the 4 canvas-drawn
@@ -83865,6 +83962,11 @@ exports.warnOnce = warnOnce;
           const dist = Math.hypot(touch.clientX - pointerDownPos.x, touch.clientY - pointerDownPos.y);
           // Tap Detection for Mobile
           if (dist < 10 && elapsed < 400) {
+            // Suppress the browser's ~300ms-later synthetic "ghost" mouse
+            // click for this tap - otherwise it lands on whatever now sits at
+            // this screen position (e.g. a modal overlay that just opened)
+            // and can immediately close it right after the tap opened it.
+            if (e.cancelable) e.preventDefault();
             triggerUnifiedClick(touch.clientX, touch.clientY);
           }
         }
@@ -83891,25 +83993,25 @@ exports.warnOnce = warnOnce;
         const dirX = dx / horizDist;
         const dirZ = dz / horizDist;
 
-        let camDist = 6.2;
-        let camHeight = 3.35;
+        let camDist = 7.6;
+        let camHeight = 3.9;
         let lookAtWeight = 0.22;
 
         if (aspect < 0.6) {
-          camDist = 8.5;
-          camHeight = 4.20;
+          camDist = 10.4;
+          camHeight = 5.1;
           lookAtWeight = 0.35;
         } else if (aspect < 0.9) {
-          camDist = 7.6;
-          camHeight = 3.80;
+          camDist = 9.3;
+          camHeight = 4.6;
           lookAtWeight = 0.28;
         } else if (aspect < 1.2) {
-          camDist = 6.8;
-          camHeight = 3.55;
+          camDist = 8.3;
+          camHeight = 4.3;
           lookAtWeight = 0.25;
         } else {
-          camDist = 6.2;
-          camHeight = 3.35;
+          camDist = 7.6;
+          camHeight = 3.9;
           lookAtWeight = 0.22;
         }
 
@@ -83919,9 +84021,14 @@ exports.warnOnce = warnOnce;
           cube.position.z + dirZ * camDist
         );
 
+        // Look-at target is raised well above the cube itself so the hologram
+        // beam and its name plate (which rise ~HOLO_BEAM_HEIGHT+ above the
+        // cube) stay comfortably inside the frame instead of poking out the top.
+        const subjectY = cube.position.y + HOLO_BEAM_HEIGHT * 0.6;
+
         const lookAt = new THREE.Vector3(
           cube.position.x * (1.0 - lookAtWeight) + screenCenter.x * lookAtWeight,
-          cube.position.y * (1.0 - lookAtWeight) + (SCREEN_CENTER_Y - 0.5) * lookAtWeight,
+          subjectY * (1.0 - lookAtWeight) + (SCREEN_CENTER_Y - 0.5) * lookAtWeight,
           cube.position.z * (1.0 - lookAtWeight) + screenCenter.z * lookAtWeight
         );
 
@@ -84741,10 +84848,12 @@ exports.warnOnce = warnOnce;
         else if (key === 'minutes') renderMinutesList();
       }
 
+      let openedAt = 0;
       window.openMeetingPanel = function (itemIdx) {
         const meta = viewMeta[itemIdx] || viewMeta[0];
         switchView(meta.key);
         overlay.classList.add('open');
+        openedAt = Date.now();
       };
 
       function closePanel() {
@@ -84752,7 +84861,13 @@ exports.warnOnce = warnOnce;
       }
 
       closeBtn.addEventListener('click', closePanel);
-      overlay.addEventListener('click', closePanel);
+      overlay.addEventListener('click', () => {
+        // Guard against a mobile "ghost click": the browser can synthesize a
+        // compatibility mouse click ~300ms after the touch that just opened
+        // this overlay, landing on the backdrop and closing it immediately.
+        if (Date.now() - openedAt < 400) return;
+        closePanel();
+      });
       panel.addEventListener('click', (e) => e.stopPropagation());
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && overlay.classList.contains('open')) closePanel();
@@ -85037,14 +85152,32 @@ exports.warnOnce = warnOnce;
         const w = canvas.width, h = canvas.height;
         ctx.clearRect(0, 0, w, h);
 
-        const cx = w / 2, cy = h / 2 + 10;
-        const R = Math.max(20, Math.min(w / 2, h * 0.62) - 12);
         const startA = Math.PI * 0.75;
         const endA = Math.PI * 2.25;
         const clamped = Math.max(0, Math.min(100, value));
         const valueA = startA + (endA - startA) * clamped / 100;
 
-        ctx.lineWidth = Math.max(8, R * 0.22);
+        // Geometry is solved from w/h directly (not derived circularly from R)
+        // so the ring + tick marks + label are mathematically guaranteed to
+        // stay inside the canvas for ANY container aspect ratio (desktop wide
+        // tiles and cramped mobile tiles alike) - the sweep's lowest points
+        // sit at the 135°/45° endpoints (sin=0.7071), not straight down.
+        const ringWidth = Math.max(6, Math.min(w, h) * 0.085);
+        const ringHalf = ringWidth / 2;
+        const tickLen = Math.max(4, ringWidth * 0.5);
+        const topMargin = 4;
+        const sideMargin = 4;
+        const labelFontSize = Math.max(9, Math.min(w, h) * 0.075);
+        const labelSpace = labelFontSize + 8;
+
+        const maxRByWidth = w / 2 - sideMargin - ringHalf - tickLen;
+        const maxRByHeight = (h - labelSpace - topMargin) / 1.7071 - ringHalf - tickLen;
+        const R = Math.max(12, Math.min(maxRByWidth, maxRByHeight));
+
+        const cx = w / 2;
+        const cy = topMargin + ringHalf + tickLen + R;
+
+        ctx.lineWidth = ringWidth;
         ctx.lineCap = 'round';
         ctx.strokeStyle = 'rgba(75,205,245,0.14)';
         ctx.beginPath();
@@ -85066,7 +85199,8 @@ exports.warnOnce = warnOnce;
         ctx.strokeStyle = 'rgba(200,230,245,0.28)';
         for (let i = 0; i <= 10; i++) {
           const a = startA + (endA - startA) * i / 10;
-          const r1 = R - ctx.lineWidth - 8, r2 = R + 8;
+          const r1 = R - ringHalf - 2;
+          const r2 = R + ringHalf + tickLen;
           ctx.beginPath();
           ctx.moveTo(cx + r1 * Math.cos(a), cy + r1 * Math.sin(a));
           ctx.lineTo(cx + r2 * Math.cos(a), cy + r2 * Math.sin(a));
@@ -85078,8 +85212,8 @@ exports.warnOnce = warnOnce;
         ctx.font = '700 ' + Math.round(R * 0.56) + 'px sans-serif';
         ctx.fillText(clamped.toFixed(1), cx, cy + R * 0.12);
         ctx.fillStyle = '#a8cfe2';
-        ctx.font = '600 13px sans-serif';
-        ctx.fillText(label || '健康度评分', cx, cy + R * 0.42);
+        ctx.font = '600 ' + Math.round(labelFontSize) + 'px sans-serif';
+        ctx.fillText(label || '健康度评分', cx, h - labelSpace * 0.3);
       }
 
       const STATUS_WORD = { normal: '正常', warning: '预警', risk: '风险' };
@@ -85095,6 +85229,7 @@ exports.warnOnce = warnOnce;
         { key: 'riskLevel', icon: '🚦', label: '风险等级' }
       ];
 
+      let openedAt = 0;
       window.openProjectDetailPanel = function (cube) {
         const data = cube.userData;
         const glow = data.glowColor;
@@ -85188,6 +85323,7 @@ exports.warnOnce = warnOnce;
         `).join('');
 
         overlay.classList.add('open');
+        openedAt = Date.now();
       };
 
       function closePanel() {
@@ -85195,7 +85331,13 @@ exports.warnOnce = warnOnce;
       }
 
       closeBtn.addEventListener('click', closePanel);
-      overlay.addEventListener('click', closePanel);
+      overlay.addEventListener('click', () => {
+        // Guard against a mobile "ghost click": the browser can synthesize a
+        // compatibility mouse click ~300ms after the touch that just opened
+        // this overlay, landing on the backdrop and closing it immediately.
+        if (Date.now() - openedAt < 400) return;
+        closePanel();
+      });
       panel.addEventListener('click', (e) => e.stopPropagation());
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && overlay.classList.contains('open')) closePanel();
