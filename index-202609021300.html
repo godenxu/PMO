@@ -684,520 +684,7 @@
       color: #ffffff;
     }
 
-    /* ==========================================================================
-       MEETING MANAGEMENT MODAL SYSTEM (预约会议 / 组织会议 / 会议通知 / 会议纪要)
-       Palette reuses the page's cyan HUD variables - no new colors introduced.
-       ========================================================================== */
-    .meeting-modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(2, 8, 18, 0.58);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-      z-index: 300;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: clamp(56px, 10vh, 110px) 16px 24px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-    }
-    .meeting-modal-overlay.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .meeting-modal-panel {
-      width: clamp(320px, 92vw, 640px);
-      max-height: 78vh;
-      display: flex;
-      flex-direction: column;
-      background: linear-gradient(160deg, rgba(10, 34, 60, 0.97) 0%, rgba(4, 16, 34, 0.98) 100%);
-      border: 1px solid rgba(32, 227, 238, 0.55);
-      border-radius: 16px;
-      box-shadow: 0 24px 60px rgba(0, 4, 14, 0.85), 0 0 40px rgba(32, 227, 238, 0.28);
-      transform: translateY(-16px) scale(0.98);
-      opacity: 0;
-      transition: transform 0.3s cubic-bezier(.2,.9,.3,1.2), opacity 0.25s ease;
-    }
-    .meeting-modal-overlay.open .meeting-modal-panel {
-      transform: translateY(0) scale(1);
-      opacity: 1;
-    }
-    .meeting-modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 1px solid rgba(75, 205, 245, 0.25);
-      flex-shrink: 0;
-    }
-    .meeting-modal-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 16px;
-      font-weight: 700;
-      color: #ffffff;
-    }
-    .meeting-modal-title .icon { font-size: 18px; }
-    .meeting-modal-close {
-      background: transparent;
-      border: 1px solid rgba(122, 200, 230, 0.35);
-      color: #9cd3ea;
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      font-size: 17px;
-      line-height: 1;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .meeting-modal-close:hover {
-      color: #ffffff;
-      border-color: var(--cyan-primary);
-      box-shadow: 0 0 10px rgba(32, 227, 238, 0.4);
-    }
-    .meeting-modal-body {
-      padding: 18px 20px 22px;
-      overflow-y: auto;
-      font-size: 13px;
-      color: #cfe9f6;
-    }
-
-    .mm-field { margin-bottom: 14px; }
-    .mm-field label {
-      display: block;
-      font-size: 12px;
-      color: #7fc2dd;
-      margin-bottom: 6px;
-      letter-spacing: 0.3px;
-    }
-    .mm-field input[type=text],
-    .mm-field input[type=number],
-    .mm-field input[type=datetime-local],
-    .mm-field textarea,
-    .mm-field select {
-      width: 100%;
-      background: rgba(4, 18, 36, 0.75);
-      border: 1px solid rgba(75, 205, 245, 0.3);
-      border-radius: 8px;
-      padding: 9px 12px;
-      color: #eaf7ff;
-      font-size: 13px;
-      font-family: inherit;
-      outline: none;
-      transition: border-color .15s, box-shadow .15s;
-    }
-    .mm-field textarea { resize: vertical; min-height: 52px; }
-    .mm-field input:focus, .mm-field textarea:focus, .mm-field select:focus {
-      border-color: var(--cyan-primary);
-      box-shadow: 0 0 0 3px rgba(32, 227, 238, 0.15);
-    }
-    .mm-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-    .mm-btn-primary {
-      width: 100%;
-      padding: 11px;
-      border-radius: 9px;
-      border: 1px solid rgba(32, 227, 238, 0.7);
-      background: linear-gradient(135deg, rgba(32, 227, 238, 0.28), rgba(0, 120, 180, 0.22));
-      color: #ffffff;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      letter-spacing: 1px;
-      transition: all .15s;
-    }
-    .mm-btn-primary:hover { box-shadow: 0 0 18px rgba(32, 227, 238, 0.45); transform: translateY(-1px); }
-    .mm-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
-
-    .mm-success-msg {
-      margin-top: 10px;
-      padding: 8px 12px;
-      border-radius: 8px;
-      background: rgba(32, 227, 238, 0.12);
-      border: 1px solid rgba(32, 227, 238, 0.4);
-      color: #7fe9f2;
-      font-size: 12px;
-      display: none;
-    }
-    .mm-success-msg.show { display: block; animation: mmFadeIn .3s ease; }
-    @keyframes mmFadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
-
-    .mm-list { display: flex; flex-direction: column; gap: 10px; }
-    .mm-card {
-      background: rgba(4, 18, 38, 0.55);
-      border: 1px solid rgba(75, 205, 245, 0.22);
-      border-radius: 10px;
-      padding: 12px 14px;
-      cursor: pointer;
-      transition: border-color .15s, background .15s;
-    }
-    .mm-card:hover { border-color: rgba(32, 227, 238, 0.6); background: rgba(6, 26, 50, 0.7); }
-    .mm-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
-    .mm-card-title { font-size: 13.5px; font-weight: 600; color: #ffffff; }
-    .mm-card-meta { font-size: 11px; color: #7fa8bf; }
-    .mm-tag {
-      font-size: 10px;
-      padding: 2px 7px;
-      border-radius: 5px;
-      border: 1px solid rgba(32, 227, 238, 0.5);
-      color: var(--cyan-primary);
-      background: rgba(32, 227, 238, 0.1);
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .mm-tag.new { border-color: var(--orange-warn); color: var(--orange-warn); background: rgba(255, 159, 36, 0.12); }
-    .mm-empty { text-align: center; padding: 24px 0; color: #5f8aa0; font-size: 12px; }
-
-    .mm-check-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 9px;
-      border: 1px solid rgba(75, 205, 245, 0.2);
-      background: rgba(4, 18, 38, 0.45);
-      margin-bottom: 8px;
-      cursor: pointer;
-    }
-    .mm-check-item input[type=checkbox] {
-      margin-top: 3px;
-      accent-color: var(--cyan-primary);
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-    .mm-check-item .mm-ci-body { flex: 1; }
-    .mm-check-item .mm-ci-title { font-size: 13px; color: #ffffff; font-weight: 600; margin-bottom: 2px; }
-    .mm-check-item .mm-ci-sub { font-size: 11px; color: #7fa8bf; }
-
-    .mm-summary-box {
-      margin-top: 14px;
-      padding: 12px 14px;
-      border-radius: 10px;
-      background: rgba(32, 227, 238, 0.06);
-      border: 1px dashed rgba(32, 227, 238, 0.4);
-      font-size: 12px;
-      color: #b8e4f0;
-      line-height: 1.7;
-    }
-
-    .mm-file-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      padding: 4px 9px;
-      border-radius: 6px;
-      background: rgba(75, 205, 245, 0.1);
-      border: 1px solid rgba(75, 205, 245, 0.3);
-      color: #a9dcee;
-      margin-right: 6px;
-      margin-top: 6px;
-    }
-    .mm-file-chip.word { border-color: rgba(80, 140, 255, 0.4); color: #9fc2ff; }
-    .mm-file-chip.pdf { border-color: rgba(255, 110, 110, 0.4); color: #ffb0b0; }
-
-    .mm-upload-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
-      border-radius: 8px;
-      border: 1px dashed rgba(32, 227, 238, 0.5);
-      color: var(--cyan-primary);
-      background: rgba(32, 227, 238, 0.06);
-      font-size: 12px;
-      cursor: pointer;
-      margin-bottom: 14px;
-    }
-    .mm-upload-btn:hover { background: rgba(32, 227, 238, 0.12); }
-
-    .mm-back-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      color: #7fc2dd;
-      font-size: 12px;
-      cursor: pointer;
-      margin-bottom: 12px;
-    }
-    .mm-back-btn:hover { color: #ffffff; }
-
-    .mm-detail-block { font-size: 13px; line-height: 1.8; color: #d3edf7; }
-    .mm-detail-block b { color: #ffffff; }
-
-    @media (max-width: 640px) {
-      .mm-row2 { grid-template-columns: 1fr; }
-    }
-
-    /* ==========================================================================
-       PROJECT DETAIL PANEL (项目状态看板 -> 锁定项目详情)
-       Larger, richer sibling of the meeting modal - same HUD palette, deeper
-       content. Accent color is set inline per-project (--pm-accent / --pm-glow).
-       ========================================================================== */
-    .project-modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(2, 8, 18, 0.62);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      z-index: 320;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: clamp(40px, 7vh, 80px) 16px 24px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-      --pm-accent: #20e3ee;
-      --pm-glow: rgba(32, 227, 238, 0.85);
-    }
-    .project-modal-overlay.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .project-modal-panel {
-      width: min(96vw, 1460px);
-      height: min(90vh, 820px);
-      min-height: 560px;
-      display: flex;
-      flex-direction: column;
-      background: linear-gradient(160deg, rgba(10, 34, 60, 0.97) 0%, rgba(4, 16, 34, 0.98) 100%);
-      border: 1px solid color-mix(in srgb, var(--pm-accent) 55%, transparent);
-      border-radius: 18px;
-      box-shadow: 0 28px 70px rgba(0, 4, 14, 0.85), 0 0 46px color-mix(in srgb, var(--pm-glow) 30%, transparent);
-      transform: translateY(-18px) scale(0.98);
-      opacity: 0;
-      transition: transform 0.32s cubic-bezier(.2,.9,.3,1.2), opacity 0.25s ease;
-      overflow: hidden;
-    }
-    .project-modal-overlay.open .project-modal-panel {
-      transform: translateY(0) scale(1);
-      opacity: 1;
-    }
-    .project-modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 24px;
-      border-bottom: 1px solid rgba(75, 205, 245, 0.25);
-      flex-shrink: 0;
-      background: linear-gradient(90deg, color-mix(in srgb, var(--pm-accent) 14%, transparent), transparent 60%);
-    }
-    .pm-title-block { display: flex; align-items: center; gap: 14px; min-width: 0; }
-    .pm-status-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      background: var(--pm-accent);
-      box-shadow: 0 0 12px var(--pm-glow), 0 0 26px var(--pm-glow);
-    }
-    .pm-name {
-      font-size: 25px;
-      font-weight: 700;
-      color: #ffffff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .pm-sub {
-      font-size: 15px;
-      color: #8fc4de;
-      margin-top: 3px;
-      letter-spacing: 0.3px;
-    }
-    .pm-sub .pm-status-word { color: var(--pm-accent); font-weight: 600; }
-    .project-modal-close {
-      background: transparent;
-      border: 1px solid rgba(122, 200, 230, 0.35);
-      color: #9cd3ea;
-      width: 30px;
-      height: 30px;
-      border-radius: 9px;
-      font-size: 18px;
-      line-height: 1;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .project-modal-close:hover {
-      color: #ffffff;
-      border-color: var(--pm-accent);
-      box-shadow: 0 0 10px var(--pm-glow);
-    }
-    /* Compact sub-header band: one-line description + owner, under the main header */
-    .pm-subheader {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 9px 24px;
-      border-bottom: 1px solid rgba(75, 205, 245, 0.14);
-      flex-shrink: 0;
-      font-size: 14.5px;
-      color: #9fcbe0;
-    }
-    .pm-subheader-desc {
-      flex: 1;
-      min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: #c3e3f2;
-    }
-    .pm-subheader-owner { flex-shrink: 0; color: #8fc4de; }
-    .pm-subheader-owner b { color: #ffffff; font-weight: 600; }
-
-    /* Main body: fixed 4-column dashboard grid, no scrolling, fills all remaining height */
-    .project-modal-body {
-      flex: 1;
-      min-height: 0;
-      display: grid;
-      grid-template-columns: 208px 1fr 1fr 270px;
-      gap: 12px;
-      padding: 12px 20px 16px;
-      overflow: hidden;
-      font-size: 13px;
-      color: #cfe9f6;
-    }
-    .pm-col { display: flex; flex-direction: column; min-height: 0; min-width: 0; gap: 10px; }
-    .pm-block {
-      background: rgba(4, 18, 38, 0.5);
-      border: 1px solid rgba(75, 205, 245, 0.18);
-      border-radius: 11px;
-      padding: 9px 11px;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-      overflow: hidden;
-    }
-    .pm-block-title {
-      font-size: 13.5px;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      flex-shrink: 0;
-      white-space: nowrap;
-    }
-    .pm-block-canvas-wrap { flex: 1; min-height: 0; position: relative; }
-    .pm-block-canvas-wrap canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-
-    /* Column 1: compact vertical KPI list */
-    .pm-kpi-list { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 7px; overflow: hidden; }
-    .pm-kpi-tile {
-      background: rgba(4, 18, 38, 0.55);
-      border: 1px solid rgba(75, 205, 245, 0.18);
-      border-radius: 8px;
-      padding: 5px 10px;
-      position: relative;
-      overflow: hidden;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      min-height: 0;
-    }
-    .pm-kpi-tile::before {
-      content: '';
-      position: absolute;
-      inset: 0 auto 0 0;
-      width: 3px;
-      background: var(--pm-accent);
-      box-shadow: 0 0 8px var(--pm-glow);
-    }
-    .pm-kpi-row { display: flex; flex-direction: column; gap: 2px; }
-    .pm-kpi-icon { font-size: 12.5px; opacity: 0.9; margin-right: 4px; }
-    .pm-kpi-label { font-size: 11.5px; color: #8fbcd4; letter-spacing: 0.2px; white-space: nowrap; }
-    .pm-kpi-value { font-size: 18px; font-weight: 700; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .pm-kpi-value.accent { color: var(--pm-accent); }
-
-    /* Column 4: milestones / risks / activity, each a flexible compact block */
-    .pm-milestones { flex: 1; min-height: 0; overflow: hidden; position: relative; padding-left: 18px; display: flex; flex-direction: column; justify-content: space-between; }
-    .pm-milestones::before {
-      content: '';
-      position: absolute;
-      left: 4px;
-      top: 4px;
-      bottom: 4px;
-      width: 1px;
-      background: rgba(75, 205, 245, 0.25);
-    }
-    .pm-milestone { position: relative; }
-    .pm-milestone::before {
-      content: '';
-      position: absolute;
-      left: -18px;
-      top: 4px;
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: #0a2036;
-      border: 2px solid #3d6a80;
-    }
-    .pm-milestone.done::before { background: var(--pm-accent); border-color: var(--pm-accent); box-shadow: 0 0 6px var(--pm-glow); }
-    .pm-milestone.active::before { background: var(--orange-warn); border-color: var(--orange-warn); box-shadow: 0 0 6px var(--orange-glow); }
-    .pm-milestone-title { font-size: 13.5px; color: #ffffff; font-weight: 600; line-height: 1.3; }
-    .pm-milestone-meta { font-size: 11.5px; color: #8fbcd4; }
-
-    .pm-risks { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; gap: 7px; overflow: hidden; }
-    .pm-risk-card {
-      background: rgba(4, 18, 38, 0.4);
-      border: 1px solid rgba(75, 205, 245, 0.15);
-      border-radius: 7px;
-      padding: 7px 9px;
-      flex: 0 0 auto;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      min-height: 0;
-      overflow: hidden;
-    }
-    .pm-risk-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
-    .pm-risk-title { font-size: 13px; color: #ffffff; font-weight: 600; }
-    .pm-risk-sev {
-      font-size: 11px;
-      padding: 1px 7px;
-      border-radius: 5px;
-      font-weight: 600;
-      flex-shrink: 0;
-    }
-    .pm-risk-sev.low { background: rgba(32, 227, 238, 0.15); color: var(--cyan-primary); border: 1px solid rgba(32, 227, 238, 0.4); }
-    .pm-risk-sev.mid { background: rgba(255, 159, 36, 0.15); color: var(--orange-warn); border: 1px solid rgba(255, 159, 36, 0.4); }
-    .pm-risk-sev.high { background: rgba(255, 56, 83, 0.15); color: var(--red-risk); border: 1px solid rgba(255, 56, 83, 0.4); }
-    .pm-risk-desc { font-size: 11.5px; color: #9cc2d6; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
-
-    .pm-activity { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
-    .pm-activity-item { display: flex; gap: 8px; font-size: 12px; align-items: baseline; }
-    .pm-activity-dot {
-      width: 5px; height: 5px; border-radius: 50%;
-      background: var(--pm-accent);
-      flex-shrink: 0;
-      box-shadow: 0 0 5px var(--pm-glow);
-    }
-    .pm-activity-time { color: #7fa8bf; flex-shrink: 0; }
-    .pm-activity-text { color: #c3e3f2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-    @media (max-width: 900px), (max-height: 560px) {
-      .project-modal-panel { height: 92vh; }
-      .project-modal-body {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto auto auto;
-        overflow-y: auto;
-      }
-    }
-
+  
     /* BOTTOM-RIGHT VERSION BADGE */
     .bottom-right-version {
       position: absolute;
@@ -1389,165 +876,6 @@
       </div>
       <div class="tooltip-detail-row" id="tt-extra-row" style="margin-top:5px;padding-top:4px;border-top:1px dashed rgba(75,205,245,0.2);color:#ffab32">
         <span id="tt-desc">运行平稳，无阻断缺陷</span>
-      </div>
-    </div>
-
-    <!-- MEETING MANAGEMENT MODAL: 预约会议 / 组织会议 / 会议通知 / 会议纪要 -->
-    <div class="meeting-modal-overlay" id="meeting-modal-overlay">
-      <div class="meeting-modal-panel" id="meeting-modal-panel">
-        <div class="meeting-modal-header">
-          <div class="meeting-modal-title">
-            <span class="icon" id="mm-header-icon">📅</span>
-            <span id="mm-header-title">预约会议</span>
-          </div>
-          <button class="meeting-modal-close" id="mm-close-btn" title="关闭">&times;</button>
-        </div>
-        <div class="meeting-modal-body">
-
-          <!-- 1. 预约会议：议题申请表单 -->
-          <div class="mm-view" id="mm-view-book">
-            <div class="mm-field">
-              <label>议题名称 *</label>
-              <input type="text" id="mm-book-title" placeholder="请输入议题名称，如「核心交易系统灰度发布评审」">
-            </div>
-            <div class="mm-row2">
-              <div class="mm-field">
-                <label>汇报人 *</label>
-                <input type="text" id="mm-book-reporter" placeholder="姓名 / 所属部门">
-              </div>
-              <div class="mm-field">
-                <label>汇报时长（分钟）</label>
-                <input type="number" id="mm-book-duration" min="5" max="120" step="5" value="15">
-              </div>
-            </div>
-            <div class="mm-field">
-              <label>参会人</label>
-              <textarea id="mm-book-attendees" placeholder="多个参会人请用顿号分隔"></textarea>
-            </div>
-            <button class="mm-btn-primary" id="mm-book-submit">提交议题预约</button>
-            <div class="mm-success-msg" id="mm-book-success">✓ 议题已提交，等待纳入会议统筹</div>
-
-            <div style="margin-top:22px;">
-              <label style="display:block;font-size:12px;color:#7fc2dd;margin-bottom:8px;">我的待统筹议题</label>
-              <div class="mm-list" id="mm-book-my-list"></div>
-            </div>
-          </div>
-
-          <!-- 2. 组织会议：议题统筹与一键发布 -->
-          <div class="mm-view" id="mm-view-organize" style="display:none;">
-            <label style="display:block;font-size:12px;color:#7fc2dd;margin-bottom:8px;">待统筹议题清单（勾选纳入本次会议）</label>
-            <div class="mm-list" id="mm-organize-list"></div>
-
-            <div class="mm-row2" style="margin-top:16px;">
-              <div class="mm-field">
-                <label>会议时间</label>
-                <input type="datetime-local" id="mm-org-time">
-              </div>
-              <div class="mm-field">
-                <label>会议地点</label>
-                <select id="mm-org-location">
-                  <option>第一会议室（本部大楼 18F）</option>
-                  <option>第二会议室（本部大楼 12F）</option>
-                  <option>腾讯会议（线上）</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="mm-summary-box" id="mm-org-summary">请勾选议题以生成会议通知预览</div>
-
-            <button class="mm-btn-primary" id="mm-org-publish" style="margin-top:14px;" disabled>一键发布会议通知</button>
-            <div class="mm-success-msg" id="mm-org-success">✓ 会议通知已发布</div>
-          </div>
-
-          <!-- 3. 会议通知：新增 + 前五次通知列表 / 详情 -->
-          <div class="mm-view" id="mm-view-notice" style="display:none;">
-            <div id="mm-notice-list-wrap">
-              <div class="mm-list" id="mm-notice-list"></div>
-            </div>
-            <div id="mm-notice-detail-wrap" style="display:none;">
-              <div class="mm-back-btn" id="mm-notice-back">← 返回通知列表</div>
-              <div class="mm-detail-block" id="mm-notice-detail-body"></div>
-            </div>
-          </div>
-
-          <!-- 4. 会议纪要：列表 + 上传 Word/PDF + 阅读详情 -->
-          <div class="mm-view" id="mm-view-minutes" style="display:none;">
-            <div id="mm-minutes-list-wrap">
-              <label class="mm-upload-btn" for="mm-upload-input">⬆ 上传会议纪要（Word / PDF）</label>
-              <input type="file" id="mm-upload-input" accept=".doc,.docx,.pdf" style="display:none;">
-              <div class="mm-list" id="mm-minutes-list"></div>
-            </div>
-            <div id="mm-minutes-detail-wrap" style="display:none;">
-              <div class="mm-back-btn" id="mm-minutes-back">← 返回纪要列表</div>
-              <div class="mm-detail-block" id="mm-minutes-detail-body"></div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <!-- PROJECT DETAIL PANEL: 锁定项目 + 点击项目状态看板大屏后弹出 -->
-    <div class="project-modal-overlay" id="project-modal-overlay">
-      <div class="project-modal-panel" id="project-modal-panel">
-        <div class="project-modal-header">
-          <div class="pm-title-block">
-            <span class="pm-status-dot" id="pm-status-dot"></span>
-            <div style="min-width:0;">
-              <div class="pm-name" id="pm-name">项目名称</div>
-              <div class="pm-sub" id="pm-sub">SYS-00 · 分类 · <span class="pm-status-word" id="pm-status-word">正常</span></div>
-            </div>
-          </div>
-          <button class="project-modal-close" id="pm-close-btn" title="关闭">&times;</button>
-        </div>
-
-        <div class="pm-subheader">
-          <span class="pm-subheader-desc" id="pm-desc"></span>
-          <span class="pm-subheader-owner" id="pm-owner"></span>
-        </div>
-
-        <div class="project-modal-body">
-          <div class="pm-col pm-col-kpi">
-            <div class="pm-kpi-list" id="pm-kpi-grid"></div>
-          </div>
-
-          <div class="pm-col pm-col-charts1">
-            <div class="pm-block" style="flex:1;">
-              <div class="pm-block-title">📈 质量趋势（近10期）</div>
-              <div class="pm-block-canvas-wrap"><canvas id="pm-trend-canvas" width="380" height="150"></canvas></div>
-            </div>
-            <div class="pm-block" style="flex:1;">
-              <div class="pm-block-title">📊 关键指标对比</div>
-              <div class="pm-block-canvas-wrap"><canvas id="pm-bar-canvas" width="380" height="150"></canvas></div>
-            </div>
-          </div>
-
-          <div class="pm-col pm-col-charts2">
-            <div class="pm-block" style="flex:1;">
-              <div class="pm-block-title">🕸 综合能力雷达</div>
-              <div class="pm-block-canvas-wrap"><canvas id="pm-radar-canvas" width="340" height="150"></canvas></div>
-            </div>
-            <div class="pm-block" style="flex:1;">
-              <div class="pm-block-title">💠 健康度环形仪表</div>
-              <div class="pm-block-canvas-wrap"><canvas id="pm-gauge-canvas" width="340" height="150"></canvas></div>
-            </div>
-          </div>
-
-          <div class="pm-col pm-col-side">
-            <div class="pm-block" style="flex:1.15;">
-              <div class="pm-block-title">🗓 里程碑时间轴</div>
-              <div class="pm-milestones" id="pm-milestones"></div>
-            </div>
-            <div class="pm-block" style="flex:1;">
-              <div class="pm-block-title">⚠ 风险与问题</div>
-              <div class="pm-risks" id="pm-risks"></div>
-            </div>
-            <div class="pm-block" style="flex:0.85;">
-              <div class="pm-block-title">🕒 近期动态</div>
-              <div class="pm-activity" id="pm-activity"></div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -82360,7 +81688,7 @@ exports.warnOnce = warnOnce;
         [[6, 16], [50, 24], [96, 14]].forEach(([y, h]) => {
           const grad = ctx.createLinearGradient(0, y, 0, y + h);
           grad.addColorStop(0.0, 'rgba(255,255,255,0)');
-          grad.addColorStop(0.5, 'rgba(255,255,255,0.55)');
+          grad.addColorStop(0.5, 'rgba(255,255,255,0.95)');
           grad.addColorStop(1.0, 'rgba(255,255,255,0)');
           ctx.fillStyle = grad;
           ctx.fillRect(0, y, 32, h);
@@ -82461,8 +81789,8 @@ exports.warnOnce = warnOnce;
       // Holographic project-name plate: HUD corner brackets + scanlines + glow text,
       // rendered to a canvas texture and redrawn only when the hover target changes
       const holoLabelCanvas = document.createElement('canvas');
-      holoLabelCanvas.width = 640;
-      holoLabelCanvas.height = 210;
+      holoLabelCanvas.width = 512;
+      holoLabelCanvas.height = 168;
       const holoLabelCtx = holoLabelCanvas.getContext('2d');
       const holoLabelTexture = new THREE.CanvasTexture(holoLabelCanvas);
       holoLabelTexture.needsUpdate = true;
@@ -82475,7 +81803,7 @@ exports.warnOnce = warnOnce;
         depthTest: false
       });
       const holoLabel = new THREE.Sprite(holoLabelMat);
-      holoLabel.scale.set(3.55, 1.165, 1);
+      holoLabel.scale.set(2.55, 0.836, 1);
       holoLabel.renderOrder = 20;
       hologramGroup.add(holoLabel);
 
@@ -82484,21 +81812,12 @@ exports.warnOnce = warnOnce;
         const colorStr = '#' + hexColor.toString(16).padStart(6, '0');
         holoLabelCtx.clearRect(0, 0, w, h);
 
-        // Soft glass backing plate so the text pops clearly against the beam
-        const bgGrad = holoLabelCtx.createLinearGradient(0, 0, 0, h);
-        bgGrad.addColorStop(0, 'rgba(6, 22, 42, 0.62)');
-        bgGrad.addColorStop(1, 'rgba(4, 14, 30, 0.42)');
-        holoLabelCtx.fillStyle = bgGrad;
-        holoLabelCtx.beginPath();
-        holoLabelCtx.roundRect(10, 10, w - 20, h - 20, 16);
-        holoLabelCtx.fill();
-
         // HUD corner brackets
         holoLabelCtx.strokeStyle = colorStr;
-        holoLabelCtx.lineWidth = 4;
+        holoLabelCtx.lineWidth = 3;
         holoLabelCtx.shadowColor = colorStr;
-        holoLabelCtx.shadowBlur = 20;
-        const bx = 20, by = 20, bw = w - 40, bh = h - 40, cl = 36;
+        holoLabelCtx.shadowBlur = 14;
+        const bx = 16, by = 16, bw = w - 32, bh = h - 32, cl = 28;
         holoLabelCtx.beginPath();
         holoLabelCtx.moveTo(bx, by + cl); holoLabelCtx.lineTo(bx, by); holoLabelCtx.lineTo(bx + cl, by);
         holoLabelCtx.moveTo(bx + bw - cl, by); holoLabelCtx.lineTo(bx + bw, by); holoLabelCtx.lineTo(bx + bw, by + cl);
@@ -82511,7 +81830,7 @@ exports.warnOnce = warnOnce;
         holoLabelCtx.globalAlpha = 0.10;
         holoLabelCtx.strokeStyle = '#ffffff';
         holoLabelCtx.lineWidth = 1;
-        for (let y = 8; y < h; y += 6) {
+        for (let y = 6; y < h; y += 5) {
           holoLabelCtx.beginPath();
           holoLabelCtx.moveTo(0, y);
           holoLabelCtx.lineTo(w, y);
@@ -82522,18 +81841,18 @@ exports.warnOnce = warnOnce;
         // Project name
         holoLabelCtx.textAlign = 'center';
         holoLabelCtx.textBaseline = 'middle';
-        holoLabelCtx.font = 'bold 52px sans-serif';
+        holoLabelCtx.font = 'bold 40px sans-serif';
         holoLabelCtx.fillStyle = '#ffffff';
         holoLabelCtx.shadowColor = colorStr;
-        holoLabelCtx.shadowBlur = 24;
-        holoLabelCtx.fillText(name, w / 2, h / 2 - 18);
+        holoLabelCtx.shadowBlur = 18;
+        holoLabelCtx.fillText(name, w / 2, h / 2 - 14);
         holoLabelCtx.shadowBlur = 0;
 
         // Sub-line: system code + holographic tag
-        holoLabelCtx.font = '24px sans-serif';
+        holoLabelCtx.font = '20px sans-serif';
         holoLabelCtx.fillStyle = colorStr;
         holoLabelCtx.globalAlpha = 0.88;
-        holoLabelCtx.fillText((code || '') + '  ·  全息链路', w / 2, h / 2 + 42);
+        holoLabelCtx.fillText((code || '') + '  ·  全息链路', w / 2, h / 2 + 34);
         holoLabelCtx.globalAlpha = 1.0;
 
         holoLabelTexture.needsUpdate = true;
@@ -83550,11 +82869,6 @@ exports.warnOnce = warnOnce;
 
       let currentFilterStatus = 'all';
       let currentFocusMode = 'overview';
-      // True from the moment a crystal cube is clicked until it is explicitly
-      // unlocked (click same cube again, or click empty space). Independent of
-      // currentFocusMode so navigating elsewhere (nav buttons, dragging a
-      // screen) does not silently drop the lock - only an explicit action does.
-      let isCubeLocked = false;
 
       // Spherical Orbit Coordinates relative to targetLookAt
       let theta = Math.PI / 4.2;
@@ -83614,28 +82928,7 @@ exports.warnOnce = warnOnce;
           return null; // A cube is in front of the screen
         }
 
-        return { screen: rootScreen, point: screenHitPoint, uv: (screenHits[0].object === rootScreen ? screenHits[0].uv : null) };
-      }
-
-      // Maps a curved-screen raycast UV hit to which of the 4 canvas-drawn
-      // 会议管理 list items (预约会议/组织会议/会议通知/会议纪要) was clicked.
-      // leftTexture uses wrapS=Repeat, repeat.x=-1, offset.x=1 (mirrored so the
-      // canvas text reads correctly from outside the cylinder), and three.js
-      // CylinderGeometry emits uv=(u, 1-v) with v=0 at the top - so both axes
-      // invert cleanly: canvasX = (1-uv.x)*w, canvasY = (1-uv.y)*h.
-      function getMeetingItemHit(uv) {
-        if (!uv) return -1;
-        const w = leftCanvas.width, h = leftCanvas.height;
-        const xPx = (1 - uv.x) * w;
-        const yPx = (1 - uv.y) * h;
-        const itemStartY = 120, itemHeight = 115, itemGap = 24;
-        for (let i = 0; i < 4; i++) {
-          const iy = itemStartY + i * (itemHeight + itemGap);
-          if (xPx >= 60 && xPx <= w - 60 && yPx >= iy && yPx <= iy + itemHeight) {
-            return i;
-          }
-        }
-        return -1;
+        return { screen: rootScreen, point: screenHitPoint };
       }
 
       // Context menu prevention
@@ -83699,6 +82992,7 @@ exports.warnOnce = warnOnce;
       window.addEventListener('mouseup', (e) => {
         const elapsed = Date.now() - pointerDownTime;
         const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+        const wasDraggingScreen = isDraggingScreen;
 
         isDraggingScreen = false;
         draggedScreen = null;
@@ -83706,7 +83000,7 @@ exports.warnOnce = warnOnce;
         isRightOrbiting = false;
         container.style.cursor = 'default';
 
-        if (e.button === 0 && dist < 8 && elapsed < 400 && !isPointerMoved) {
+        if (e.button === 0 && dist < 8 && elapsed < 400 && !isPointerMoved && !wasDraggingScreen) {
           triggerUnifiedClick(e.clientX, e.clientY);
         }
       });
@@ -83855,6 +83149,7 @@ exports.warnOnce = warnOnce;
       }, { passive: false });
 
       container.addEventListener('touchend', (e) => {
+        const wasDragging = isDraggingScreen;
         isDraggingScreen = false;
         draggedScreen = null;
         isLeftPanning = false;
@@ -83864,7 +83159,7 @@ exports.warnOnce = warnOnce;
           const elapsed = Date.now() - pointerDownTime;
           const dist = Math.hypot(touch.clientX - pointerDownPos.x, touch.clientY - pointerDownPos.y);
           // Tap Detection for Mobile
-          if (dist < 10 && elapsed < 400) {
+          if (dist < 10 && elapsed < 400 && !wasDragging) {
             triggerUnifiedClick(touch.clientX, touch.clientY);
           }
         }
@@ -83931,9 +83226,7 @@ exports.warnOnce = warnOnce;
       function cancelCubeFocus() {
         hoveredCube = null;
         lastHoveredCube = null;
-        isCubeLocked = false;
         updateStatusCanvas(null);
-        updateHologramTarget(null);
         setFocusView('overview');
       }
 
@@ -83958,7 +83251,7 @@ exports.warnOnce = warnOnce;
 
         cubeObjects.forEach(c => {
           tempV.copy(c.position);
-          tempV.y += CUBE_SIZE * 0.5;
+          tempV.y += CUBE_HEIGHT * 0.5;
           tempV.project(camera);
 
           if (tempV.z >= -1.0 && tempV.z <= 1.0) {
@@ -83979,7 +83272,7 @@ exports.warnOnce = warnOnce;
         // 1. Priority 1: Check Crystal Cubes
         const targetCube = findHitCube(clientX, clientY, true);
         if (targetCube) {
-          if (isCubeLocked && hoveredCube === targetCube) {
+          if (currentFocusMode === 'cube' && hoveredCube === targetCube) {
             cancelCubeFocus();
             return;
           }
@@ -83993,45 +83286,24 @@ exports.warnOnce = warnOnce;
           phi = Math.acos(Math.max(-1, Math.min(1, (targetCamPos.y - targetLookAt.y) / orbitRadius)));
 
           currentFocusMode = 'cube';
-          isCubeLocked = true;
           hoveredCube = targetCube;
           lastHoveredCube = targetCube;
           updateStatusCanvas(targetCube.userData);
-          updateHologramTarget(targetCube);
           return;
         }
 
         // 2. Priority 2: Check Background 3D Screens
         const hitInfo = getHitScreen(clientX, clientY);
         if (hitInfo && hitInfo.screen.userData && hitInfo.screen.userData.targetView) {
-          // A project is locked and the status board was clicked: show its detail
-          // panel instead of the normal screen-focus behavior. Camera, lock state
-          // and hologram are left untouched (works regardless of how the user
-          // navigated to the status screen - nav button, drag, or direct click).
-          if (hitInfo.screen === statusCurvedScreen && isCubeLocked && hoveredCube) {
-            openProjectDetailPanel(hoveredCube);
-            return;
-          }
-
           hoveredCube = null;
           lastHoveredCube = null;
-          isCubeLocked = false;
           updateStatusCanvas(null);
-          updateHologramTarget(null);
-          if (hitInfo.screen === leftCurvedScreen) {
-            const itemIdx = getMeetingItemHit(hitInfo.uv);
-            if (itemIdx >= 0) {
-              activeMeetingIdx = itemIdx;
-              updateLeftCanvas();
-              openMeetingPanel(itemIdx);
-            }
-          }
           setFocusView(hitInfo.screen.userData.targetView);
           return;
         }
 
         // 3. Click Empty Space: Cancel Focus
-        if (isCubeLocked || hoveredCube) {
+        if (currentFocusMode === 'cube' || hoveredCube) {
           cancelCubeFocus();
         }
       }
@@ -84178,13 +83450,11 @@ exports.warnOnce = warnOnce;
 
           if (intersects.length > 0) {
             const targetCube = intersects[0].object.parent;
-            // While a project is locked, only an explicit click may change or
-            // release it - passive hover must not steal or drop the lock.
-            if (hoveredCube !== targetCube && !isCubeLocked) {
+            if (hoveredCube !== targetCube) {
               hoveredCube = targetCube;
             }
           } else {
-            if (hoveredCube && !isCubeLocked) {
+            if (hoveredCube && currentFocusMode !== 'cube') {
               hoveredCube = null;
             }
           }
@@ -84314,10 +83584,10 @@ exports.warnOnce = warnOnce;
 
             holoBeamMat.opacity = eased * 0.42;
             holoCoreMat.opacity = eased * 0.62;
-            holoStreakMat.opacity = eased * 0.26 * Math.max(0.5, flicker);
+            holoStreakMat.opacity = eased * 0.75 * Math.max(0.4, flicker);
             holoRingMat.opacity = eased * 0.85;
             holoRing2Mat.opacity = eased * 0.55;
-            holoLabelMat.opacity = eased * Math.max(0.72, flicker);
+            holoLabelMat.opacity = eased * Math.max(0.55, flicker);
 
             const beamScaleY = 0.35 + eased * 0.65;
             holoBeam.scale.y = beamScaleY;
@@ -84326,9 +83596,9 @@ exports.warnOnce = warnOnce;
 
             holoRing.rotation.z += 0.012;
             holoRing2.rotation.z -= 0.018;
-            holoStreakTexture.offset.y -= 0.007;
+            holoStreakTexture.offset.y -= 0.012;
 
-            holoLabel.position.y = HOLO_BEAM_HEIGHT * beamScaleY + 0.46 + Math.sin(clockTime * 1.6) * 0.05;
+            holoLabel.position.y = HOLO_BEAM_HEIGHT * beamScaleY + 0.34 + Math.sin(clockTime * 1.6) * 0.05;
           }
         }
 
@@ -84364,842 +83634,6 @@ exports.warnOnce = warnOnce;
 
       window.addEventListener('resize', handleResize);
       window.addEventListener('orientationchange', () => setTimeout(handleResize, 150));
-    })();
-
-    // ==========================================================================
-    // MEETING MANAGEMENT MODAL SYSTEM (预约会议 / 组织会议 / 会议通知 / 会议纪要)
-    // Self-contained overlay UI, decoupled from the 3D scene IIFE above.
-    // openMeetingPanel() is exposed on window so the curved-screen click
-    // handler (handlePointerClick) can trigger it. All data below is mocked
-    // client-side only - nothing is persisted or sent anywhere.
-    // ==========================================================================
-    (function initMeetingModals() {
-      const overlay = document.getElementById('meeting-modal-overlay');
-      if (!overlay) return;
-
-      const panel = document.getElementById('meeting-modal-panel');
-      const headerIcon = document.getElementById('mm-header-icon');
-      const headerTitle = document.getElementById('mm-header-title');
-      const closeBtn = document.getElementById('mm-close-btn');
-
-      const views = {
-        book: document.getElementById('mm-view-book'),
-        organize: document.getElementById('mm-view-organize'),
-        notice: document.getElementById('mm-view-notice'),
-        minutes: document.getElementById('mm-view-minutes')
-      };
-      const viewMeta = [
-        { key: 'book', icon: '📅', title: '预约会议 · 议题申请' },
-        { key: 'organize', icon: '👥', title: '组织会议 · 统筹与发布' },
-        { key: 'notice', icon: '🔔', title: '会议通知' },
-        { key: 'minutes', icon: '📝', title: '会议纪要' }
-      ];
-
-      // ---------------- Mock Data ----------------
-      let topicSeq = 100;
-      let noticeSeq = 100;
-      let minutesSeq = 100;
-
-      const meetingTopics = [
-        { id: 't1', title: '核心交易系统灰度发布方案评审', reporter: '张伟 / 架构一处', duration: 15, attendees: '王总监、李经理、技术委员会', submittedAt: '08-28', status: 'pending' },
-        { id: 't2', title: '信贷风控模型 V3 上线前安全测评', reporter: '陈静 / 风险管理部', duration: 20, attendees: '安全保卫部、风险管理部', submittedAt: '08-29', status: 'pending' },
-        { id: 't3', title: '同业资金交易直连系统联调进度汇报', reporter: '刘洋 / 同业业务部', duration: 10, attendees: '同业业务部、科技运营部', submittedAt: '08-30', status: 'pending' }
-      ];
-
-      const meetingNotices = [
-        {
-          id: 'n1',
-          title: 'PMO项目管理委员会 · 9月第1周统筹会议',
-          time: '2026-09-03 14:30',
-          location: '第一会议室（本部大楼 18F）',
-          topics: [
-            { title: '手机银行9.0版本迭代排期评审', reporter: '赵敏 / 零售金融科技部', duration: 20 },
-            { title: '票据交易系统直连联调验收', reporter: '董经理 / 票据业务部', duration: 15 }
-          ],
-          publishedAt: '2026-08-27 17:05'
-        },
-        {
-          id: 'n2',
-          title: 'PMO项目管理委员会 · 8月第4周统筹会议',
-          time: '2026-08-25 10:00',
-          location: '腾讯会议（线上）',
-          topics: [
-            { title: '智能反欺诈生物特征库准确率复盘', reporter: '陆总 / 安全保卫部', duration: 15 }
-          ],
-          publishedAt: '2026-08-20 09:30'
-        },
-        {
-          id: 'n3',
-          title: 'PMO项目管理委员会 · 8月第3周统筹会议',
-          time: '2026-08-18 14:00',
-          location: '第二会议室（本部大楼 12F）',
-          topics: [
-            { title: '科技资产CMDB纳管率专项汇报', reporter: '梁总监 / 科技运营部', duration: 15 },
-            { title: '电子票据流转网风险清零方案', reporter: '董经理 / 票据业务部', duration: 20 }
-          ],
-          publishedAt: '2026-08-13 16:40'
-        },
-        {
-          id: 'n4',
-          title: 'PMO项目管理委员会 · 8月第2周统筹会议',
-          time: '2026-08-11 14:00',
-          location: '第一会议室（本部大楼 18F）',
-          topics: [
-            { title: '信贷风控模型V2迭代复盘', reporter: '陈静 / 风险管理部', duration: 15 }
-          ],
-          publishedAt: '2026-08-06 11:15'
-        },
-        {
-          id: 'n5',
-          title: 'PMO项目管理委员会 · 8月第1周统筹会议',
-          time: '2026-08-04 14:00',
-          location: '腾讯会议（线上）',
-          topics: [
-            { title: '同业资金交易直连系统联调启动', reporter: '刘洋 / 同业业务部', duration: 15 },
-            { title: '智能反欺诈生物特征库上线预演', reporter: '陆总 / 安全保卫部', duration: 15 }
-          ],
-          publishedAt: '2026-07-30 09:50'
-        }
-      ];
-
-      const meetingMinutes = [
-        {
-          id: 'm1',
-          title: 'PMO项目管理委员会 · 8月第4周会议纪要',
-          date: '2026-08-25',
-          summary: '会议听取智能反欺诈生物特征库准确率复盘汇报，确认活体防伪检测准确率已达 99.98% 达标线；决议：安全保卫部于9月10日前完成生产环境全量切换。',
-          files: [{ name: '20260825_PMO周例会纪要.docx', type: 'word' }]
-        },
-        {
-          id: 'm2',
-          title: 'PMO项目管理委员会 · 8月第3周会议纪要',
-          date: '2026-08-18',
-          summary: '会议审议科技资产CMDB纳管率专项进展及电子票据流转网风险清零方案，决议两项事项均按期推进，下周汇报收尾情况。',
-          files: [{ name: '20260818_PMO周例会纪要.pdf', type: 'pdf' }, { name: '风险清零方案附件.docx', type: 'word' }]
-        }
-      ];
-
-      // ---------------- Helpers ----------------
-      function escapeHtml(s) {
-        return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-      }
-
-      function fileChip(f) {
-        const icon = f.type === 'word' ? '📄' : '📕';
-        return `<span class="mm-file-chip ${f.type}">${icon} ${escapeHtml(f.name)}</span>`;
-      }
-
-      function pad2(n) { return String(n).padStart(2, '0'); }
-
-      // ---------------- View 1: 预约会议 ----------------
-      function renderMyTopicList() {
-        const wrap = document.getElementById('mm-book-my-list');
-        const pending = meetingTopics.filter(t => t.status === 'pending');
-        if (pending.length === 0) {
-          wrap.innerHTML = '<div class="mm-empty">暂无待统筹议题</div>';
-          return;
-        }
-        wrap.innerHTML = pending.map(t => `
-          <div class="mm-card">
-            <div class="mm-card-head">
-              <span class="mm-card-title">${escapeHtml(t.title)}</span>
-              <span class="mm-tag">待统筹</span>
-            </div>
-            <div class="mm-card-meta">${escapeHtml(t.reporter)} · ${t.duration} 分钟 · 提交于 ${escapeHtml(t.submittedAt)}</div>
-          </div>
-        `).join('');
-      }
-
-      document.getElementById('mm-book-submit').addEventListener('click', () => {
-        const titleEl = document.getElementById('mm-book-title');
-        const reporterEl = document.getElementById('mm-book-reporter');
-        const title = titleEl.value.trim();
-        const reporter = reporterEl.value.trim();
-        const duration = parseInt(document.getElementById('mm-book-duration').value, 10) || 15;
-        const attendees = document.getElementById('mm-book-attendees').value.trim() || '待定';
-
-        titleEl.style.borderColor = title ? '' : 'var(--red-risk)';
-        reporterEl.style.borderColor = reporter ? '' : 'var(--red-risk)';
-        if (!title || !reporter) return;
-
-        topicSeq++;
-        const now = new Date();
-        meetingTopics.unshift({
-          id: 't' + topicSeq,
-          title, reporter, duration, attendees,
-          submittedAt: `${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}`,
-          status: 'pending'
-        });
-
-        titleEl.value = '';
-        reporterEl.value = '';
-        document.getElementById('mm-book-duration').value = '15';
-        document.getElementById('mm-book-attendees').value = '';
-
-        const successEl = document.getElementById('mm-book-success');
-        successEl.classList.add('show');
-        setTimeout(() => successEl.classList.remove('show'), 2600);
-
-        renderMyTopicList();
-      });
-
-      ['mm-book-title', 'mm-book-reporter'].forEach(id => {
-        document.getElementById(id).addEventListener('input', function () { this.style.borderColor = ''; });
-      });
-
-      // ---------------- View 2: 组织会议 ----------------
-      const selectedTopicIds = new Set();
-
-      function renderOrganizeList() {
-        const wrap = document.getElementById('mm-organize-list');
-        const pending = meetingTopics.filter(t => t.status === 'pending');
-        if (pending.length === 0) {
-          wrap.innerHTML = '<div class="mm-empty">暂无待统筹议题，请先在「预约会议」中提交</div>';
-        } else {
-          wrap.innerHTML = pending.map(t => `
-            <label class="mm-check-item">
-              <input type="checkbox" class="mm-organize-check" data-id="${t.id}" ${selectedTopicIds.has(t.id) ? 'checked' : ''}>
-              <div class="mm-ci-body">
-                <div class="mm-ci-title">${escapeHtml(t.title)}</div>
-                <div class="mm-ci-sub">${escapeHtml(t.reporter)} · ${t.duration} 分钟 · 参会：${escapeHtml(t.attendees)}</div>
-              </div>
-            </label>
-          `).join('');
-          wrap.querySelectorAll('.mm-organize-check').forEach(cb => {
-            cb.addEventListener('change', () => {
-              if (cb.checked) selectedTopicIds.add(cb.dataset.id);
-              else selectedTopicIds.delete(cb.dataset.id);
-              updateOrganizeSummary();
-            });
-          });
-        }
-        updateOrganizeSummary();
-      }
-
-      function updateOrganizeSummary() {
-        const summaryEl = document.getElementById('mm-org-summary');
-        const publishBtn = document.getElementById('mm-org-publish');
-        const selected = meetingTopics.filter(t => selectedTopicIds.has(t.id));
-        if (selected.length === 0) {
-          summaryEl.textContent = '请勾选议题以生成会议通知预览';
-          publishBtn.disabled = true;
-          return;
-        }
-        const totalMin = selected.reduce((s, t) => s + t.duration, 0);
-        const timeVal = document.getElementById('mm-org-time').value;
-        const locVal = document.getElementById('mm-org-location').value;
-        summaryEl.innerHTML = `
-          <b style="color:#fff;">会议通知预览</b><br>
-          已选 ${selected.length} 项议题，预计时长 ${totalMin} 分钟<br>
-          会议时间：${timeVal ? escapeHtml(timeVal.replace('T', ' ')) : '（未设置，默认按发布时刻顺延排期）'}<br>
-          会议地点：${escapeHtml(locVal)}<br>
-          议题清单：${selected.map(t => escapeHtml(t.title)).join('、')}
-        `;
-        publishBtn.disabled = false;
-      }
-
-      document.getElementById('mm-org-time').addEventListener('input', updateOrganizeSummary);
-      document.getElementById('mm-org-location').addEventListener('change', updateOrganizeSummary);
-
-      document.getElementById('mm-org-publish').addEventListener('click', () => {
-        const selected = meetingTopics.filter(t => selectedTopicIds.has(t.id));
-        if (selected.length === 0) return;
-
-        const timeVal = document.getElementById('mm-org-time').value;
-        const locVal = document.getElementById('mm-org-location').value;
-        const now = new Date();
-        const displayTime = timeVal
-          ? timeVal.replace('T', ' ')
-          : `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())} 14:00`;
-
-        noticeSeq++;
-        meetingNotices.forEach(n => { n.isNew = false; });
-        meetingNotices.unshift({
-          id: 'n' + noticeSeq,
-          title: `PMO项目管理委员会 · ${now.getMonth() + 1}月统筹会议`,
-          time: displayTime,
-          location: locVal,
-          topics: selected.map(t => ({ title: t.title, reporter: t.reporter, duration: t.duration })),
-          publishedAt: `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())} ${pad2(now.getHours())}:${pad2(now.getMinutes())}`,
-          isNew: true
-        });
-
-        selected.forEach(t => { t.status = 'scheduled'; });
-        selectedTopicIds.clear();
-
-        const successEl = document.getElementById('mm-org-success');
-        successEl.classList.add('show');
-        setTimeout(() => successEl.classList.remove('show'), 2600);
-
-        renderOrganizeList();
-      });
-
-      // ---------------- View 3: 会议通知 ----------------
-      function renderNoticeList() {
-        document.getElementById('mm-notice-detail-wrap').style.display = 'none';
-        document.getElementById('mm-notice-list-wrap').style.display = 'block';
-
-        const wrap = document.getElementById('mm-notice-list');
-        const shown = meetingNotices.slice(0, 6); // 新增会议通知 + 前五次通知
-        wrap.innerHTML = shown.map(n => `
-          <div class="mm-card" data-id="${n.id}">
-            <div class="mm-card-head">
-              <span class="mm-card-title">${escapeHtml(n.title)}</span>
-              ${n.isNew ? '<span class="mm-tag new">新增</span>' : '<span class="mm-tag">已发布</span>'}
-            </div>
-            <div class="mm-card-meta">${escapeHtml(n.time)} · ${escapeHtml(n.location)} · 议题 ${n.topics.length} 项</div>
-          </div>
-        `).join('');
-        wrap.querySelectorAll('.mm-card').forEach(card => {
-          card.addEventListener('click', () => openNoticeDetail(card.dataset.id));
-        });
-      }
-
-      function openNoticeDetail(id) {
-        const n = meetingNotices.find(x => x.id === id);
-        if (!n) return;
-        document.getElementById('mm-notice-list-wrap').style.display = 'none';
-        document.getElementById('mm-notice-detail-wrap').style.display = 'block';
-        document.getElementById('mm-notice-detail-body').innerHTML = `
-          <b>${escapeHtml(n.title)}</b><br><br>
-          会议时间：${escapeHtml(n.time)}<br>
-          会议地点：${escapeHtml(n.location)}<br>
-          发布时间：${escapeHtml(n.publishedAt)}<br><br>
-          <b>议题清单</b><br>
-          ${n.topics.map(t => `· ${escapeHtml(t.title)}（${escapeHtml(t.reporter)} · ${t.duration} 分钟）`).join('<br>')}
-        `;
-      }
-      document.getElementById('mm-notice-back').addEventListener('click', renderNoticeList);
-
-      // ---------------- View 4: 会议纪要 ----------------
-      function renderMinutesList() {
-        document.getElementById('mm-minutes-detail-wrap').style.display = 'none';
-        document.getElementById('mm-minutes-list-wrap').style.display = 'block';
-
-        const wrap = document.getElementById('mm-minutes-list');
-        if (meetingMinutes.length === 0) {
-          wrap.innerHTML = '<div class="mm-empty">暂无会议纪要</div>';
-          return;
-        }
-        wrap.innerHTML = meetingMinutes.map(m => `
-          <div class="mm-card" data-id="${m.id}">
-            <div class="mm-card-head">
-              <span class="mm-card-title">${escapeHtml(m.title)}</span>
-              <span class="mm-tag">${escapeHtml(m.date)}</span>
-            </div>
-            <div class="mm-card-meta">${m.files.length} 个附件</div>
-          </div>
-        `).join('');
-        wrap.querySelectorAll('.mm-card').forEach(card => {
-          card.addEventListener('click', () => openMinutesDetail(card.dataset.id));
-        });
-      }
-
-      function openMinutesDetail(id) {
-        const m = meetingMinutes.find(x => x.id === id);
-        if (!m) return;
-        document.getElementById('mm-minutes-list-wrap').style.display = 'none';
-        document.getElementById('mm-minutes-detail-wrap').style.display = 'block';
-        document.getElementById('mm-minutes-detail-body').innerHTML = `
-          <b>${escapeHtml(m.title)}</b><br>
-          <span style="color:#7fa8bf;font-size:12px;">${escapeHtml(m.date)}</span><br><br>
-          ${escapeHtml(m.summary)}<br><br>
-          <b>附件</b><br>
-          <div style="margin-top:6px;">${m.files.map(fileChip).join('')}</div>
-        `;
-      }
-      document.getElementById('mm-minutes-back').addEventListener('click', renderMinutesList);
-
-      document.getElementById('mm-upload-input').addEventListener('change', function () {
-        const file = this.files && this.files[0];
-        if (!file) return;
-        const lower = file.name.toLowerCase();
-        const type = lower.endsWith('.pdf') ? 'pdf' : 'word';
-        const now = new Date();
-        minutesSeq++;
-        meetingMinutes.unshift({
-          id: 'm' + minutesSeq,
-          title: file.name.replace(/\.(docx?|pdf)$/i, ''),
-          date: `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}`,
-          summary: '（演示环境）纪要文件已上传，内容摘要待补充。',
-          files: [{ name: file.name, type }]
-        });
-        this.value = '';
-        renderMinutesList();
-      });
-
-      // ---------------- Panel open / close / switch ----------------
-      function switchView(key) {
-        Object.keys(views).forEach(k => { views[k].style.display = (k === key) ? 'block' : 'none'; });
-        const meta = viewMeta.find(v => v.key === key) || viewMeta[0];
-        headerIcon.textContent = meta.icon;
-        headerTitle.textContent = meta.title;
-
-        if (key === 'book') renderMyTopicList();
-        else if (key === 'organize') renderOrganizeList();
-        else if (key === 'notice') renderNoticeList();
-        else if (key === 'minutes') renderMinutesList();
-      }
-
-      window.openMeetingPanel = function (itemIdx) {
-        const meta = viewMeta[itemIdx] || viewMeta[0];
-        switchView(meta.key);
-        overlay.classList.add('open');
-      };
-
-      function closePanel() {
-        overlay.classList.remove('open');
-      }
-
-      closeBtn.addEventListener('click', closePanel);
-      overlay.addEventListener('click', closePanel);
-      panel.addEventListener('click', (e) => e.stopPropagation());
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && overlay.classList.contains('open')) closePanel();
-      });
-    })();
-
-    // ==========================================================================
-    // PROJECT DETAIL PANEL (项目状态看板 -> 锁定项目后点击大屏弹出的详情面板)
-    // Bigger/richer sibling of the meeting modal. Mock sections (milestones,
-    // risks, trend, activity) are seeded from the project's own index so the
-    // same crystal cube always shows the same mock content within a session.
-    // openProjectDetailPanel() is exposed on window - called from the 3D
-    // scene's handlePointerClick when the status board is clicked while a
-    // project is locked (isCubeLocked === true).
-    // ==========================================================================
-    (function initProjectDetailPanel() {
-      const overlay = document.getElementById('project-modal-overlay');
-      if (!overlay) return;
-
-      const panel = document.getElementById('project-modal-panel');
-      const closeBtn = document.getElementById('pm-close-btn');
-
-      function escapeHtml(s) {
-        return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-      }
-
-      function mulberry32(seed) {
-        let a = seed >>> 0;
-        return function () {
-          a |= 0; a = (a + 0x6D2B79F5) | 0;
-          let t = Math.imul(a ^ (a >>> 15), 1 | a);
-          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-        };
-      }
-
-      const MILESTONE_TEMPLATES = ['需求冻结与范围锁定', '核心方案设计评审', '开发与联调自测', '集成压测与安全测评', '灰度发布验证', '生产全量上线'];
-      const RISK_POOL = [
-        '第三方接口响应时序偶发超时，已加入重试熔断策略验证',
-        '压测显示高峰时段连接池利用率逼近阈值，需评估扩容',
-        '灰度发布验证用例覆盖尚不完整，存在边界场景遗漏',
-        '核心配置变更缺少自动化回滚脚本',
-        '监控告警阈值需结合近期流量重新校准',
-        '跨部门联调依赖方接口环境偶发不稳定'
-      ];
-      const ACTIVITY_TEMPLATES = [
-        (n) => `${n} 完成本周迭代自测，缺陷闭环率达标`,
-        (n) => `${n} 提交本期变更评审材料`,
-        (n) => `${n} 责任团队更新风险台账并同步至 PMO`,
-        (n) => `${n} 完成与上游系统的接口联调`,
-        (n) => `${n} 通过内部安全基线扫描`
-      ];
-
-      function buildMockMilestones(rand, progPercent) {
-        const doneCount = Math.max(1, Math.min(MILESTONE_TEMPLATES.length, Math.round((progPercent / 100) * MILESTONE_TEMPLATES.length)));
-        return MILESTONE_TEMPLATES.map((title, i) => {
-          const status = i < doneCount - 1 ? 'done' : (i === doneCount - 1 ? 'active' : 'pending');
-          const dayOffset = (i - doneCount) * 6;
-          const d = new Date(2026, 8, 2 + dayOffset);
-          const dateStr = `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-          return { title, status, dateStr };
-        });
-      }
-
-      function buildMockRisks(rand, status) {
-        const countMap = { risk: 3, warning: 2, normal: 2 };
-        const sevPoolMap = { risk: ['high', 'high', 'mid'], warning: ['mid', 'mid', 'low'], normal: ['low'] };
-        const count = countMap[status] || 1;
-        const sevs = sevPoolMap[status] || ['low'];
-        const indices = [];
-        let guard = 0;
-        while (indices.length < count && guard++ < 40) {
-          const idx = Math.floor(rand() * RISK_POOL.length);
-          if (!indices.includes(idx)) indices.push(idx);
-        }
-        return indices.map((idx, i) => ({ desc: RISK_POOL[idx], sev: sevs[i % sevs.length] }));
-      }
-
-      function buildMockActivity(rand, name) {
-        const picks = [];
-        const used = new Set();
-        let guard = 0;
-        while (picks.length < 3 && guard++ < 40) {
-          const idx = Math.floor(rand() * ACTIVITY_TEMPLATES.length);
-          if (used.has(idx) && used.size < ACTIVITY_TEMPLATES.length) continue;
-          used.add(idx);
-          picks.push(ACTIVITY_TEMPLATES[idx]);
-        }
-        return picks.map((tpl, i) => {
-          const d = new Date(2026, 8, 2 - i * 2 - 1);
-          const dateStr = `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-          return { time: dateStr, text: tpl(name) };
-        });
-      }
-
-      function buildMockTrend(rand, endValue) {
-        const points = [endValue];
-        let v = endValue;
-        for (let i = 0; i < 9; i++) {
-          v = Math.max(55, Math.min(99.5, v - (rand() - 0.45) * 6));
-          points.unshift(v);
-        }
-        return points;
-      }
-
-      function drawTrendChart(canvas, points, colorHex) {
-        fitCanvas(canvas);
-        const ctx = canvas.getContext('2d');
-        const w = canvas.width, h = canvas.height;
-        ctx.clearRect(0, 0, w, h);
-
-        const pad = 14;
-        const minV = Math.min(...points) - 4;
-        const maxV = Math.max(...points) + 4;
-        const stepX = (w - pad * 2) / (points.length - 1);
-        const coords = points.map((v, i) => ({
-          x: pad + i * stepX,
-          y: h - pad - ((v - minV) / (maxV - minV)) * (h - pad * 2)
-        }));
-
-        ctx.strokeStyle = 'rgba(75,205,245,0.12)';
-        ctx.lineWidth = 1;
-        for (let i = 0; i <= 3; i++) {
-          const gy = pad + i * (h - pad * 2) / 3;
-          ctx.beginPath(); ctx.moveTo(pad, gy); ctx.lineTo(w - pad, gy); ctx.stroke();
-        }
-
-        ctx.beginPath();
-        ctx.moveTo(coords[0].x, h - pad);
-        coords.forEach(p => ctx.lineTo(p.x, p.y));
-        ctx.lineTo(coords[coords.length - 1].x, h - pad);
-        ctx.closePath();
-        const grad = ctx.createLinearGradient(0, 0, 0, h);
-        grad.addColorStop(0, colorHex + '55');
-        grad.addColorStop(1, colorHex + '00');
-        ctx.fillStyle = grad;
-        ctx.fill();
-
-        ctx.beginPath();
-        coords.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
-        ctx.strokeStyle = colorHex;
-        ctx.lineWidth = 2.4;
-        ctx.shadowColor = colorHex;
-        ctx.shadowBlur = 10;
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-
-        coords.forEach((p, i) => {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, i === coords.length - 1 ? 4 : 2.5, 0, Math.PI * 2);
-          ctx.fillStyle = i === coords.length - 1 ? '#ffffff' : colorHex;
-          ctx.fill();
-        });
-      }
-
-      function parseNum(s) {
-        const m = String(s == null ? '' : s).match(/[\d.]+/);
-        return m ? parseFloat(m[0]) : 0;
-      }
-
-      function fitCanvas(canvas) {
-        const rect = canvas.getBoundingClientRect();
-        const w = Math.max(60, Math.round(rect.width));
-        const h = Math.max(40, Math.round(rect.height));
-        if (canvas.width !== w) canvas.width = w;
-        if (canvas.height !== h) canvas.height = h;
-      }
-
-      function drawBarChart(canvas, items, colorHex) {
-        fitCanvas(canvas);
-        const ctx = canvas.getContext('2d');
-        const w = canvas.width, h = canvas.height;
-        ctx.clearRect(0, 0, w, h);
-
-        const padTop = 22, padBottom = 24, padSide = 8;
-        const chartH = h - padTop - padBottom;
-        const n = items.length;
-        const gap = Math.max(6, w * 0.03);
-        const barW = (w - padSide * 2 - gap * (n - 1)) / n;
-
-        ctx.strokeStyle = 'rgba(75,205,245,0.10)';
-        ctx.lineWidth = 1;
-        for (let i = 0; i <= 2; i++) {
-          const gy = padTop + i * chartH / 2;
-          ctx.beginPath(); ctx.moveTo(padSide, gy); ctx.lineTo(w - padSide, gy); ctx.stroke();
-        }
-
-        items.forEach((it, i) => {
-          const bx = padSide + i * (barW + gap);
-          const bh = Math.max(2, (Math.min(100, it.value) / 100) * chartH);
-          const by = padTop + chartH - bh;
-
-          const grad = ctx.createLinearGradient(0, by, 0, padTop + chartH);
-          grad.addColorStop(0, colorHex);
-          grad.addColorStop(1, colorHex + '20');
-          ctx.fillStyle = grad;
-          ctx.beginPath();
-          ctx.roundRect(bx, by, barW, bh, [4, 4, 0, 0]);
-          ctx.fill();
-
-          ctx.fillStyle = '#ffffff';
-          ctx.font = '700 13px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText(Math.round(it.value), bx + barW / 2, Math.max(14, by - 7));
-
-          ctx.fillStyle = '#a8cfe2';
-          ctx.font = '600 12px sans-serif';
-          ctx.fillText(it.label, bx + barW / 2, padTop + chartH + 17);
-        });
-      }
-
-      function drawRadarChart(canvas, axes, colorHex) {
-        fitCanvas(canvas);
-        const ctx = canvas.getContext('2d');
-        const w = canvas.width, h = canvas.height;
-        ctx.clearRect(0, 0, w, h);
-
-        const cx = w / 2, cy = h / 2 + 2;
-        const R = Math.max(20, Math.min(w, h) / 2 - 34);
-        const n = axes.length;
-        const angleStep = (Math.PI * 2) / n;
-        const startAngle = -Math.PI / 2;
-
-        ctx.strokeStyle = 'rgba(75,205,245,0.18)';
-        ctx.lineWidth = 1;
-        for (let ring = 1; ring <= 4; ring++) {
-          const r = R * ring / 4;
-          ctx.beginPath();
-          for (let i = 0; i <= n; i++) {
-            const a = startAngle + i * angleStep;
-            const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
-            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-          }
-          ctx.stroke();
-        }
-
-        ctx.font = '600 12px sans-serif';
-        ctx.fillStyle = '#a8cfe2';
-        for (let i = 0; i < n; i++) {
-          const a = startAngle + i * angleStep;
-          const x2 = cx + R * Math.cos(a), y2 = cy + R * Math.sin(a);
-          ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(x2, y2); ctx.stroke();
-
-          const lx = cx + (R + 15) * Math.cos(a), ly = cy + (R + 15) * Math.sin(a);
-          ctx.textAlign = Math.abs(Math.cos(a)) < 0.25 ? 'center' : (Math.cos(a) > 0 ? 'left' : 'right');
-          ctx.textBaseline = Math.abs(Math.sin(a)) < 0.25 ? 'middle' : (Math.sin(a) > 0 ? 'top' : 'bottom');
-          ctx.fillText(axes[i].label, lx, ly);
-        }
-        ctx.textBaseline = 'alphabetic';
-
-        ctx.beginPath();
-        axes.forEach((ax, i) => {
-          const a = startAngle + i * angleStep;
-          const r = R * Math.max(0.06, Math.min(1, ax.value / 100));
-          const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
-          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        });
-        ctx.closePath();
-        ctx.fillStyle = colorHex + '33';
-        ctx.fill();
-        ctx.strokeStyle = colorHex;
-        ctx.lineWidth = 2;
-        ctx.shadowColor = colorHex;
-        ctx.shadowBlur = 8;
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-
-        axes.forEach((ax, i) => {
-          const a = startAngle + i * angleStep;
-          const r = R * Math.max(0.06, Math.min(1, ax.value / 100));
-          const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
-          ctx.beginPath();
-          ctx.arc(x, y, 2.4, 0, Math.PI * 2);
-          ctx.fillStyle = '#ffffff';
-          ctx.fill();
-        });
-      }
-
-      function drawGaugeChart(canvas, value, colorHex, label) {
-        fitCanvas(canvas);
-        const ctx = canvas.getContext('2d');
-        const w = canvas.width, h = canvas.height;
-        ctx.clearRect(0, 0, w, h);
-
-        const cx = w / 2, cy = h / 2 + 10;
-        const R = Math.max(20, Math.min(w / 2, h * 0.62) - 12);
-        const startA = Math.PI * 0.75;
-        const endA = Math.PI * 2.25;
-        const clamped = Math.max(0, Math.min(100, value));
-        const valueA = startA + (endA - startA) * clamped / 100;
-
-        ctx.lineWidth = Math.max(8, R * 0.22);
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = 'rgba(75,205,245,0.14)';
-        ctx.beginPath();
-        ctx.arc(cx, cy, R, startA, endA);
-        ctx.stroke();
-
-        const grad = ctx.createLinearGradient(cx - R, cy, cx + R, cy);
-        grad.addColorStop(0, colorHex + 'aa');
-        grad.addColorStop(1, colorHex);
-        ctx.strokeStyle = grad;
-        ctx.shadowColor = colorHex;
-        ctx.shadowBlur = 9;
-        ctx.beginPath();
-        ctx.arc(cx, cy, R, startA, valueA);
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = 'rgba(200,230,245,0.28)';
-        for (let i = 0; i <= 10; i++) {
-          const a = startA + (endA - startA) * i / 10;
-          const r1 = R - ctx.lineWidth - 8, r2 = R + 8;
-          ctx.beginPath();
-          ctx.moveTo(cx + r1 * Math.cos(a), cy + r1 * Math.sin(a));
-          ctx.lineTo(cx + r2 * Math.cos(a), cy + r2 * Math.sin(a));
-          ctx.stroke();
-        }
-
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '700 ' + Math.round(R * 0.56) + 'px sans-serif';
-        ctx.fillText(clamped.toFixed(1), cx, cy + R * 0.12);
-        ctx.fillStyle = '#a8cfe2';
-        ctx.font = '600 13px sans-serif';
-        ctx.fillText(label || '健康度评分', cx, cy + R * 0.42);
-      }
-
-      const STATUS_WORD = { normal: '正常', warning: '预警', risk: '风险' };
-      const KPI_DEFS = [
-        { key: 'prog', icon: '📈', label: '进度达成率', accent: true },
-        { key: 'healthScore', icon: '💠', label: '健康度评分', accent: true, suffix: ' 分' },
-        { key: 'sla', icon: '🛡️', label: 'SLA 达标' },
-        { key: 'tps', icon: '⚡', label: 'TPS 吞吐' },
-        { key: 'latency', icon: '⏱️', label: '平均时延' },
-        { key: 'nodes', icon: '🖥️', label: '节点规模' },
-        { key: 'cpu', icon: '🧠', label: 'CPU 占用' },
-        { key: 'mem', icon: '💾', label: '内存占用' },
-        { key: 'riskLevel', icon: '🚦', label: '风险等级' }
-      ];
-
-      window.openProjectDetailPanel = function (cube) {
-        const data = cube.userData;
-        const glow = data.glowColor;
-        const accentHex = glow ? '#' + glow.getHexString() : '#20e3ee';
-        const glowRgba = glow
-          ? `rgba(${Math.round(glow.r * 255)},${Math.round(glow.g * 255)},${Math.round(glow.b * 255)},0.85)`
-          : 'rgba(32,227,238,0.85)';
-        overlay.style.setProperty('--pm-accent', accentHex);
-        overlay.style.setProperty('--pm-glow', glowRgba);
-
-        document.getElementById('pm-name').textContent = data.name || '未命名项目';
-        document.getElementById('pm-sub').innerHTML =
-          `${escapeHtml(data.code || '')} · ${escapeHtml(data.category || '核心系统')} · <span class="pm-status-word">${STATUS_WORD[data.status] || '正常'}</span>`;
-
-        document.getElementById('pm-kpi-grid').innerHTML = KPI_DEFS.map(k => `
-          <div class="pm-kpi-tile">
-            <div class="pm-kpi-row">
-              <span class="pm-kpi-label"><span class="pm-kpi-icon">${k.icon}</span>${k.label}</span>
-              <span class="pm-kpi-value${k.accent ? ' accent' : ''}">${escapeHtml((data[k.key] != null ? data[k.key] : '--') + (k.suffix || ''))}</span>
-            </div>
-          </div>
-        `).join('');
-
-        document.getElementById('pm-desc').textContent = data.desc || '暂无描述';
-        document.getElementById('pm-owner').innerHTML = `责任团队：<b>${escapeHtml(data.owner || '待指定')}</b>`;
-
-        const seed = ((data.index != null ? data.index : 0) * 7919 + 13) >>> 0;
-        const rand = mulberry32(seed);
-
-        const progNum = parseNum(data.prog) || 90;
-        const milestones = buildMockMilestones(rand, progNum);
-        document.getElementById('pm-milestones').innerHTML = milestones.map(m => `
-          <div class="pm-milestone ${m.status}">
-            <div class="pm-milestone-title">${escapeHtml(m.title)}</div>
-            <div class="pm-milestone-meta">${m.dateStr} · ${m.status === 'done' ? '已完成' : (m.status === 'active' ? '进行中' : '未开始')}</div>
-          </div>
-        `).join('');
-
-        const risks = buildMockRisks(rand, data.status);
-        document.getElementById('pm-risks').innerHTML = risks.length ? risks.map(r => `
-          <div class="pm-risk-card">
-            <div class="pm-risk-head">
-              <span class="pm-risk-title">风险点</span>
-              <span class="pm-risk-sev ${r.sev}">${r.sev === 'high' ? '高' : (r.sev === 'mid' ? '中' : '低')}风险</span>
-            </div>
-            <div class="pm-risk-desc">${escapeHtml(r.desc)}</div>
-          </div>
-        `).join('') : '<div class="mm-empty">暂无风险记录</div>';
-
-        // Derived metrics feeding the bar / radar / gauge charts (all normalized to 0-100)
-        const healthNum = parseNum(data.healthScore) || 90;
-        const slaNum = parseNum(data.sla) || 99;
-        const latencyNum = parseNum(data.latency) || 5;
-        const cpuNum = parseNum(data.cpu) || 50;
-        const memNum = parseNum(data.mem) || 50;
-        const timeliness = Math.max(8, Math.min(100, 100 - latencyNum * 1.1));
-        const headroom = Math.max(5, Math.min(100, 100 - (cpuNum + memNum) / 2));
-
-        const trendPoints = buildMockTrend(rand, healthNum);
-        const trendCanvas = document.getElementById('pm-trend-canvas');
-        const barCanvas = document.getElementById('pm-bar-canvas');
-        const radarCanvas = document.getElementById('pm-radar-canvas');
-        const gaugeCanvas = document.getElementById('pm-gauge-canvas');
-
-        requestAnimationFrame(() => {
-          drawTrendChart(trendCanvas, trendPoints, accentHex);
-          drawBarChart(barCanvas, [
-            { label: '进度', value: progNum },
-            { label: '健康度', value: healthNum },
-            { label: 'SLA', value: Math.min(100, slaNum) },
-            { label: 'CPU', value: cpuNum },
-            { label: '内存', value: memNum }
-          ], accentHex);
-          drawRadarChart(radarCanvas, [
-            { label: '进度', value: progNum },
-            { label: '健康度', value: healthNum },
-            { label: 'SLA', value: Math.min(100, slaNum) },
-            { label: '时效性', value: timeliness },
-            { label: '资源余量', value: headroom }
-          ], accentHex);
-          drawGaugeChart(gaugeCanvas, healthNum, accentHex, '健康度评分');
-        });
-
-        const activity = buildMockActivity(rand, data.name || '本项目');
-        document.getElementById('pm-activity').innerHTML = activity.map(a => `
-          <div class="pm-activity-item">
-            <span class="pm-activity-dot"></span>
-            <span class="pm-activity-time">${a.time}</span>
-            <span class="pm-activity-text">${escapeHtml(a.text)}</span>
-          </div>
-        `).join('');
-
-        overlay.classList.add('open');
-      };
-
-      function closePanel() {
-        overlay.classList.remove('open');
-      }
-
-      closeBtn.addEventListener('click', closePanel);
-      overlay.addEventListener('click', closePanel);
-      panel.addEventListener('click', (e) => e.stopPropagation());
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && overlay.classList.contains('open')) closePanel();
-      });
     })();
 
     (function initFullscreenControls() {
