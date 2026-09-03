@@ -1036,6 +1036,72 @@
       color: #79a6bc;
     }
   
+    
+    /* 移动端 (手机屏幕) 底部里程碑响应式布局：抬高底部间距，彻底与左下版权和右下版本号错开 */
+    @media (max-width: 768px) {
+      .bottom-timeline-area {
+        min-height: auto;
+        padding-bottom: calc(29px + env(safe-area-inset-bottom, 0px)) !important;
+        justify-content: flex-end;
+      }
+      .timeline-header-row {
+        margin-bottom: 2px;
+      }
+      .timeline-title {
+        font-size: 13px !important;
+        letter-spacing: 0.12em !important;
+      }
+      .milestone-stages-wrapper {
+        justify-content: flex-start !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        max-width: 100vw !important;
+        width: 100% !important;
+        padding: 3px 16px !important;
+        box-sizing: border-box !important;
+        scrollbar-width: none !important;
+      }
+      .milestone-stages-wrapper::-webkit-scrollbar {
+        display: none !important;
+      }
+      .milestone-epoch {
+        padding: 3px 6px !important;
+        gap: 2px !important;
+      }
+      .epoch-badge {
+        font-size: 10px !important;
+        gap: 3px !important;
+      }
+      .epoch-state {
+        font-size: 8px !important;
+        padding: 0 4px !important;
+      }
+      .epoch-months {
+        font-size: 9px !important;
+        gap: 2px !important;
+      }
+      .month-chip {
+        padding: 0 2px !important;
+      }
+      .special-cursor-beacon {
+        padding: 1px 5px !important;
+      }
+      .beacon-name {
+        font-size: 9.5px !important;
+      }
+      .beacon-tag {
+        font-size: 8px !important;
+        padding: 0 3px !important;
+      }
+      .epoch-connector {
+        width: 10px !important;
+      }
+      .assault-telemetry-hud {
+        width: min(310px, 90vw) !important;
+        padding: 10px 12px !important;
+      }
+    }
+
     /* BOTTOM-LEFT COPYRIGHT INFO */
     .bottom-left-copyright {
       position: absolute;
@@ -1048,8 +1114,8 @@
       gap: 6px;
       padding: 3px 10px;
       border-radius: 12px;
-      background: rgba(6, 24, 48, 0.55);
-      border: 1px solid rgba(64, 196, 238, 0.2);
+      background: rgba(6, 24, 48, 0.65);
+      border: 1px solid rgba(64, 196, 238, 0.25);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
       font-size: clamp(10.5px, 0.95vw, 12px);
@@ -1058,12 +1124,16 @@
       white-space: nowrap;
       text-shadow: 0 0 8px rgba(32, 227, 238, 0.25);
     }
-    @media (max-width: 480px) {
+    @media (max-width: 768px) {
       .bottom-left-copyright {
-        bottom: 6px;
+        bottom: calc(5px + env(safe-area-inset-bottom, 0px));
         left: 8px;
         padding: 2px 7px;
-        font-size: 10px;
+        font-size: 9.5px;
+        height: 18px;
+        line-height: 18px;
+        background: rgba(4, 18, 36, 0.82);
+        z-index: 30;
       }
     }
 
@@ -1748,8 +1818,8 @@
       gap: 5px;
       padding: 3px 10px;
       border-radius: 12px;
-      background: rgba(6, 24, 48, 0.55);
-      border: 1px solid rgba(64, 196, 238, 0.2);
+      background: rgba(6, 24, 48, 0.65);
+      border: 1px solid rgba(64, 196, 238, 0.25);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
       font-size: clamp(10.5px, 0.95vw, 12px);
@@ -1759,12 +1829,16 @@
       white-space: nowrap;
       text-shadow: 0 0 8px rgba(32, 227, 238, 0.25);
     }
-    @media (max-width: 480px) {
+    @media (max-width: 768px) {
       .bottom-right-version {
-        bottom: 6px;
+        bottom: calc(5px + env(safe-area-inset-bottom, 0px));
         right: 8px;
         padding: 2px 7px;
-        font-size: 10px;
+        font-size: 9.5px;
+        height: 18px;
+        line-height: 18px;
+        background: rgba(4, 18, 36, 0.82);
+        z-index: 30;
       }
     }
     .orbit-svg-container, .orbit-svg-container * {
@@ -2307,7 +2381,7 @@
 
     <!-- BOTTOM-RIGHT VERSION BADGE (UTC+8 YYYYMMDDHHmm) -->
     <div class="bottom-right-version">
-      <span>202609032208</span>
+      <span>202609032215</span>
     </div>
 
 
@@ -85168,6 +85242,19 @@ exports.warnOnce = warnOnce;
           hudPopover.classList.remove('show');
         }
       });
+
+      
+      // Auto-center active milestone node on mobile screens
+      if (window.innerWidth <= 768) {
+        setTimeout(() => {
+          const wrapper = document.querySelector('.milestone-stages-wrapper');
+          const activeNode = document.querySelector('.current-assault-node-wrapper');
+          if (wrapper && activeNode) {
+            const scrollTarget = activeNode.offsetLeft - (wrapper.offsetWidth / 2) + (activeNode.offsetWidth / 2);
+            wrapper.scrollTo({ left: Math.max(0, scrollTarget), behavior: 'smooth' });
+          }
+        }, 350);
+      }
 
       window.addEventListener('resize', () => {
         if (hudPopover.classList.contains('show')) {
