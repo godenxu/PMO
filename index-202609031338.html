@@ -506,20 +506,20 @@
       font-weight: 500;
     }
 
-    /* BOTTOM TIMELINE AREA: 科技攻坚里程碑 (3大阶段 + 月度小节点 + 9月特殊光标与全局顶层遥测浮窗) */
+    /* BOTTOM TIMELINE AREA: 关键里程碑 (RESPONSIVE SVG & CHIPS) */
     .bottom-timeline-area {
       position: absolute;
       left: 0;
       right: 0;
       bottom: 0;
-      min-height: clamp(82px, 12vh, 140px);
+      height: clamp(80px, 12vh, 150px);
       pointer-events: none;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
-      padding-bottom: clamp(6px, 1.2vh, 14px);
-      z-index: 25;
+      padding-bottom: clamp(6px, 1.5vh, 16px);
+      z-index: 15;
     }
     .orbit-svg-container {
       position: absolute;
@@ -527,7 +527,6 @@
       width: 100%;
       height: 100%;
       overflow: visible;
-      pointer-events: none;
     }
     .timeline-content {
       position: relative;
@@ -537,503 +536,56 @@
       align-items: center;
       gap: clamp(3px, 0.6vh, 6px);
       pointer-events: none;
-      width: 100%;
-      max-width: 98vw;
+      max-width: 96vw;
     }
-    /* 标题行：文字居中放置（按用户要求可被顶层悬浮窗挡住） */
-    .timeline-header-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: clamp(8px, 1.6vw, 18px);
+    .milestone-nodes-row {
       pointer-events: auto;
-      box-sizing: border-box;
-      text-align: center;
-    }
-    .timeline-title-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-    .timeline-title-icon {
-      color: #38e5f2;
-      font-size: 14px;
-      text-shadow: 0 0 8px #38e5f2;
     }
     .timeline-title {
-      font-size: clamp(14px, 1.8vw, 19px);
-      font-weight: 700;
+      font-size: clamp(13px, 1.8vw, 19px);
+      font-weight: 600;
       letter-spacing: clamp(0.12em, 0.25em, 0.3em);
       color: #ffffff;
-      text-shadow: 0 0 16px rgba(32, 227, 238, 0.95), 0 0 32px rgba(20, 140, 220, 0.65);
-      margin: 0;
-      white-space: nowrap;
-      text-align: center;
+      text-shadow: 0 0 16px rgba(32, 227, 238, 0.9), 0 0 32px rgba(20, 140, 220, 0.6);
     }
-    .timeline-phase-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 2px 10px;
-      border-radius: 12px;
-      background: rgba(8, 28, 54, 0.85);
-      border: 1px solid rgba(255, 175, 40, 0.55);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      font-size: clamp(9.5px, 0.9vw, 11px);
-      color: #ffe099;
-      letter-spacing: 0.05em;
-      box-shadow: 0 0 12px rgba(255, 160, 30, 0.25);
-      white-space: nowrap;
-    }
-    .phase-indicator-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #ffb834;
-      box-shadow: 0 0 8px #ffb834;
-      animation: pulsePhaseDot 1.8s infinite ease-in-out;
-    }
-    @keyframes pulsePhaseDot {
-      0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 6px #ffb834; }
-      50% { transform: scale(1.4); opacity: 0.7; box-shadow: 0 0 14px #ffb834; }
-    }
-
-    /* 3大节点与月度小节点包裹容器 (overflow visible，避免限制任何绝对定位子层) */
-    .milestone-stages-wrapper {
+    .milestone-nodes-row {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: clamp(5px, 1.4vw, 18px);
-      pointer-events: auto;
-      max-width: 96vw;
-      padding: 4px 10px;
-      overflow: visible;
-    }
-
-    /* 阶段大节点卡片 */
-    .milestone-epoch {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      padding: 4px 9px;
-      border-radius: 10px;
-      background: rgba(6, 22, 42, 0.65);
-      border: 1px solid rgba(32, 227, 238, 0.22);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      transition: all 0.25s ease;
-      flex-shrink: 0;
-    }
-    .milestone-epoch:hover {
-      background: rgba(8, 28, 56, 0.85);
-      border-color: rgba(32, 227, 238, 0.5);
-      box-shadow: 0 0 16px rgba(32, 227, 238, 0.2);
-    }
-    .milestone-epoch.completed {
-      border-color: rgba(32, 227, 238, 0.35);
-    }
-    .milestone-epoch.active-epoch {
-      border-color: rgba(255, 185, 50, 0.6);
-      background: rgba(26, 28, 48, 0.75);
-      box-shadow: 0 0 18px rgba(255, 170, 30, 0.25);
-    }
-    .milestone-epoch.upcoming {
-      border-color: rgba(80, 130, 170, 0.2);
-      opacity: 0.75;
-    }
-
-    /* 阶段头部 */
-    .epoch-badge {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: clamp(10.5px, 1.0vw, 12px);
-      font-weight: 600;
-      color: #9fe2ff;
+      gap: clamp(8px, 2.2vw, 28px);
+      font-size: clamp(10px, 1.1vw, 12px);
       letter-spacing: 0.04em;
+      color: #88bad0;
+      margin-top: 2px;
+      overflow-x: auto;
+      max-width: 95vw;
+      white-space: nowrap;
+      padding: 0 8px;
+      scrollbar-width: none;
     }
-    .epoch-badge.done {
-      color: #38e5f2;
+    .milestone-nodes-row::-webkit-scrollbar {
+      display: none;
     }
-    .epoch-badge.active {
-      color: #ffd269;
-    }
-    .epoch-badge.upcoming {
-      color: #8bb2c8;
-    }
-    .epoch-icon {
-      font-size: 11px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .epoch-icon.pulse {
-      color: #ffb834;
-      animation: pulseIcon 1.5s infinite ease-in-out;
-    }
-    @keyframes pulseIcon {
-      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px #ffb834); }
-      50% { transform: scale(1.25); filter: drop-shadow(0 0 8px #ffb834); }
-    }
-    .epoch-state {
-      font-size: 9px;
-      padding: 1px 5px;
-      border-radius: 8px;
-      font-weight: 500;
-      margin-left: 2px;
-    }
-    .epoch-state.done {
-      background: rgba(32, 227, 238, 0.15);
-      color: #38e5f2;
-      border: 1px solid rgba(32, 227, 238, 0.35);
-    }
-    .epoch-state.active {
-      background: rgba(255, 175, 40, 0.2);
-      color: #ffd068;
-      border: 1px solid rgba(255, 175, 40, 0.5);
-      box-shadow: 0 0 8px rgba(255, 175, 40, 0.3);
-    }
-    .epoch-state.upcoming {
-      background: rgba(70, 110, 140, 0.15);
-      color: #7d9fb2;
-      border: 1px solid rgba(70, 110, 140, 0.25);
-    }
-
-    /* 月度小节点排列 */
-    .epoch-months {
+    .milestone-node-text {
       display: flex;
       align-items: center;
-      gap: 3px;
-      font-size: clamp(9.5px, 0.9vw, 11px);
-      color: #79a6bc;
-      margin-top: 1px;
-    }
-    .month-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      padding: 1px 3px;
-      border-radius: 4px;
+      gap: 5px;
+      cursor: pointer;
       transition: all 0.2s ease;
-      cursor: pointer;
+      flex-shrink: 0;
     }
-    .month-chip:hover {
+    .milestone-node-text:hover, .milestone-node-text:active {
       color: #f0fdff;
-      text-shadow: 0 0 8px #38e5f2;
+      text-shadow: 0 0 10px var(--cyan-primary);
     }
-    .month-chip.done {
-      color: #8eeaf4;
-    }
-    .month-chip.in-progress {
-      color: #ffe2a6;
-      font-weight: 500;
-    }
-    .month-chip.upcoming {
-      color: #648698;
-    }
-    .m-dot {
-      width: 5px;
-      height: 5px;
+    .milestone-dot {
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      background: #38e5f2;
-      box-shadow: 0 0 5px #38e5f2;
+      background: var(--cyan-primary);
+      box-shadow: 0 0 8px var(--cyan-primary);
     }
-    .m-dot.done {
-      background: #20e3ee;
-      box-shadow: 0 0 6px #20e3ee;
-    }
-    .m-dot.in-progress {
-      background: #ffab32;
-      box-shadow: 0 0 6px #ffab32;
-    }
-    .m-dot.upcoming {
-      background: #507185;
-      box-shadow: none;
-    }
-    .month-sep {
-      color: rgba(90, 130, 160, 0.45);
-      font-size: 8px;
-    }
-
-    /* 阶段过渡连接符 */
-    .epoch-connector {
-      width: clamp(10px, 1.6vw, 20px);
-      height: 2px;
-      flex-shrink: 0;
-      position: relative;
-    }
-    .epoch-connector.done-link {
-      background: linear-gradient(90deg, #20e3ee, #ffb834);
-      box-shadow: 0 0 8px rgba(32, 227, 238, 0.6);
-    }
-    .epoch-connector.upcoming-link {
-      background: linear-gradient(90deg, rgba(255, 184, 52, 0.6), rgba(80, 120, 150, 0.3));
-    }
-    .epoch-connector::after {
-      content: '›';
-      position: absolute;
-      right: -2px;
-      top: 50%;
-      transform: translateY(-56%);
-      font-size: 13px;
-      font-weight: bold;
-      color: #9fe2ff;
-      opacity: 0.8;
-    }
-
-    /* =========================================================================
-       9月当前节点特殊光标 (9TH MONTH SPECIAL CURSOR BEACON)
-       ========================================================================= */
-    .current-assault-node-wrapper {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    /* 特殊光标实体按钮 (9月定位游标) */
-    .special-cursor-beacon {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 7px;
-      border-radius: 6px;
-      background: rgba(255, 165, 30, 0.28);
-      border: 1px solid rgba(255, 185, 50, 0.95);
-      box-shadow: 0 0 14px rgba(255, 170, 30, 0.6), inset 0 0 6px rgba(255, 200, 80, 0.3);
-      cursor: pointer;
-      position: relative;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      animation: beaconFloat 2.4s infinite ease-in-out;
-    }
-    .special-cursor-beacon:hover, .special-cursor-beacon:focus {
-      background: rgba(255, 175, 40, 0.45);
-      border-color: #ffe68a;
-      box-shadow: 0 0 24px rgba(255, 180, 40, 0.9), inset 0 0 10px rgba(255, 220, 120, 0.5);
-      transform: scale(1.06);
-    }
-    @keyframes beaconFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-2px); }
-    }
-
-    /* 准星光标视觉指示器 */
-    .beacon-reticle-visual {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 14px;
-      height: 14px;
-    }
-    .reticle-cross {
-      font-size: 13px;
-      font-weight: 900;
-      color: #ffe38f;
-      line-height: 1;
-      text-shadow: 0 0 8px #ffb834;
-      animation: reticleSpin 6s infinite linear;
-    }
-    @keyframes reticleSpin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .reticle-pin-arrow {
-      position: absolute;
-      top: -9px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 8px;
-      color: #ff9f24;
-      line-height: 1;
-      animation: pinArrowBounce 1.4s infinite ease-in-out;
-    }
-    @keyframes pinArrowBounce {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(2px); }
-    }
-    .beacon-sonar-ring {
-      position: absolute;
-      inset: -3px;
-      border-radius: 50%;
-      border: 1px solid rgba(255, 184, 52, 0.8);
-      animation: sonarPulse 1.8s infinite ease-out;
-      pointer-events: none;
-    }
-    @keyframes sonarPulse {
-      0% { transform: scale(0.6); opacity: 1; }
-      100% { transform: scale(2.2); opacity: 0; }
-    }
-
-    .beacon-label-box {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-    }
-    .beacon-name {
-      font-size: clamp(10px, 0.95vw, 11px);
-      font-weight: 700;
-      color: #ffffff;
-      text-shadow: 0 0 8px rgba(255, 184, 52, 0.9);
-      white-space: nowrap;
-    }
-    .beacon-tag {
-      font-size: 8.5px;
-      padding: 0 4px;
-      border-radius: 4px;
-      background: #ff9f24;
-      color: #06182c;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-    }
-
-    /* =========================================================================
-       全局最上层悬停遥测 HUD 浮窗 (TOPMOST FIXED HUD POPOVER)
-       脱离父级 overflow 与 backdrop-filter 束缚，固定定位在全屏最上层 (z-index: 99999)
-       位于中间时干净利落覆盖并挡住下方标题，绝不被任何元素反向遮挡！
-       ========================================================================= */
-    .assault-telemetry-hud {
-      position: fixed;
-      z-index: 99999 !important;
-      transform: translateX(-50%) translateY(6px);
-      width: clamp(280px, 25vw, 340px);
-      background: rgba(3, 14, 30, 0.98);
-      border: 1.5px solid rgba(32, 227, 238, 0.85);
-      border-radius: 12px;
-      padding: 13px 15px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95), 0 0 30px rgba(32, 227, 238, 0.45);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    /* 悬停或激活显示 */
-    .assault-telemetry-hud.show {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-      transform: translateX(-50%) translateY(0);
-    }
-    .hud-card-arrow {
-      position: absolute;
-      bottom: -6px;
-      left: 50%;
-      transform: translateX(-50%) rotate(45deg);
-      width: 11px;
-      height: 11px;
-      background: rgba(3, 14, 30, 0.98);
-      border-right: 1.5px solid rgba(32, 227, 238, 0.85);
-      border-bottom: 1.5px solid rgba(32, 227, 238, 0.85);
-    }
-    .hud-card-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 10px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid rgba(75, 205, 245, 0.25);
-    }
-    .hud-tag-beacon {
-      display: inline-block;
-      font-size: 9.5px;
-      color: var(--cyan-primary);
-      letter-spacing: 0.1em;
-      margin-bottom: 2px;
-      font-weight: 500;
-    }
-    .hud-card-title {
-      font-size: 13.5px;
-      font-weight: 700;
-      color: #ffffff;
-      letter-spacing: 0.05em;
-    }
-    .hud-status-chip {
-      font-size: 10px;
-      padding: 2px 7px;
-      border-radius: 6px;
-      background: rgba(255, 175, 40, 0.25);
-      border: 1px solid rgba(255, 175, 40, 0.7);
-      color: #ffd269;
-      font-weight: 600;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .hud-metrics-container {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .hud-metric-row {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-    .metric-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 11.5px;
-    }
-    .metric-name {
-      color: #a4c9dc;
-    }
-    .metric-num {
-      font-weight: 700;
-      font-size: 13px;
-      letter-spacing: 0.04em;
-    }
-    .metric-num.cyan {
-      color: #38e5f2;
-      text-shadow: 0 0 8px rgba(32, 227, 238, 0.6);
-    }
-    .metric-num.gold {
-      color: #ffbe42;
-      text-shadow: 0 0 8px rgba(255, 190, 66, 0.6);
-    }
-    .metric-num.green {
-      color: #4ef0a2;
-      text-shadow: 0 0 8px rgba(78, 240, 162, 0.6);
-    }
-    .metric-progress-track {
-      width: 100%;
-      height: 5.5px;
-      background: rgba(14, 38, 64, 0.85);
-      border-radius: 4px;
-      overflow: hidden;
-      border: 1px solid rgba(75, 205, 245, 0.2);
-    }
-    .metric-progress-fill {
-      height: 100%;
-      border-radius: 4px;
-      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .metric-progress-fill.cyan {
-      background: linear-gradient(90deg, #1098b8, #38e5f2);
-      box-shadow: 0 0 8px #38e5f2;
-    }
-    .metric-progress-fill.gold {
-      background: linear-gradient(90deg, #c77e16, #ffbe42);
-      box-shadow: 0 0 8px #ffbe42;
-    }
-    .metric-progress-fill.green {
-      background: linear-gradient(90deg, #18985c, #4ef0a2);
-      box-shadow: 0 0 8px #4ef0a2;
-    }
-    .hud-card-bottom {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 9px;
-      padding-top: 6px;
-      border-top: 1px dashed rgba(75, 205, 245, 0.2);
-      font-size: 10.5px;
-      color: #79a6bc;
+    .milestone-dot.warn {
+      background: var(--orange-warn);
+      box-shadow: 0 0 8px var(--orange-warn);
     }
   
     /* BOTTOM-LEFT COPYRIGHT INFO */
@@ -2082,220 +1634,62 @@
       </div>
     </div>
 
-    <!-- BOTTOM TIMELINE AREA: 科技攻坚里程碑 -->
+    <!-- BOTTOM TIMELINE AREA: 关键里程碑 -->
     <div class="bottom-timeline-area">
       <svg class="orbit-svg-container" viewBox="0 0 1440 180" preserveAspectRatio="none">
         <defs>
           <linearGradient id="orbitGrad" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stop-color="rgba(32, 227, 238, 0.05)"/>
             <stop offset="25%" stop-color="rgba(32, 227, 238, 0.6)"/>
-            <stop offset="50%" stop-color="rgba(255, 184, 52, 0.85)"/>
-            <stop offset="75%" stop-color="rgba(32, 227, 238, 0.4)"/>
+            <stop offset="50%" stop-color="rgba(32, 227, 238, 0.85)"/>
+            <stop offset="75%" stop-color="rgba(32, 227, 238, 0.6)"/>
             <stop offset="100%" stop-color="rgba(32, 227, 238, 0.05)"/>
           </linearGradient>
-          <linearGradient id="completedOrbitGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="rgba(32, 227, 238, 0.2)"/>
-            <stop offset="65%" stop-color="#20e3ee"/>
-            <stop offset="100%" stop-color="#ffb834"/>
-          </linearGradient>
-          <filter id="beaconGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
-            <feMerge>
-              <feMergeNode in="blur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
         </defs>
 
-        <!-- 底层全景轨道弧线 -->
-        <path d="M 60,30 Q 720,210 1380,30" fill="none" stroke="rgba(32, 227, 238, 0.18)" stroke-width="2.0"/>
-        <path d="M 160,20 Q 720,175 1280,20" fill="none" stroke="rgba(32, 227, 238, 0.12)" stroke-width="1.2"/>
-        
-        <!-- 已攻坚完成与进行中流光弧线 (贯通至秋季9月节点) -->
-        <path d="M 60,30 Q 720,210 1380,30" fill="none" stroke="url(#completedOrbitGrad)" stroke-width="2.6" stroke-dasharray="660 1000" stroke-linecap="round" style="filter:drop-shadow(0 0 10px rgba(32,227,238,0.7))"/>
-
-        <!-- 流动光子动画 -->
-        <path d="M 60,30 Q 720,210 1380,30" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-dasharray="18 300" stroke-linecap="round">
-          <animate attributeName="stroke-dashoffset" from="318" to="-318" dur="4.2s" repeatCount="indefinite"/>
+        <path d="M 60,30 Q 720,210 1380,30" fill="none" stroke="url(#orbitGrad)" stroke-width="2.2" style="filter:drop-shadow(0 0 10px rgba(32,227,238,0.7))"/>
+        <path d="M 160,20 Q 720,175 1280,20" fill="none" stroke="rgba(32, 227, 238, 0.22)" stroke-width="1.2"/>
+        <path d="M 60,30 Q 720,210 1380,30" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="16 260" stroke-linecap="round">
+          <animate attributeName="stroke-dashoffset" from="276" to="-276" dur="4.5s" repeatCount="indefinite"/>
         </path>
 
         <g>
-          <!-- 大节点 1：春季攻坚轨道标点 (3月~7月) -->
-          <circle cx="310" cy="85" r="7" fill="#20e3ee" style="filter:drop-shadow(0 0 10px #20e3ee)"/>
-          <circle cx="310" cy="85" r="12" fill="none" stroke="rgba(32,227,238,0.5)" stroke-width="1.5"/>
-          <text x="310" y="68" fill="#38e5f2" font-size="10" font-weight="bold" text-anchor="middle" letter-spacing="1">春季攻坚 (3-7月)</text>
+          <circle cx="280" cy="98" r="6.5" fill="#20e3ee" style="filter:drop-shadow(0 0 8px #20e3ee)"/>
+          <circle cx="280" cy="98" r="11" fill="none" stroke="rgba(32,227,238,0.4)" stroke-width="1.5"/>
+          
+          <circle cx="560" cy="128" r="6.5" fill="#20e3ee" style="filter:drop-shadow(0 0 8px #20e3ee)"/>
+          <circle cx="560" cy="128" r="11" fill="none" stroke="rgba(32,227,238,0.4)" stroke-width="1.5"/>
 
-          <!-- 大节点 2：秋季攻坚 9月 当前节点特殊光标雷达指示 (X=660, Y=118) -->
-          <g transform="translate(660, 118)">
-            <!-- 脉冲扩展光环 -->
-            <circle cx="0" cy="0" r="6" fill="#ffb834" filter="url(#beaconGlow)"/>
-            <circle cx="0" cy="0" r="13" fill="none" stroke="#ffb834" stroke-width="1.8">
-              <animate attributeName="r" values="8;20;8" dur="2s" repeatCount="indefinite"/>
-              <animate attributeName="opacity" values="0.9;0.1;0.9" dur="2s" repeatCount="indefinite"/>
-            </circle>
-            <circle cx="0" cy="0" r="24" fill="none" stroke="rgba(32,227,238,0.6)" stroke-width="1" stroke-dasharray="3 3">
-              <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="8s" repeatCount="indefinite"/>
-            </circle>
-            <!-- 准星线 -->
-            <line x1="-12" y1="0" x2="12" y2="0" stroke="#ffb834" stroke-width="1.2" stroke-dasharray="2 2"/>
-            <line x1="0" y1="-12" x2="0" y2="12" stroke="#ffb834" stroke-width="1.2" stroke-dasharray="2 2"/>
-            <!-- 顶部定位三角指针 -->
-            <polygon points="0,-16 -4,-22 4,-22" fill="#ffb834" filter="url(#beaconGlow)">
-              <animate attributeName="transform" type="translate" values="0,0; 0,-3; 0,0" dur="1.5s" repeatCount="indefinite"/>
-            </polygon>
-          </g>
+          <circle cx="880" cy="128" r="8" fill="#ff9f24" style="filter:drop-shadow(0 0 12px #ff9f24)"/>
+          <circle cx="880" cy="128" r="14" fill="none" stroke="rgba(255,159,36,0.6)" stroke-width="1.8">
+            <animate attributeName="r" values="12;16;12" dur="2s" repeatCount="indefinite"/>
+          </circle>
 
-          <!-- 大节点 2：秋季攻坚中心轨道点 (8月~12月) -->
-          <circle cx="720" cy="120" r="5" fill="#ffab32" opacity="0.8"/>
-          <text x="720" y="142" fill="#ffab32" font-size="10" font-weight="bold" text-anchor="middle" letter-spacing="1">秋季攻坚 (8-12月)</text>
-
-          <!-- 大节点 3：冬季攻坚轨道点 (明年1月~4月) -->
-          <circle cx="1130" cy="85" r="6" fill="#4d7894" opacity="0.7"/>
-          <circle cx="1130" cy="85" r="11" fill="none" stroke="rgba(77,120,148,0.4)" stroke-width="1.2" stroke-dasharray="3 3"/>
-          <text x="1130" y="68" fill="#7a9fb5" font-size="10" font-weight="bold" text-anchor="middle" letter-spacing="1">冬季攻坚 (明年1-4月)</text>
+          <circle cx="1160" cy="98" r="6.5" fill="#20e3ee" style="filter:drop-shadow(0 0 8px #20e3ee)"/>
+          <circle cx="1160" cy="98" r="11" fill="none" stroke="rgba(32,227,238,0.4)" stroke-width="1.5"/>
         </g>
       </svg>
 
       <div class="timeline-content">
-        <!-- 标题行：居中展示，可被悬停展开的顶层浮窗自然遮挡 -->
-        <div class="timeline-header-row">
-          <div class="timeline-title-wrap">
-            <span class="timeline-title-icon">❖</span>
-            <h2 class="timeline-title">科技攻坚里程碑</h2>
+        <h2 class="timeline-title">关键里程碑</h2>
+        <div class="milestone-nodes-row">
+          <div class="milestone-node-text" title="已按期达成">
+            <span class="milestone-dot"></span>
+            <span>M1 需求冻结 (03/15) · 100%</span>
+          </div>
+          <div class="milestone-node-text" title="已按期达成">
+            <span class="milestone-dot"></span>
+            <span>M2 核心改造 (05/28) · 100%</span>
+          </div>
+          <div class="milestone-node-text" title="当前进行中阶段" style="color:#ffe2a6;font-weight:600">
+            <span class="milestone-dot warn"></span>
+            <span>M3 集成联调 (08/20) · 进行中</span>
+          </div>
+          <div class="milestone-node-text" title="待开展">
+            <span class="milestone-dot"></span>
+            <span>M4 投产切换 (11/12) · 筹备中</span>
           </div>
         </div>
-
-        <!-- 3大攻坚阶段与月度小节点 -->
-        <div class="milestone-stages-wrapper">
-          <!-- 大节点 1：春季攻坚 (3月 ~ 7月 · 已完成 100%) -->
-          <div class="milestone-epoch completed">
-            <div class="epoch-badge done">
-              <span class="epoch-icon">✓</span>
-              <span class="epoch-name">春季攻坚</span>
-              <span class="epoch-state done">已完成 100%</span>
-            </div>
-            <div class="epoch-months">
-              <span class="month-chip done" title="3月 · 规划定标 (已达成 100%)"><span class="m-dot done"></span>3月</span>
-              <span class="month-sep">·</span>
-              <span class="month-chip done" title="4月 · 架构攻坚 (已达成 100%)"><span class="m-dot done"></span>4月</span>
-              <span class="month-sep">·</span>
-              <span class="month-chip done" title="5月 · 核心研发 (已达成 100%)"><span class="m-dot done"></span>5月</span>
-              <span class="month-sep">·</span>
-              <span class="month-chip done" title="6月 · 深度联调 (已达成 100%)"><span class="m-dot done"></span>6月</span>
-              <span class="month-sep">·</span>
-              <span class="month-chip done" title="7月 · 春季收官 (已达成 100%)"><span class="m-dot done"></span>7月</span>
-            </div>
-          </div>
-
-          <div class="epoch-connector done-link"></div>
-
-          <!-- 大节点 2：秋季攻坚 (8月 ~ 12月 · 进行中 · 当前节点在 9月) -->
-          <div class="milestone-epoch active-epoch">
-            <div class="epoch-badge active">
-              <span class="epoch-icon pulse">⚡</span>
-              <span class="epoch-name">秋季攻坚</span>
-              <span class="epoch-state active">攻坚中 · 33.3%</span>
-            </div>
-            <div class="epoch-months">
-              <span class="month-chip done" title="8月 · 试点验证 (已达成 100%)"><span class="m-dot done"></span>8月</span>
-              <span class="month-sep">·</span>
-
-              <!-- 当前所在节点：9月 (秋季攻坚 1/3 节点)，配置专属特殊光标 -->
-              <div class="current-assault-node-wrapper" id="current-assault-node">
-                <div class="special-cursor-beacon" role="button" tabindex="0" aria-label="当前攻坚节点 9月 (1/3)，悬停查看遥测指标">
-                  <div class="beacon-reticle-visual">
-                    <span class="reticle-cross">⌖</span>
-                    <span class="reticle-pin-arrow">▼</span>
-                    <span class="beacon-sonar-ring"></span>
-                  </div>
-                  <div class="beacon-label-box">
-                    <span class="beacon-name">9月 · 当前节点</span>
-                    <span class="beacon-tag">1/3</span>
-                  </div>
-                </div>
-              </div>
-
-              <span class="month-sep">·</span>
-              <span class="month-chip in-progress" title="10月 · 跨域集成联调 (推进中)"><span class="m-dot in-progress"></span>10月</span>
-              <span class="month-sep">·</span>
-              <span class="month-chip upcoming" title="11月 · 全域总攻冲刺 (筹备中)"><span class="m-dot upcoming"></span>11月</span>
-              <span class="month-sep">·</span>
-              <span class="month-chip upcoming" title="12月 · 秋季收官决胜 (待开展)"><span class="m-dot upcoming"></span>12月</span>
-            </div>
-          </div>
-
-          <div class="epoch-connector upcoming-link"></div>
-
-          <!-- 大节点 3：冬季攻坚 (明年1月 ~ 4月 · 待开展) -->
-          <div class="milestone-epoch upcoming">
-            <div class="epoch-badge upcoming">
-              <span class="epoch-icon">⏳</span>
-              <span class="epoch-name">冬季攻坚</span>
-              <span class="epoch-state upcoming">筹备中</span>
-            </div>
-            <div class="epoch-months">
-              <span class="month-chip upcoming" title="明年1月 · 全面压测演练"><span class="m-dot upcoming"></span>明年1月</span>
-              <span class="month-sep">·</span>
-              <span class="month-chip upcoming" title="明年2月 · 准生产投产演练"><span class="m-dot upcoming"></span>明年2月</span>
-              <span class="month-sep">·</span>
-              <span class="month-chip upcoming" title="明年3月 · 投产切换上线"><span class="m-dot upcoming"></span>明年3月</span>
-              <span class="month-sep">·</span>
-              <span class="month-chip upcoming" title="明年4月 · 决胜攻坚复盘"><span class="m-dot upcoming"></span>明年4月</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 全局最上层科技攻坚遥测浮窗 (脱离任何父级overflow束缚，z-index: 99999) -->
-    <div class="assault-telemetry-hud" id="assault-telemetry-hud" role="tooltip">
-      <div class="hud-card-arrow"></div>
-      <div class="hud-card-top">
-        <div>
-          <span class="hud-tag-beacon">科技攻坚实时遥测</span>
-          <div class="hud-card-title">秋季攻坚 · 9月当前节点 (1/3)</div>
-        </div>
-        <span class="hud-status-chip">攻坚推进中</span>
-      </div>
-
-      <div class="hud-metrics-container">
-        <!-- 指标 1：处室攻坚任务完成率 -->
-        <div class="hud-metric-row">
-          <div class="metric-head">
-            <span class="metric-name">处室攻坚任务完成率</span>
-            <span class="metric-num cyan">94.6%</span>
-          </div>
-          <div class="metric-progress-track">
-            <div class="metric-progress-fill cyan" style="width: 94.6%;"></div>
-          </div>
-        </div>
-
-        <!-- 指标 2：系统能力建设完成率 -->
-        <div class="hud-metric-row">
-          <div class="metric-head">
-            <span class="metric-name">系统能力建设完成率</span>
-            <span class="metric-num gold">88.2%</span>
-          </div>
-          <div class="metric-progress-track">
-            <div class="metric-progress-fill gold" style="width: 88.2%;"></div>
-          </div>
-        </div>
-
-        <!-- 指标 3：系统投产完成率 -->
-        <div class="hud-metric-row">
-          <div class="metric-head">
-            <span class="metric-name">系统投产完成率</span>
-            <span class="metric-num green">66.5%</span>
-          </div>
-          <div class="metric-progress-track">
-            <div class="metric-progress-fill green" style="width: 66.5%;"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="hud-card-bottom">
-        <span>攻坚基线：秋季战役第二阶段</span>
-        <span>时效状态：超前 3.2 天</span>
       </div>
     </div>
 
@@ -2307,7 +1701,7 @@
 
     <!-- BOTTOM-RIGHT VERSION BADGE (UTC+8 YYYYMMDDHHmm) -->
     <div class="bottom-right-version">
-      <span>202609032208</span>
+      <span>v202609010946</span>
     </div>
 
 
@@ -85092,89 +84486,6 @@ exports.warnOnce = warnOnce;
           setFocusView(currentFocusMode);
         }
       }
-
-      
-    // Bulletproof Top-Level Positioning & Hover/Click Toggle for Assault Telemetry HUD
-    (function initAssaultHudSystem() {
-      const beaconBtn = document.querySelector('.special-cursor-beacon');
-      const nodeWrapper = document.querySelector('.current-assault-node-wrapper');
-      const hudPopover = document.getElementById('assault-telemetry-hud');
-      if (!beaconBtn || !hudPopover) return;
-
-      let hideTimer = null;
-
-      function updateHudPosition() {
-        const rect = beaconBtn.getBoundingClientRect();
-        const hudWidth = hudPopover.offsetWidth || 310;
-        
-        // Centered horizontally directly above the beacon
-        let left = rect.left + rect.width / 2;
-        const minLeft = hudWidth / 2 + 8;
-        const maxLeft = window.innerWidth - hudWidth / 2 - 8;
-        left = Math.max(minLeft, Math.min(maxLeft, left));
-        
-        // Bottom aligned above the beacon top
-        const bottom = window.innerHeight - rect.top + 14;
-        
-        hudPopover.style.left = left + 'px';
-        hudPopover.style.bottom = bottom + 'px';
-      }
-
-      function showHud() {
-        if (hideTimer) {
-          clearTimeout(hideTimer);
-          hideTimer = null;
-        }
-        updateHudPosition();
-        hudPopover.classList.add('show');
-      }
-
-      function scheduleHideHud() {
-        if (hideTimer) clearTimeout(hideTimer);
-        hideTimer = setTimeout(() => {
-          hudPopover.classList.remove('show');
-        }, 150);
-      }
-
-      // Mouse Hover on Beacon / Node Wrapper
-      if (nodeWrapper) {
-        nodeWrapper.addEventListener('mouseenter', showHud);
-        nodeWrapper.addEventListener('mouseleave', scheduleHideHud);
-      }
-      beaconBtn.addEventListener('mouseenter', showHud);
-      beaconBtn.addEventListener('mouseleave', scheduleHideHud);
-
-      // Keep open when mouse moves into HUD
-      hudPopover.addEventListener('mouseenter', () => {
-        if (hideTimer) {
-          clearTimeout(hideTimer);
-          hideTimer = null;
-        }
-      });
-      hudPopover.addEventListener('mouseleave', scheduleHideHud);
-
-      // Mobile Touch / Click Toggle
-      beaconBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (hudPopover.classList.contains('show')) {
-          hudPopover.classList.remove('show');
-        } else {
-          showHud();
-        }
-      });
-
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('.current-assault-node-wrapper') && !e.target.closest('#assault-telemetry-hud')) {
-          hudPopover.classList.remove('show');
-        }
-      });
-
-      window.addEventListener('resize', () => {
-        if (hudPopover.classList.contains('show')) {
-          updateHudPosition();
-        }
-      });
-    })();
 
       window.addEventListener('resize', handleResize);
       window.addEventListener('orientationchange', () => setTimeout(handleResize, 150));
